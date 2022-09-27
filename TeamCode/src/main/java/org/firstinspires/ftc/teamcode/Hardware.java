@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -58,8 +59,9 @@ public class Hardware {
 
     /* Declare OpMode members. */
     private LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
+    private ElapsedTime runtime = new ElapsedTime();
 
-    // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
+    // Define Motor and Servo objects  (Make them private so they can't be accessed externally - idk abt that one)
     public DcMotor fLMotor;
     public DcMotor fRMotor;
     public DcMotor bLMotor;
@@ -86,15 +88,30 @@ public class Hardware {
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
         bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
 
-        fLMotor.setDirection(DcMotor.Direction.REVERSE);
-        fRMotor.setDirection(DcMotor.Direction.FORWARD);
-        bLMotor.setDirection(DcMotor.Direction.REVERSE);
-        bRMotor.setDirection(DcMotor.Direction.FORWARD);
+        fLMotor.setDirection(DcMotor.Direction.FORWARD);
+        fRMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.FORWARD);
+        bRMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        fLMotor.setPower(0);
+        bLMotor.setPower(0);
+        fRMotor.setPower(0);
+        bRMotor.setPower(0);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        fLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // Define and initialize ALL installed servos.
         /**
         leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
@@ -124,6 +141,21 @@ public class Hardware {
         setDrivePower(left, right, left, right);
     }
 
+    public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
+    {
+        //variables
+        double r = Math.hypot(-left_stick_x, left_stick_y);
+        double robotAngle = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
+        double rightX = -right_stick_x;
+        final double v1 = r * Math.cos(robotAngle) + rightX;
+        final double v2 = r * Math.sin(robotAngle) - rightX;
+        final double v3 = r * Math.sin(robotAngle) + rightX;
+        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+        setDrivePower(v1, v2, v3, v4);
+
+        myOpMode.telemetry.update();
+    }
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.
     public void setDrivePower(double frontLeft, double frontRight, double backLeft, double backRight) {
         // Output the values to the motor drives.
