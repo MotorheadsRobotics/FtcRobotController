@@ -67,6 +67,12 @@ public class Hardware {
     public DcMotor bLMotor;
     public DcMotor bRMotor;
 
+    public DcMotor upMotorL;
+    public DcMotor upMotorR;
+    public DcMotor horMotor;
+
+    public Servo claw;
+
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     public static final double      COUNTS_PER_INCH = 8080;
 
@@ -82,21 +88,36 @@ public class Hardware {
      * All of the hardware devices are accessed via the hardware map, and initialized.
      */
     public void init()    {
-        // Define and Initialize Motors (note: need to use reference to actual OpMode).
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
         fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
         bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
+
+        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
+        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
+        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
+
+        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
 
         fLMotor.setDirection(DcMotor.Direction.FORWARD);
         fRMotor.setDirection(DcMotor.Direction.REVERSE);
         bLMotor.setDirection(DcMotor.Direction.FORWARD);
         bRMotor.setDirection(DcMotor.Direction.REVERSE);
 
+        upMotorL.setDirection(DcMotor.Direction.REVERSE);
+        upMotorR.setDirection(DcMotor.Direction.FORWARD);
+        horMotor.setDirection(DcMotor.Direction.FORWARD);
+
         fLMotor.setPower(0);
         bLMotor.setPower(0);
         fRMotor.setPower(0);
         bRMotor.setPower(0);
+
+        upMotorL.setPower(0);
+        upMotorR.setPower(0);
+        horMotor.setPower(0);
+
+        claw.setPosition(0);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         // fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -112,35 +133,13 @@ public class Hardware {
         bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // Define and initialize ALL installed servos.
-        /**
-        leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
-        rightHand = myOpMode.hardwareMap.get(Servo.class, "right_hand");
-        leftHand.setPosition(MID_SERVO);
-        rightHand.setPosition(MID_SERVO);
-         **/
+        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
-
-    public void driveRobot(double Drive, double Turn) {
-        // Combine drive and turn for blended motion.
-        double left  = Drive + Turn;
-        double right = Drive - Turn;
-
-        // Scale the values so neither exceed +/- 1.0
-        double max = Math.max(Math.abs(left), Math.abs(right));
-        if (max > 1.0)
-        {
-            left /= max;
-            right /= max;
-        }
-
-        // Use existing function to drive both wheels.
-        setDrivePower(left, right, left, right);
-    }
-
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
     {
         //variables

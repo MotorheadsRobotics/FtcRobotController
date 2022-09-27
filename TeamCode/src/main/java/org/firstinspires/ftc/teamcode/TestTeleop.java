@@ -75,11 +75,11 @@ public class TestTeleop extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double left_stick_x        = 0;
-        double left_stick_y        = 0;
-        double right_stick_x       = 0;
         double arm          = 0;
         double handOffset   = 0;
+        double servoPosition = 0;
+        double verticalMotorPower = 1;
+        double horizontalMotorPower = 1;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -90,26 +90,40 @@ public class TestTeleop extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            // Drive robot via mecanum
+            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // This way it's also easy to just drive straight, or just turn.
-            left_stick_x    = gamepad1.left_stick_x;
-            left_stick_y    = gamepad1.left_stick_y;
-            right_stick_x   = gamepad1.right_stick_x;
+            // Servo mapped to a
+            if (gamepad1.a) {
+                servoPosition = 1 - servoPosition;
+            }
+            robot.claw.setPosition(servoPosition);
 
-            // Combine drive and turn for blended motion. Use RobotHardware class
-            robot.mecanumMove(left_stick_x, left_stick_y, right_stick_x);
-            // robot.driveRobot(drive, turn);
+            // Vertical Slides
+            if (gamepad1.left_trigger > 0.3) {
+                robot.upMotorL.setPower(verticalMotorPower);
+                robot.upMotorR.setPower(verticalMotorPower);
+            } else if (gamepad1.right_trigger > 0.3) {
+                robot.upMotorL.setPower(-verticalMotorPower);
+                robot.upMotorR.setPower(-verticalMotorPower);
+            } else {
+                robot.upMotorL.setPower(0);
+                robot.upMotorR.setPower(0);
+            }
 
+            // Horizontal Slides
+            if (gamepad1.y) {
+                robot.horMotor.setPower(horizontalMotorPower);
+            } else if (gamepad1.x) {
+                robot.horMotor.setPower(-horizontalMotorPower);
+            } else {
+                robot.horMotor.setPower(0);
+            }
             // Send telemetry messages to explain controls and show robot status
-            telemetry.addData("Drive", "Left Stick");
-            telemetry.addData("Turn", "Right Stick");
-            telemetry.addData("Arm Up/Down", "Y & A Buttons");
-            telemetry.addData("Hand Open/Closed", "Left and Right Bumpers");
+            telemetry.addData("Arm Up/Down", "Trigger Buttons");
+            telemetry.addData("Arm Forward/Backward", "Y / X Buttons");
             telemetry.addData("-", "-------");
 
-            telemetry.addData("Arm Power",  "%.2f", arm);
             telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
             telemetry.update();
 
