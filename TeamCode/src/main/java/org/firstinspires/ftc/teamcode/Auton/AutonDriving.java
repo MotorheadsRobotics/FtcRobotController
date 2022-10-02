@@ -43,31 +43,45 @@ public class AutonDriving extends LinearOpMode {
     // Initialize Hardware
     Hardware robot = new Hardware(this);
     ElapsedTime runtime = new ElapsedTime();
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // Gearing up (more speed, less torque) --> ratio < 1.0
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
+    static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
+    static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED             = 0.1;
     static final double     TURN_SPEED              = 0.5;
 
     @Override
     public void runOpMode() {
-
+        robot.init();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  0,  10, 5.0);
-        telemetry.addData("Path", "Part 1 Done");
+        telemetry.addData("Path","Part 0/4 Done");
         telemetry.update();
-        encoderDrive(TURN_SPEED,   45, 2, 2.0);
-        telemetry.addData("Path", "Part 2 Done");
+        encoderDriveSimple(DRIVE_SPEED, 3, 3, 3.0);
+        telemetry.addData("Path","Part 1/4 Done");
         telemetry.update();
-        encoderDrive(DRIVE_SPEED, 270, 10, 4.0);
-        telemetry.addData("Path", "Part 3 Done");
+        encoderDriveSimple(DRIVE_SPEED, 3, -3, 3.0);
+        telemetry.addData("Path","Part 2/4 Done");
         telemetry.update();
-
+        encoderDriveSimple(DRIVE_SPEED, -3, -3, 3.0);
+        telemetry.addData("Path","Part 3/4 Done");
+        telemetry.update();
+        encoderDriveSimple(DRIVE_SPEED, -3, 3, 3.0);
+        telemetry.addData("Path","Part 4/4 Done");
+        telemetry.update();
+        encoderDrive(DRIVE_SPEED,  0,  2, 5.0);
+        telemetry.addData("Path", "Part 1/3 Done");
+        telemetry.update();
+        encoderDrive(TURN_SPEED,   45, 1.41, 2.0);
+        telemetry.addData("Path", "Part 2/3 Done");
+        telemetry.update();
+        encoderDrive(DRIVE_SPEED, 270, 13, 4.0);
+        telemetry.addData("Path", "Part 3/3 Done");
+        telemetry.update();
+        sleep(500);
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
@@ -80,7 +94,7 @@ public class AutonDriving extends LinearOpMode {
         int newBackRightTarget;
         robot.stopAndResetDriveEncoders();
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Starting at",  "%7d :%7d :%7d :7d",
+        telemetry.addData("Starting at",  "%7d :%7d :%7d :%7d",
                 robot.fLMotor.getCurrentPosition(),
                 robot.fRMotor.getCurrentPosition(),
                 robot.bLMotor.getCurrentPosition(),
@@ -150,6 +164,72 @@ public class AutonDriving extends LinearOpMode {
             robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            sleep(250);   // optional pause after each move.
+        }
+    }
+    public void encoderDriveSimple(double speed,
+                             double leftInches, double rightInches,
+                             double timeoutS) {
+        int newfLeftTarget;
+        int newfRightTarget;
+        int newbLeftTarget;
+        int newbRightTarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newfLeftTarget = robot.fLMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newfRightTarget = robot.fRMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newbLeftTarget = robot.bLMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newbRightTarget = robot.bRMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            robot.fLMotor.setTargetPosition(newfLeftTarget);
+            robot.fRMotor.setTargetPosition(newfRightTarget);
+            robot.bLMotor.setTargetPosition(newbLeftTarget);
+            robot.bRMotor.setTargetPosition(newbRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.fRMotor.setPower(Math.abs(speed));
+            robot.fLMotor.setPower(Math.abs(speed));
+            robot.bRMotor.setPower(Math.abs(speed));
+            robot.bLMotor.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.fRMotor.isBusy() && robot.bLMotor.isBusy() && robot.fLMotor.isBusy() && robot.bRMotor.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newfLeftTarget,  newfRightTarget, newbLeftTarget, newbRightTarget);
+                telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
+                        robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.fLMotor.setPower(0);
+            robot.fRMotor.setPower(0);
+            robot.bLMotor.setPower(0);
+            robot.bRMotor.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             sleep(250);   // optional pause after each move.
         }
     }
