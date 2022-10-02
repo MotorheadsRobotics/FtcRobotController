@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,22 +37,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
- * Please read the explanations in that Sample about how to use this class definition.
- *
- * This file defines a Java Class that performs all the setup and configuration for a sample robot's hardware (motors and sensors).
- * It assumes three motors (left_drive, right_drive and arm) and two servos (left_hand and right_hand)
- *
- * This one file/class can be used by ALL of your OpModes without having to cut & paste the code each time.
- *
- * Where possible, the actual hardware objects are "abstracted" (or hidden) so the OpMode code just makes calls into the class,
- * rather than accessing the internal hardware directly. This is why the objects are declared "private".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with *exactly the same name*.
- *
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
  * Also add a new OpMode, drawing from the Sample ConceptExternalHardwareClass.java; select TeleOp.
- *
  */
 
 public class Hardware {
@@ -93,25 +79,41 @@ public class Hardware {
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
         bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
 
+        fLMotor.setDirection(DcMotor.Direction.FORWARD);
+        fRMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.FORWARD);
+        bRMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        fLMotor.setPower(0);
+        bLMotor.setPower(0);
+        fRMotor.setPower(0);
+        bRMotor.setPower(0);
+
+        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+         fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        bRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        fLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        /** Non-drive Motors **/
         upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
         upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
         horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
 
         claw = myOpMode.hardwareMap.get(Servo.class, "claw");
 
-        fLMotor.setDirection(DcMotor.Direction.FORWARD);
-        fRMotor.setDirection(DcMotor.Direction.REVERSE);
-        bLMotor.setDirection(DcMotor.Direction.FORWARD);
-        bRMotor.setDirection(DcMotor.Direction.REVERSE);
-
         upMotorL.setDirection(DcMotor.Direction.REVERSE);
         upMotorR.setDirection(DcMotor.Direction.FORWARD);
         horMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        fLMotor.setPower(0);
-        bLMotor.setPower(0);
-        fRMotor.setPower(0);
-        bRMotor.setPower(0);
 
         upMotorL.setPower(0);
         upMotorR.setPower(0);
@@ -119,20 +121,6 @@ public class Hardware {
 
         claw.setPosition(0);
 
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        fLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -162,5 +150,12 @@ public class Hardware {
         fRMotor.setPower(frontRight);
         bLMotor.setPower(backLeft);
         bRMotor.setPower(backRight);
+    }
+    public void stopAndResetDriveEncoders() {
+        fLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     }
 }
