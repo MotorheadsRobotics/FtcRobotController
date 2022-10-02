@@ -75,7 +75,7 @@ public class TestTeleop extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double arm          = 0;
+        double army          = 0;
         double handOffset   = 0;
         double servoPosition = 0;
         double verticalMotorPower = 1;
