@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.RobotHardware;
@@ -69,39 +70,43 @@ public class TestTeleop extends LinearOpMode {
             // Drive robot via mecanum
             robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-            // Servo mapped to a
-            if (gamepad1.a) {
-                servoPosition = 1 - servoPosition;
-            }
-            robot.claw.setPosition(servoPosition);
-
-            // Vertical Slides
-            if (gamepad1.left_trigger > 0.3) {
-                robot.upMotorL.setPower(verticalMotorPower);
-                robot.upMotorR.setPower(verticalMotorPower);
-            } else if (gamepad1.right_trigger > 0.3) {
-                robot.upMotorL.setPower(-verticalMotorPower);
-                robot.upMotorR.setPower(-verticalMotorPower);
-            } else {
-                robot.upMotorL.setPower(0);
-                robot.upMotorR.setPower(0);
-            }
-
-            // Horizontal Slides
-            if (gamepad1.y) {
-                robot.horMotor.setPower(horizontalMotorPower);
-            } else if (gamepad1.x) {
-                robot.horMotor.setPower(-horizontalMotorPower);
-            } else {
-                robot.horMotor.setPower(0);
-            }
-            // Send telemetry messages to explain controls and show robot status
-            telemetry.addData("Arm Up/Down", "Trigger Buttons");
-            telemetry.addData("Arm Forward/Backward", "Y / X Buttons");
-            telemetry.addData("-", "-------");
-
-            telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
+            // Test telemetry / encoders
+            telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
+                    robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
             telemetry.update();
+//            // Servo mapped to a
+//            if (gamepad1.a) {
+//                servoPosition = 1 - servoPosition;
+//            }
+//            robot.claw.setPosition(servoPosition);
+//
+//            // Vertical Slides
+//            if (gamepad1.left_trigger > 0.3) {
+//                robot.upMotorL.setPower(verticalMotorPower);
+//                robot.upMotorR.setPower(verticalMotorPower);
+//            } else if (gamepad1.right_trigger > 0.3) {
+//                robot.upMotorL.setPower(-verticalMotorPower);
+//                robot.upMotorR.setPower(-verticalMotorPower);
+//            } else {
+//                robot.upMotorL.setPower(0);
+//                robot.upMotorR.setPower(0);
+//            }
+//
+//            // Horizontal Slides
+//            if (gamepad1.y) {
+//                robot.horMotor.setPower(horizontalMotorPower);
+//            } else if (gamepad1.x) {
+//                robot.horMotor.setPower(-horizontalMotorPower);
+//            } else {
+//                robot.horMotor.setPower(0);
+//            }
+//            // Send telemetry messages to explain controls and show robot status
+//            telemetry.addData("Arm Up/Down", "Trigger Buttons");
+//            telemetry.addData("Arm Forward/Backward", "Y / X Buttons");
+//            telemetry.addData("-", "-------");
+//
+//            telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
+//            telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
             sleep(50);
