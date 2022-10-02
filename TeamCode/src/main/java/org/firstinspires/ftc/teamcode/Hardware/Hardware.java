@@ -79,10 +79,10 @@ public class Hardware {
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
         bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
 
-        fLMotor.setDirection(DcMotor.Direction.FORWARD);
-        fRMotor.setDirection(DcMotor.Direction.REVERSE);
-        bLMotor.setDirection(DcMotor.Direction.FORWARD);
-        bRMotor.setDirection(DcMotor.Direction.REVERSE);
+        fLMotor.setDirection(DcMotor.Direction.REVERSE);
+        fRMotor.setDirection(DcMotor.Direction.FORWARD);
+        bLMotor.setDirection(DcMotor.Direction.REVERSE);
+        bRMotor.setDirection(DcMotor.Direction.FORWARD);
 
         fLMotor.setPower(0);
         bLMotor.setPower(0);
@@ -105,25 +105,25 @@ public class Hardware {
         bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         /** Non-drive Motors **/
-        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
-        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
-        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
-
-        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
-
-        upMotorL.setDirection(DcMotor.Direction.REVERSE);
-        upMotorR.setDirection(DcMotor.Direction.FORWARD);
-        horMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        upMotorL.setPower(0);
-        upMotorR.setPower(0);
-        horMotor.setPower(0);
-
-        claw.setPosition(0);
-
-        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
+//        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
+//        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
+//
+//        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
+//
+//        upMotorL.setDirection(DcMotor.Direction.REVERSE);
+//        upMotorR.setDirection(DcMotor.Direction.FORWARD);
+//        horMotor.setDirection(DcMotor.Direction.FORWARD);
+//
+//        upMotorL.setPower(0);
+//        upMotorR.setPower(0);
+//        horMotor.setPower(0);
+//
+//        claw.setPosition(0);
+//
+//        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -134,10 +134,10 @@ public class Hardware {
         double r = Math.hypot(-left_stick_x, left_stick_y);
         double robotAngle = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
         double rightX = -right_stick_x;
-        final double v1 = r * Math.cos(robotAngle) + rightX;
-        final double v2 = r * Math.sin(robotAngle) - rightX;
-        final double v3 = r * Math.sin(robotAngle) + rightX;
-        final double v4 = r * Math.cos(robotAngle) - rightX;
+        final double v1 = -r * Math.cos(robotAngle) - rightX;
+        final double v2 = -r * Math.sin(robotAngle) + rightX;
+        final double v3 = -r * Math.sin(robotAngle) - rightX;
+        final double v4 = -r * Math.cos(robotAngle) + rightX;
 
         setDrivePower(v1, v2, v3, v4);
 
@@ -156,6 +156,5 @@ public class Hardware {
         fRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
     }
 }
