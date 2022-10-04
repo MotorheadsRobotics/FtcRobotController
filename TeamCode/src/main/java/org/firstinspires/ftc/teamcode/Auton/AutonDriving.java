@@ -47,8 +47,8 @@ public class AutonDriving extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.1;
+                                                      (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
     @Override
@@ -58,30 +58,22 @@ public class AutonDriving extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        telemetry.addData("Path","Part 0/4 Done");
-        telemetry.update();
-        encoderDriveSimple(DRIVE_SPEED, 3, 3, 3.0);
-        telemetry.addData("Path","Part 1/4 Done");
-        telemetry.update();
-        encoderDriveSimple(DRIVE_SPEED, 3, -3, 3.0);
-        telemetry.addData("Path","Part 2/4 Done");
-        telemetry.update();
-        encoderDriveSimple(DRIVE_SPEED, -3, -3, 3.0);
-        telemetry.addData("Path","Part 3/4 Done");
-        telemetry.update();
-        encoderDriveSimple(DRIVE_SPEED, -3, 3, 3.0);
-        telemetry.addData("Path","Part 4/4 Done");
-        telemetry.update();
-        encoderDrive(DRIVE_SPEED,  0,  2, 5.0);
+        encoderDrive(DRIVE_SPEED,  0,  20, 5.0);
         telemetry.addData("Path", "Part 1/3 Done");
         telemetry.update();
-        encoderDrive(TURN_SPEED,   45, 1.41, 2.0);
+        sleep(1000);
+        encoderDrive(TURN_SPEED,   90, 20, 5.0);
         telemetry.addData("Path", "Part 2/3 Done");
         telemetry.update();
-        encoderDrive(DRIVE_SPEED, 270, 13, 4.0);
+        sleep(1000);
+        encoderDrive(DRIVE_SPEED, 180, 20, 5.0);
         telemetry.addData("Path", "Part 3/3 Done");
         telemetry.update();
-        sleep(500);
+        sleep(1000);
+        encoderDrive(DRIVE_SPEED, 270, 20, 5.0);
+        telemetry.addData("Path", "Part 3/3 Done");
+        telemetry.update();
+        sleep(1000);
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
@@ -131,10 +123,12 @@ public class AutonDriving extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            robot.fLMotor.setPower(Math.abs(speed));
-            robot.fRMotor.setPower(Math.abs(speed));
-            robot.bLMotor.setPower(Math.abs(speed));
-            robot.bRMotor.setPower(Math.abs(speed));
+            double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
+            double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+            robot.fLMotor.setPower(forwardSlashSpeed);
+            robot.fRMotor.setPower(backwardsSlashSpeed);
+            robot.bLMotor.setPower(backwardsSlashSpeed);
+            robot.bRMotor.setPower(forwardSlashSpeed);
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -144,7 +138,7 @@ public class AutonDriving extends LinearOpMode {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
-                   (robot.fLMotor.isBusy() && robot.fRMotor.isBusy() && robot.bLMotor.isBusy() && robot.bRMotor.isBusy())) {
+                   (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newFrontLeftTarget,  newFrontRightTarget, newBackLeftTarget, newBackRightTarget);
