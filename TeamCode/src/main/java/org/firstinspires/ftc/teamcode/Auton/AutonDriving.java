@@ -62,7 +62,7 @@ public class AutonDriving extends LinearOpMode {
         telemetry.addData("Path", "Part 1/3 Done");
         telemetry.update();
         sleep(1000);
-        encoderDrive(TURN_SPEED,   90, 20, 5.0);
+        encoderDrive(DRIVE_SPEED,   90, 20, 5.0);
         telemetry.addData("Path", "Part 2/3 Done");
         telemetry.update();
         sleep(1000);
