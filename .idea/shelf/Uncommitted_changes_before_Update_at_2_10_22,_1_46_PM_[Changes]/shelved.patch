@@ -1,0 +1,19 @@
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/**\n * Top-level build file for ftc_app project.\n *\n * It is extraordinarily rare that you will ever need to edit this file.\n */\n\nbuildscript {\n    repositories {\n        mavenCentral()\n        google()\n    }\n    dependencies {\n        classpath 'com.android.tools.build:gradle:7.2.2'\n    }\n}\n\n// This is now required because aapt2 has to be downloaded from the\n// google() repository beginning with version 3.2 of the Android Gradle Plugin\nallprojects {\n    repositories {\n        mavenCentral()\n        google()\n    }\n}\n\nrepositories {\n    mavenCentral()\n\n    flatDir {\n        dirs '../libs'\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle b/build.gradle
+--- a/build.gradle	(revision 02fc4fb4a93b585d4802d218c0ff2c6d01518d7f)
++++ b/build.gradle	(date 1664736306320)
+@@ -10,7 +10,7 @@
+         google()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:7.2.2'
++        classpath 'com.android.tools.build:gradle:7.3.0'
+     }
+ }
+ 
