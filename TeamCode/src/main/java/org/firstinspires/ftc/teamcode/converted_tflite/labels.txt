@@ -1,0 +1,3 @@
+0 Magenta
+1 Cyan
+2 Yellow
