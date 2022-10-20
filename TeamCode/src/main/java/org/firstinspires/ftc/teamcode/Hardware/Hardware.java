@@ -36,6 +36,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
  * Also add a new OpMode, drawing from the Sample ConceptExternalHardwareClass.java; select TeleOp.
@@ -58,6 +72,14 @@ public class Hardware {
     public DcMotor horMotor;
 
     public Servo claw;
+
+    public WebcamName looker;
+    private static final String VUFORIA_KEY =
+            "AYy6NYn/////AAABmTW3q+TyLUMbg/IXWlIG3BkMMq0okH0hLmwj3CxhPhvUlEZHaOAmESqfePJ57KC2g6UdWLN7OYvc8ihGAZSUJ2JPWAsHQGv6GUAj4BlrMCjHvqhY0w3tV/Azw2wlPmls4FcUCRTzidzVEDy+dtxqQ7U5ZtiQhjBZetAcnLsCYb58dgwZEjTx2+36jiqcFYvS+FlNJBpbwmnPUyEEb32YBBZj4ra5jB0v4IW4wYYRKTNijAQKxco33VYSCbH0at99SqhXECURA55dtmmJxYpFlT/sMmj0iblOqoG/auapQmmyEEXt/T8hv9StyirabxhbVVSe7fPsAueiXOWVm0kCPO+KN/TyWYB9Hg/mSfnNu9i9";
+    private OpenGLMatrix lastLocation   = null;
+    private VuforiaLocalizer vuforia    = null;
+    private VuforiaTrackables targets   = null;
+    private boolean targetVisible       = false;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     public static final double      COUNTS_PER_INCH = 8080;
@@ -90,10 +112,10 @@ public class Hardware {
         bRMotor.setPower(0);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-         fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -128,16 +150,32 @@ public class Hardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
+    public void initVuforia() {
+        looker = myOpMode.hardwareMap.get(WebcamName.class, "looker");
+
+        int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = looker;
+        parameters.useExtendedTracking = false;
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        targets = this.vuforia.loadTrackablesFromAsset("PowerPlay");
+
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targets);
+
+    }
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
     {
         //variables
-        double r = Math.hypot(-left_stick_x, left_stick_y);
-        double robotAngle = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
-        double rightX = -right_stick_x;
-        final double v1 = -r * Math.cos(robotAngle) - rightX;
-        final double v2 = -r * Math.sin(robotAngle) + rightX;
-        final double v3 = -r * Math.sin(robotAngle) - rightX;
-        final double v4 = -r * Math.cos(robotAngle) + rightX;
+        double r = Math.hypot(left_stick_x, left_stick_y);
+        double robotAngle = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
+        double rightX = right_stick_x;
+        final double v1 = r * Math.cos(robotAngle) + rightX;
+        final double v2 = r * Math.sin(robotAngle) - rightX;
+        final double v3 = r * Math.sin(robotAngle) + rightX;
+        final double v4 = r * Math.cos(robotAngle) - rightX;
 
         setDrivePower(v1, v2, v3, v4);
 
