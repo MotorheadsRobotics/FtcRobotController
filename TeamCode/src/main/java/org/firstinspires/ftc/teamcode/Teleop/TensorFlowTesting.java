@@ -63,7 +63,7 @@ public class TensorFlowTesting extends LinearOpMode {
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
 //    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
-     private static final String TFOD_MODEL_FILE  = "/ftc/teamcode/converted_tflite/model_unquant.tflite";
+     private static final String TFOD_MODEL_FILE  = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/converted_tflite/model_unquant.tflite";
 
 
     private static final String[] LABELS = {
