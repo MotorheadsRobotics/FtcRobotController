@@ -81,9 +81,6 @@ public class Hardware {
     private VuforiaTrackables targets   = null;
     private boolean targetVisible       = false;
 
-    // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
-    public static final double      COUNTS_PER_INCH = 8080;
-
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Hardware(LinearOpMode opmode) {
         myOpMode = opmode;
@@ -101,10 +98,10 @@ public class Hardware {
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
         bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
 
-        fLMotor.setDirection(DcMotor.Direction.REVERSE);
-        fRMotor.setDirection(DcMotor.Direction.FORWARD);
-        bLMotor.setDirection(DcMotor.Direction.REVERSE);
-        bRMotor.setDirection(DcMotor.Direction.FORWARD);
+        fLMotor.setDirection(DcMotor.Direction.FORWARD);
+        fRMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.FORWARD);
+        bRMotor.setDirection(DcMotor.Direction.REVERSE);
 
         fLMotor.setPower(0);
         bLMotor.setPower(0);
@@ -127,24 +124,24 @@ public class Hardware {
         bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         /** Non-drive Motors **/
-//        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
-//        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
+        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
+        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
 //        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
 //
 //        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
 //
-//        upMotorL.setDirection(DcMotor.Direction.REVERSE);
-//        upMotorR.setDirection(DcMotor.Direction.FORWARD);
+        upMotorL.setDirection(DcMotor.Direction.FORWARD);
+        upMotorR.setDirection(DcMotor.Direction.REVERSE);
 //        horMotor.setDirection(DcMotor.Direction.FORWARD);
 //
-//        upMotorL.setPower(0);
-//        upMotorR.setPower(0);
+        upMotorL.setPower(0);
+        upMotorR.setPower(0);
 //        horMotor.setPower(0);
 //
 //        claw.setPosition(0);
 //
-//        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
@@ -170,12 +167,12 @@ public class Hardware {
     {
         //variables
         double r = Math.hypot(left_stick_x, left_stick_y);
-        double robotAngle = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
+        double robotAngle = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
         double rightX = right_stick_x;
-        final double v1 = r * Math.cos(robotAngle) + rightX;
-        final double v2 = r * Math.sin(robotAngle) - rightX;
-        final double v3 = r * Math.sin(robotAngle) + rightX;
-        final double v4 = r * Math.cos(robotAngle) - rightX;
+        final double v1 = r * Math.cos(robotAngle) - rightX;
+        final double v2 = r * Math.sin(robotAngle) + rightX;
+        final double v3 = r * Math.sin(robotAngle) - rightX;
+        final double v4 = r * Math.cos(robotAngle) + rightX;
 
         setDrivePower(v1, v2, v3, v4);
 

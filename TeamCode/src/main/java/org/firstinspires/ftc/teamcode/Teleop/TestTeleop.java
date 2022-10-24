@@ -81,16 +81,16 @@ public class TestTeleop extends LinearOpMode {
 //            robot.claw.setPosition(servoPosition);
 //
 //            // Vertical Slides
-//            if (gamepad1.left_trigger > 0.3) {
-//                robot.upMotorL.setPower(verticalMotorPower);
-//                robot.upMotorR.setPower(verticalMotorPower);
-//            } else if (gamepad1.right_trigger > 0.3) {
-//                robot.upMotorL.setPower(-verticalMotorPower);
-//                robot.upMotorR.setPower(-verticalMotorPower);
-//            } else {
-//                robot.upMotorL.setPower(0);
-//                robot.upMotorR.setPower(0);
-//            }
+            if (gamepad1.left_trigger > 0.3) {
+                robot.upMotorL.setPower(verticalMotorPower);
+                robot.upMotorR.setPower(verticalMotorPower);
+            } else if (gamepad1.right_trigger > 0.3) {
+                robot.upMotorL.setPower(-verticalMotorPower);
+                robot.upMotorR.setPower(-verticalMotorPower);
+            } else {
+                robot.upMotorL.setPower(0);
+                robot.upMotorR.setPower(0);
+            }
 //
 //            // Horizontal Slides
 //            if (gamepad1.y) {

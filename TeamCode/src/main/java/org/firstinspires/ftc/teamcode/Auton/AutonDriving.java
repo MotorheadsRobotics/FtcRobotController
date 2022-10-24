@@ -62,6 +62,7 @@ public class AutonDriving extends LinearOpMode {
     // Initialize Hardware
     Hardware robot = new Hardware(this);
     ElapsedTime runtime = new ElapsedTime();
+
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
