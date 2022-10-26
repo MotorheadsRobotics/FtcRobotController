@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -72,6 +73,7 @@ public class Hardware {
     public DcMotor horMotor;
 
     public Servo claw;
+    public BNO055IMU imu;
 
     public WebcamName looker;
     private static final String VUFORIA_KEY =
@@ -92,6 +94,12 @@ public class Hardware {
      *
      * All of the hardware devices are accessed via the hardware map, and initialized.
      */
+    public void initGyro(){
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+    }
     public void init()    {
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
         fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");

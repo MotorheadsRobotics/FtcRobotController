@@ -39,11 +39,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -70,6 +74,23 @@ public class AutonDriving extends LinearOpMode {
                                                       (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+
+    static final double     P_TURN_GAIN            = 0.02;     // Larger is more responsive, but also less stable
+    static final double     P_DRIVE_GAIN           = 0.03;     // Larger is more responsive, but also less stable
+    static final double     HEADING_THRESHOLD      = 1;
+
+    private double          robotHeading  = 0;
+    private double          headingOffset = 0;
+    private double          headingError  = 0;
+
+
+    private double  targetHeading = 0;
+    private double  driveSpeed    = 0;
+    private double  turnSpeed     = 0;
+    private double  leftSpeed     = 0;
+    private double  rightSpeed    = 0;
+    private int     leftTarget    = 0;
+    private int     rightTarget   = 0;
 
     private static final String VUFORIA_KEY =
             "AYy6NYn/////AAABmTW3q+TyLUMbg/IXWlIG3BkMMq0okH0hLmwj3CxhPhvUlEZHaOAmESqfePJ57KC2g6UdWLN7OYvc8ihGAZSUJ2JPWAsHQGv6GUAj4BlrMCjHvqhY0w3tV/Azw2wlPmls4FcUCRTzidzVEDy+dtxqQ7U5ZtiQhjBZetAcnLsCYb58dgwZEjTx2+36jiqcFYvS+FlNJBpbwmnPUyEEb32YBBZj4ra5jB0v4IW4wYYRKTNijAQKxco33VYSCbH0at99SqhXECURA55dtmmJxYpFlT/sMmj0iblOqoG/auapQmmyEEXt/T8hv9StyirabxhbVVSe7fPsAueiXOWVm0kCPO+KN/TyWYB9Hg/mSfnNu9i9";
@@ -98,29 +119,26 @@ public class AutonDriving extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init();
-
+        robot.initGyro();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  0,  20, 5.0);
+        encoderDrive(DRIVE_SPEED,  0,  20, 5.0); // drive forwards 20 inches
         telemetry.addData("Path", "Part 1/3 Done");
         telemetry.update();
         sleep(1000);
-        encoderDrive(DRIVE_SPEED,   90, 20, 5.0);
+
+        turnToHeading(TURN_SPEED, -90); // turn 90 deg clockwise
         telemetry.addData("Path", "Part 2/3 Done");
         telemetry.update();
         sleep(1000);
-        encoderDrive(DRIVE_SPEED, 180, 20, 5.0);
+
+        holdHeading(TURN_SPEED, -90, 2);
+
+        encoderDrive(DRIVE_SPEED, 90, 20, 5); // strafe rightwards 20 inches (should get back to starting position)
         telemetry.addData("Path", "Part 3/3 Done");
         telemetry.update();
         sleep(1000);
-        encoderDrive(DRIVE_SPEED, 270, 20, 5.0);
-        telemetry.addData("Path", "Part 3/3 Done");
-        telemetry.update();
-        sleep(1000);
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        sleep(1000);  // pause to display final telemetry message.
     }
 
     public void identifyMarker(String sleeve) {
@@ -183,6 +201,13 @@ public class AutonDriving extends LinearOpMode {
         }
     }
 
+    /**
+     * Method to drive at any given angle for a certain number of degrees. Maintains heading.
+     * @param speed desired magnitude speed for the robot
+     * @param direction forwards = 0, right = 90, backwards = 180, left = 270
+     * @param inches you know what this means
+     * @param timeoutS how many seconds until the robot gives up on this task
+     */
     public void encoderDrive(double speed, double direction, double inches, double timeoutS) {
         int newFrontLeftTarget;
         int newFrontRightTarget;
@@ -265,6 +290,14 @@ public class AutonDriving extends LinearOpMode {
             sleep(250);   // optional pause after each move.
         }
     }
+
+    /**
+     *
+     * @param speed desired speed at which wheels turn
+     * @param leftInches how many inches the left-side wheels turn
+     * @param rightInches same for right-side wheels
+     * @param timeoutS seconds until robot gives up on life
+     */
     public void encoderDriveSimple(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
@@ -364,5 +397,153 @@ public class AutonDriving extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+    }
+
+    /**
+     *  Method to spin on central axis to point in a new direction.
+     *  Move will stop if either of these conditions occur:
+     *  1) Move gets to the heading (angle)
+     *  2) Driver stops the opmode running.
+     *
+     * @param maxTurnSpeed Desired MAX speed of turn. (range 0 to +1.0)
+     * @param heading Absolute Heading Angle (in Degrees) relative to last gyro reset.
+     *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *              If a relative angle is required, add/subtract from current heading.
+     */
+    public void turnToHeading(double maxTurnSpeed, double heading) {
+
+        // Run getSteeringCorrection() once to pre-calculate the current error
+        getSteeringCorrection(heading, P_DRIVE_GAIN);
+
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
+
+            // Clip the speed to the maximum permitted value.
+            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+
+            // Pivot in place by applying the turning correction
+            turnRobot(turnSpeed);
+
+            // Display drive status for the driver.
+            sendTelemetry();
+        }
+
+        // Stop all motion;
+        stopAllMotion();
+    }
+
+    /**
+     *  Method to obtain & hold a heading for a finite amount of time
+     *  Move will stop once the requested time has elapsed
+     *  This function is useful for giving the robot a moment to stabilize it's heading between movements.
+     *
+     * @param maxTurnSpeed      Maximum differential turn speed (range 0 to +1.0)
+     * @param heading    Absolute Heading Angle (in Degrees) relative to last gyro reset.
+     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *                   If a relative angle is required, add/subtract from current heading.
+     * @param holdTime   Length of time (in seconds) to hold the specified heading.
+     */
+    public void holdHeading(double maxTurnSpeed, double heading, double holdTime) {
+
+        ElapsedTime holdTimer = new ElapsedTime();
+        holdTimer.reset();
+
+        // keep looping while we have time remaining.
+        while (opModeIsActive() && (holdTimer.time() < holdTime)) {
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
+
+            // Clip the speed to the maximum permitted value.
+            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+
+            // Pivot in place by applying the turning correction
+            turnRobot(turnSpeed);
+
+            // Display drive status for the driver.
+            sendTelemetry();
+        }
+
+        // Stop all motion;
+        stopAllMotion();
+    }
+
+    // **********  LOW Level driving functions.  ********************
+
+    /**
+     * This method uses a Proportional Controller to determine how much steering correction is required.
+     *
+     * @param desiredHeading        The desired absolute heading (relative to last heading reset)
+     * @param proportionalGain      Gain factor applied to heading error to obtain turning power.
+     * @return                      Turning power needed to get to required heading.
+     */
+    public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
+        targetHeading = desiredHeading;  // Save for telemetry
+
+        // Get the robot heading by applying an offset to the IMU heading
+        robotHeading = getRawHeading() - headingOffset;
+
+        // Determine the heading current error
+        headingError = targetHeading - robotHeading;
+
+        // Normalize the error to be within +/- 180 degrees
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+
+        // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
+        return Range.clip(headingError * proportionalGain, -1, 1);
+    }
+
+    /**
+     * This method takes separate drive (fwd/rev) and turn (right/left) requests,
+     * combines them, and applies the appropriate speed commands to the left and right wheel motors.
+     * @param turn  clockwise turning motor speed.
+     */
+    public void turnRobot(double turn) {
+        turnSpeed  = turn;      // save this value as a class member so it can be used by telemetry.
+
+        leftSpeed  = -turn;
+        rightSpeed = turn;
+
+        // Scale speeds down if either one exceeds +/- 1.0;
+        double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+        if (max > 1.0)
+        {
+            leftSpeed /= max;
+            rightSpeed /= max;
+        }
+
+        robot.fLMotor.setPower(leftSpeed);
+        robot.bLMotor.setPower(leftSpeed);
+        robot.fRMotor.setPower(rightSpeed);
+        robot.bRMotor.setPower(rightSpeed);
+    }
+    public void stopAllMotion(){
+        robot.fLMotor.setPower(0);
+        robot.fRMotor.setPower(0);
+        robot.bLMotor.setPower(0);
+        robot.bRMotor.setPower(0);
+    }
+
+    /**
+     *  Display the various control parameters while driving
+     */
+    private void sendTelemetry() {
+        telemetry.addData("Motion", "Turning");
+
+        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
+        telemetry.addData("Error:Steer",  "%5.1f:%5.1f", headingError, turnSpeed);
+        telemetry.addData("Wheel Speeds L:R.", "%5.2f : %5.2f", leftSpeed, rightSpeed);
+        telemetry.update();
+    }
+
+    /**
+     * read the raw (un-offset Gyro heading) directly from the IMU
+     */
+    public double getRawHeading() {
+        Orientation angles   = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
     }
 }
