@@ -55,8 +55,8 @@ public class TestTeleop extends LinearOpMode {
         double army          = 0;
         double handOffset   = 0;
         double servoPosition = 0;
-        double verticalMotorPower = 1;
-        double horizontalMotorPower = 1;
+        double verticalMotorPower = 1.0;
+        double horizontalMotorPower = 1.0;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -74,13 +74,13 @@ public class TestTeleop extends LinearOpMode {
             telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
                     robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
             telemetry.update();
-//            // Servo mapped to a
-//            if (gamepad1.a) {
-//                servoPosition = 1 - servoPosition;
-//            }
-//            robot.claw.setPosition(servoPosition);
-//
-//            // Vertical Slides
+            // Servo mapped to a
+            if (gamepad1.a) {
+                servoPosition = 1 - servoPosition;
+            }
+            robot.claw.setPosition(servoPosition);
+
+            // Vertical Slides
             if (gamepad1.left_trigger > 0.3) {
                 robot.upMotorL.setPower(verticalMotorPower);
                 robot.upMotorR.setPower(verticalMotorPower);
@@ -104,8 +104,6 @@ public class TestTeleop extends LinearOpMode {
 //            telemetry.addData("Arm Up/Down", "Trigger Buttons");
 //            telemetry.addData("Arm Forward/Backward", "Y / X Buttons");
 //            telemetry.addData("-", "-------");
-//
-//            telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
 //            telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.

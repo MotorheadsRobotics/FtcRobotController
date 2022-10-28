@@ -201,6 +201,12 @@ public class AutonDriving extends LinearOpMode {
         }
     }
 
+    public char identifySleeveColorSensor() {
+        int red = robot.colorSensor.red();
+        int green = robot.colorSensor.green();
+        int blue = robot.colorSensor.blue();
+        return 'r';
+    }
     /**
      * Method to drive at any given angle for a certain number of degrees. Maintains heading.
      * @param speed desired magnitude speed for the robot

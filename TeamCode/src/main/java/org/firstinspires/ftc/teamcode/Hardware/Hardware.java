@@ -29,8 +29,12 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -74,6 +78,7 @@ public class Hardware {
 
     public Servo claw;
     public BNO055IMU imu;
+    public ColorSensor colorSensor;
 
     public WebcamName looker;
     private static final String VUFORIA_KEY =
@@ -136,7 +141,7 @@ public class Hardware {
         upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
 //        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
 //
-//        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
+        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
 //
         upMotorL.setDirection(DcMotor.Direction.FORWARD);
         upMotorR.setDirection(DcMotor.Direction.REVERSE);
@@ -146,7 +151,7 @@ public class Hardware {
         upMotorR.setPower(0);
 //        horMotor.setPower(0);
 //
-//        claw.setPosition(0);
+        claw.setPosition(0);
 //
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
