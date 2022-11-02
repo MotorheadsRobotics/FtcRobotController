@@ -29,13 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Auton;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XZY;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -43,24 +37,18 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name="Robot: Auto Drive By Encoder", group="Robot")
+@Autonomous(name="Autonomous Driving", group="Robot")
 
 public class AutonDriving extends LinearOpMode {
     // Initialize Hardware
@@ -119,24 +107,12 @@ public class AutonDriving extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init();
-        robot.initGyro();
+        // robot.initGyro();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  0,  20, 5.0); // drive forwards 20 inches
+        encoderDrive(DRIVE_SPEED,  180,  5, 0.55); // drive forwards 20 inches
         telemetry.addData("Path", "Part 1/3 Done");
-        telemetry.update();
-        sleep(1000);
-
-        turnToHeading(TURN_SPEED, -90); // turn 90 deg clockwise
-        telemetry.addData("Path", "Part 2/3 Done");
-        telemetry.update();
-        sleep(1000);
-
-        holdHeading(TURN_SPEED, -90, 2);
-
-        encoderDrive(DRIVE_SPEED, 90, 20, 5); // strafe rightwards 20 inches (should get back to starting position)
-        telemetry.addData("Path", "Part 3/3 Done");
         telemetry.update();
         sleep(1000);
     }

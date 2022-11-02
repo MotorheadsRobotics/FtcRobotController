@@ -29,13 +29,9 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.RobotHardware;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
 /**
@@ -43,8 +39,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="Concept: Robot Hardware Class", group="Robot")
-public class TestTeleop extends LinearOpMode {
+@TeleOp(name="TestTeleopSolo", group="Robot")
+public class TestTeleopSolo extends LinearOpMode {
 
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
@@ -77,6 +73,8 @@ public class TestTeleop extends LinearOpMode {
             // Servo mapped to a
             if (gamepad1.a) {
                 servoPosition = 1 - servoPosition;
+                while (gamepad1.a) {
+                }
             }
             robot.claw.setPosition(servoPosition);
 

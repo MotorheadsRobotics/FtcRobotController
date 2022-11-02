@@ -157,6 +157,9 @@ public class Hardware {
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
