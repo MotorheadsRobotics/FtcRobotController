@@ -52,9 +52,7 @@ public class TestLiftEncoder extends LinearOpMode {
                             break;
                         }
                     }
-                    while (gamepad2.right_bumper){
-
-                    }
+                    while (gamepad2.right_bumper);
                 }
                 else if (gamepad2.left_bumper) {
                     for (int i = 0; i < heights.length; i++) {
@@ -66,9 +64,7 @@ public class TestLiftEncoder extends LinearOpMode {
                             break;
                         }
                     }
-                    while (gamepad2.left_bumper){
-
-                    }
+                    while (gamepad2.left_bumper);
                 }
                 robot.upMotorL.setTargetPosition(target);
                 robot.upMotorR.setTargetPosition(target);
@@ -91,15 +87,11 @@ public class TestLiftEncoder extends LinearOpMode {
             else {
                 if (gamepad2.left_bumper && currentPreset < heights.length - 1) {
                     currentPreset++;
-                    while (gamepad2.left_bumper) {
-
-                    }
+                    while (gamepad2.left_bumper);
                 }
                 else if (gamepad2.right_bumper && currentPreset > 0) {
                     currentPreset--;
-                    while (gamepad2.right_bumper) {
-
-                    }
+                    while (gamepad2.right_bumper);
                 }
 
                 int target = heights[currentPreset] * countsPerInch;
