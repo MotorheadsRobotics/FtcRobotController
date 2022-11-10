@@ -55,6 +55,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
             // Move Lifts
             if(manualMode){
                 telemetry.addData("Manual Mode", true);
+                telemetry.addData("Current Preset", heightNames[currentPreset]);
                 if(gamepad2.right_trigger > 0.3){
                     robot.upMotorL.setPower(LIFTMOTORPOWER);
                     robot.upMotorR.setPower(LIFTMOTORPOWER);
@@ -68,7 +69,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
                 }
             }
             else { // Preset Mode
-                telemetry.addData("Manual Mode", true);
+                telemetry.addData("Preset Mode", true);
                 telemetry.addData("Current Preset", heightNames[currentPreset]);
                 robot.upMotorL.setTargetPosition(heightsCounts[currentPreset] + offsetCounts);
                 robot.upMotorR.setTargetPosition(heightsCounts[currentPreset] + offsetCounts);
@@ -81,7 +82,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
                 // might need to code in the run_to_position function because i dont know if DcMotor.RunMode.RUN_TO_POSITION only finishes exits the while loop once done.
             }
             telemetry.update();
-            sleep(50);
+            sleep(150);
         }
     }
 }
