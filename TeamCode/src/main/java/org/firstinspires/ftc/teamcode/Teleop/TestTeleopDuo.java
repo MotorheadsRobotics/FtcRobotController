@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
@@ -45,6 +46,14 @@ public class TestTeleopDuo extends LinearOpMode {
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
     Hardware robot = new Hardware(this);
+
+    public static int[] heights = new int[] {0, 2, 15, 23, 32};
+    public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
+    public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
+    public int currentPreset = 0;
+    public static int countsPerInch = 330;
+    public boolean manualMode = true;
+    private static double LIFTMOTORPOWER = 1.0;
 
     @Override
     public void runOpMode() {
@@ -62,7 +71,12 @@ public class TestTeleopDuo extends LinearOpMode {
         waitForStart();
         
         // boolean slow = false;
+        robot.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int offsetCounts = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Drive robot via mecanum
@@ -100,7 +114,7 @@ public class TestTeleopDuo extends LinearOpMode {
             robot.claw.setPosition(servoPosition);
 
             // Vertical Slides
-            if (gamepad2.left_trigger > 0.3) {
+            /*if (gamepad2.left_trigger > 0.3) {
                 robot.upMotorL.setPower(verticalMotorPower);
                 robot.upMotorR.setPower(verticalMotorPower);
             } else if (gamepad2.right_trigger > 0.3) {
@@ -109,7 +123,72 @@ public class TestTeleopDuo extends LinearOpMode {
             } else {
                 robot.upMotorL.setPower(0);
                 robot.upMotorR.setPower(0);
+            }*/
+            telemetry.addData("leftLiftPos", robot.upMotorL.getCurrentPosition());
+            telemetry.addData("rightLiftPos", robot.upMotorR.getCurrentPosition());
+
+            // Offset Calculations using bumpers
+            if(gamepad2.left_bumper){
+                offsetCounts -= 33;
             }
+            else if(gamepad2.right_bumper){
+                offsetCounts += 33;
+            }
+
+            // dpad setting presets
+            if(gamepad2.dpad_up){
+                if(currentPreset < 4) {
+                    currentPreset++;
+                }
+                manualMode = false;
+            }
+            else if(gamepad2.dpad_down){
+                if(currentPreset > 0){
+                    currentPreset--;
+                }
+                manualMode = false;
+            }
+
+            // Check if we should be in manual mode
+            if(gamepad2.right_trigger > 0.3 || gamepad2.left_trigger > 0.3) {
+                manualMode = true;
+            }
+
+            // Move Lifts
+            if(manualMode){
+                telemetry.addData("Manual Mode", true);
+                telemetry.addData("Current Preset", heightNames[currentPreset]);
+
+                robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                if(gamepad2.left_trigger > 0.3){
+                    robot.upMotorL.setPower(-LIFTMOTORPOWER);
+                    robot.upMotorR.setPower(-LIFTMOTORPOWER);
+                }
+                else if(gamepad2.right_trigger > 0.3){
+                    robot.upMotorL.setPower(LIFTMOTORPOWER);
+                    robot.upMotorR.setPower(LIFTMOTORPOWER);
+                }
+                else{
+                    robot.upMotorL.setPower(0);
+                    robot.upMotorR.setPower(0);
+                }
+            }
+            else { // Preset Mode
+                telemetry.addData("Preset Mode", true);
+                telemetry.addData("Current Preset", heightNames[currentPreset]);
+                robot.upMotorL.setTargetPosition(heightsCounts[currentPreset] + offsetCounts);
+                robot.upMotorR.setTargetPosition(heightsCounts[currentPreset] + offsetCounts);
+
+                robot.upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                robot.upMotorL.setPower(LIFTMOTORPOWER);
+                robot.upMotorR.setPower(LIFTMOTORPOWER);
+                // might need to code in the run_to_position function because i dont know if DcMotor.RunMode.RUN_TO_POSITION only finishes exits the while loop once done.
+            }
+            telemetry.update();
 //
 //            // Horizontal Slides
 //            if (gamepad1.y) {
@@ -126,7 +205,7 @@ public class TestTeleopDuo extends LinearOpMode {
 //            telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
-            sleep(50);
+            sleep(75);
         }
     }
 }

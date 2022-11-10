@@ -44,12 +44,16 @@ public class TestLiftEncoderKevin extends LinearOpMode {
             }
 
             // dpad setting presets
-            if(gamepad2.dpad_up && currentPreset < 4){
-                currentPreset++;
+            if(gamepad2.dpad_up){
+                if(currentPreset < 4) {
+                    currentPreset++;
+                }
                 manualMode = false;
             }
-            else if(gamepad2.dpad_down && currentPreset > 0){
-                currentPreset--;
+            else if(gamepad2.dpad_down){
+                if(currentPreset > 0){
+                    currentPreset--;
+                }
                 manualMode = false;
             }
 
@@ -62,13 +66,17 @@ public class TestLiftEncoderKevin extends LinearOpMode {
             if(manualMode){
                 telemetry.addData("Manual Mode", true);
                 telemetry.addData("Current Preset", heightNames[currentPreset]);
-                if(gamepad2.right_trigger > 0.3){
-                    robot.upMotorL.setPower(LIFTMOTORPOWER);
-                    robot.upMotorR.setPower(LIFTMOTORPOWER);
-                }
-                else if(gamepad2.left_trigger > 0.3){
+
+                robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                if(gamepad2.left_trigger > 0.3){
                     robot.upMotorL.setPower(-LIFTMOTORPOWER);
                     robot.upMotorR.setPower(-LIFTMOTORPOWER);
+                }
+                else if(gamepad2.right_trigger > 0.3){
+                    robot.upMotorL.setPower(LIFTMOTORPOWER);
+                    robot.upMotorR.setPower(LIFTMOTORPOWER);
                 }
                 else{
                     robot.upMotorL.setPower(0);
