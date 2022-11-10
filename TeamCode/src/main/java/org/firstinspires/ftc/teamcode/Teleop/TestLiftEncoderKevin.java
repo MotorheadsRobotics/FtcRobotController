@@ -15,7 +15,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
     public static int[] heightsCounts = new int[] {0, -660, -3300, -6600, -9900};
     public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
     public int currentPreset = 0;
-    public static int countsPerInch = 330;
+    public static int countsPerInch = -330;
     public boolean manualMode = true;
     private static double LIFTMOTORPOWER = 1.0;
 
