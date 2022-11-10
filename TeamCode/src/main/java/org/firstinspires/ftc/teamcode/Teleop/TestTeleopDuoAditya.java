@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  */
 
 @TeleOp(name="TestTeleopDuo", group="Robot")
-public class TeleopDuoAditya extends LinearOpMode {
+public class TestTeleopDuoAditya extends LinearOpMode {
 
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
