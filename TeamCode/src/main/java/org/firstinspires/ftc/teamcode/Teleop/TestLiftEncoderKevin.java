@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
-@TeleOp(name="TestLiftEncoder", group="Robot")
+@TeleOp(name="TestLiftEncoder2", group="Robot")
 
 public class TestLiftEncoderKevin extends LinearOpMode {
     Hardware robot = new Hardware(this);
     
     public static int[] heights = new int[] {0, 2, 10, 20, 30};
-    public static int[] heightsCounts = new int[] {0, 660, 3300, 6600, 9900};
+    public static int[] heightsCounts = new int[] {0, -660, -3300, -6600, -9900};
     public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
     public int currentPreset = 0;
     public static int countsPerInch = 330;
@@ -23,6 +23,12 @@ public class TestLiftEncoderKevin extends LinearOpMode {
     public void runOpMode () {
         robot.init();
         waitForStart();
+
+        robot.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int offsetCounts = 0;
 
         while(opModeIsActive()) {
@@ -65,6 +71,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
                     robot.upMotorR.setPower(-LIFTMOTORPOWER);
                 }
                 else{
+                    robot.upMotorL.setPower(0);
                     robot.upMotorR.setPower(0);
                 }
             }
@@ -82,7 +89,7 @@ public class TestLiftEncoderKevin extends LinearOpMode {
                 // might need to code in the run_to_position function because i dont know if DcMotor.RunMode.RUN_TO_POSITION only finishes exits the while loop once done.
             }
             telemetry.update();
-            sleep(150);
+            sleep(50);
         }
     }
 }
