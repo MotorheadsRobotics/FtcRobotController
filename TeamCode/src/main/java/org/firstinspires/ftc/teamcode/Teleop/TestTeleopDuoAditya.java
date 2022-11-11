@@ -132,16 +132,31 @@ public class TestTeleopDuoAditya extends LinearOpMode {
 
             // dpad setting presets
             if(gamepad2.dpad_up){
-                if(currentPreset < 4) {
-                    currentPreset++;
-                }
+//                if(currentPreset < 4) {
+//                    currentPreset++;
+//                } //sequential
+                //direct mapping
+                currentPreset = 4;
                 manualMode = false;
                 while (gamepad2.dpad_up); // while loop locks program till button released
             }
+            //following two are only direct map
+            else if (gamepad2.dpad_right) {
+                currentPreset = 3;
+                manualMode = false;
+                while (gamepad2.dpad_right);
+            }
+            else if (gamepad2.dpad_left) {
+                currentPreset = 2;
+                manualMode = false;
+                while (gamepad2.dpad_left);
+            }
             else if(gamepad2.dpad_down){
-                if(currentPreset > 0){
-                    currentPreset--;
-                }
+//                if(currentPreset > 0){
+//                    currentPreset--;
+//                }//sequential
+                //direct mapping
+                currentPreset = 0;
                 manualMode = false;
                 while (gamepad2.dpad_down);
             }
