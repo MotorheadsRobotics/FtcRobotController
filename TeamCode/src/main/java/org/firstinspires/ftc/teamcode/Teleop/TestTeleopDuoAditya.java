@@ -40,7 +40,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="TestTeleopDuo", group="Robot")
+@TeleOp(name="TestTeleopDuoAditya", group="Robot")
 public class TestTeleopDuoAditya extends LinearOpMode {
 
     // Create a RobotHardware object to be used to access robot hardware.
