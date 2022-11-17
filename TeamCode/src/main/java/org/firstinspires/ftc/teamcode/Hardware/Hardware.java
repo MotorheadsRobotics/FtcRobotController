@@ -34,6 +34,7 @@ import android.graphics.Color;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -43,17 +44,14 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-
-import java.util.ArrayList;
-import java.util.List;
+import org.firstinspires.ftc.teamcode.Auton.IterativeAuton;
+import org.opencv.objdetect.QRCodeDetector;
+import org.opencv.core.Mat;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
@@ -63,7 +61,7 @@ import java.util.List;
 public class Hardware {
 
     /* Declare OpMode members. */
-    private LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
+    private OpMode myOpMode;   // gain access to methods in the calling OpMode.
     private ElapsedTime runtime = new ElapsedTime();
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally - idk abt that one)
@@ -78,32 +76,67 @@ public class Hardware {
 
     public Servo claw;
     public BNO055IMU imu;
-    public ColorSensor colorSensor;
 
-    public WebcamName looker;
-    private static final String VUFORIA_KEY =
-            "AYy6NYn/////AAABmTW3q+TyLUMbg/IXWlIG3BkMMq0okH0hLmwj3CxhPhvUlEZHaOAmESqfePJ57KC2g6UdWLN7OYvc8ihGAZSUJ2JPWAsHQGv6GUAj4BlrMCjHvqhY0w3tV/Azw2wlPmls4FcUCRTzidzVEDy+dtxqQ7U5ZtiQhjBZetAcnLsCYb58dgwZEjTx2+36jiqcFYvS+FlNJBpbwmnPUyEEb32YBBZj4ra5jB0v4IW4wYYRKTNijAQKxco33VYSCbH0at99SqhXECURA55dtmmJxYpFlT/sMmj0iblOqoG/auapQmmyEEXt/T8hv9StyirabxhbVVSe7fPsAueiXOWVm0kCPO+KN/TyWYB9Hg/mSfnNu9i9";
-    private OpenGLMatrix lastLocation   = null;
-    private VuforiaLocalizer vuforia    = null;
-    private VuforiaTrackables targets   = null;
-    private boolean targetVisible       = false;
+    public OpenCvWebcam webcam;
+    public QRCodeDetector det;
+    public boolean found;
+    public String message;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Hardware(LinearOpMode opmode) {
+    public Hardware(OpMode opmode) {
         myOpMode = opmode;
     }
 
-    /**
-     * Initialize all the robot's hardware.
-     * This method must be called ONCE when the OpMode is initialized.
-     *
-     * All of the hardware devices are accessed via the hardware map, and initialized.
-     */
     public void initGyro(){
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
         imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+    }
+    public void initQRCodeSensor(){
+        // Borrowed from OpenCV's FTC documentation:
+        int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        webcam.setPipeline(new SimplePipeline());
+        det = new QRCodeDetector();
+
+        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                /*
+                 * Tell the webcam to start streaming images to us! Note that you must make sure
+                 * the resolution you specify is supported by the camera. If it is not, an exception
+                 * will be thrown.
+                 *
+                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+                 *
+                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+                 * away from the user.
+                 */
+                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+        myOpMode.telemetry.addData(">", "QRCodeReader Initialized");
+        myOpMode.telemetry.update();
     }
     public void init()    {
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
@@ -163,22 +196,7 @@ public class Hardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
-    public void initVuforia() {
-        looker = myOpMode.hardwareMap.get(WebcamName.class, "looker");
 
-        int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = looker;
-        parameters.useExtendedTracking = false;
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        targets = this.vuforia.loadTrackablesFromAsset("PowerPlay");
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targets);
-
-    }
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
     {
         //variables
@@ -207,5 +225,15 @@ public class Hardware {
         fRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public class SimplePipeline extends OpenCvPipeline{
+        public Mat processFrame(Mat input){
+            String decoded = det.detectAndDecode(input);
+            if (decoded.length() > 5){
+                found = true;
+                message = decoded;
+            }
+            return input;
+        }
     }
 }

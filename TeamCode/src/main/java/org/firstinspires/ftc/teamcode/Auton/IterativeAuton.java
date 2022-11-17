@@ -29,37 +29,40 @@
 
 package org.firstinspires.ftc.teamcode.Auton;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.opencv.core.Mat;
+import org.opencv.objdetect.QRCodeDetector;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.List;
-
-@Autonomous(name="Autonomous Driving", group="Robot")
-
-public class AutonDriving extends LinearOpMode {
-    // Initialize Hardware
+@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@Disabled
+public class IterativeAuton extends OpMode
+{
     Hardware robot = new Hardware(this);
     ElapsedTime runtime = new ElapsedTime();
+    private String finalMessage = "";
+    private boolean hasStarted = false;
+    private boolean isStopped = false;
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * Math.PI);
+            (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -71,7 +74,6 @@ public class AutonDriving extends LinearOpMode {
     private double          headingOffset = 0;
     private double          headingError  = 0;
 
-
     private double  targetHeading = 0;
     private double  driveSpeed    = 0;
     private double  turnSpeed     = 0;
@@ -80,41 +82,64 @@ public class AutonDriving extends LinearOpMode {
     private int     leftTarget    = 0;
     private int     rightTarget   = 0;
 
-    private static final String VUFORIA_KEY =
-            "AYy6NYn/////AAABmTW3q+TyLUMbg/IXWlIG3BkMMq0okH0hLmwj3CxhPhvUlEZHaOAmESqfePJ57KC2g6UdWLN7OYvc8ihGAZSUJ2JPWAsHQGv6GUAj4BlrMCjHvqhY0w3tV/Azw2wlPmls4FcUCRTzidzVEDy+dtxqQ7U5ZtiQhjBZetAcnLsCYb58dgwZEjTx2+36jiqcFYvS+FlNJBpbwmnPUyEEb32YBBZj4ra5jB0v4IW4wYYRKTNijAQKxco33VYSCbH0at99SqhXECURA55dtmmJxYpFlT/sMmj0iblOqoG/auapQmmyEEXt/T8hv9StyirabxhbVVSe7fPsAueiXOWVm0kCPO+KN/TyWYB9Hg/mSfnNu9i9";
-
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
-
-    private static final String[] LABELS = {
-            "Cyan",
-            "Magenta",
-            "Yellow"
-    };
-
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
-     * localization engine.
+    /*
+     * Code to run ONCE when the driver hits INIT
      */
-    private VuforiaLocalizer vuforia;
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod;
-
     @Override
-    public void runOpMode() {
+    public void init() {
         robot.init();
-        // robot.initGyro();
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        robot.initQRCodeSensor();
+    }
 
-        encoderDrive(DRIVE_SPEED,  180,  5, 0.55); // drive forwards 20 inches
-        telemetry.addData("Path", "Part 1/3 Done");
-        telemetry.update();
-        sleep(1000);
+    /*
+     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+     */
+    @Override
+    public void init_loop() {
+    }
+
+    /*
+     * Code to run ONCE when the driver hits PLAY
+     */
+    @Override
+    public void start() {
+        hasStarted = true;
+        runtime.reset();
+        telemetry.addData("Message: ", robot.message);
+        finalMessage = robot.message;
+
+        encoderDrive(1,0,29, 2);
+        switch(finalMessage){
+            case "https://left.com" :
+                // strafe left one tile
+                encoderDrive(1,270,24,1.5);
+                break;
+            case "https://middle.com" :
+                // no need to move
+                break;
+            case "https://right.com" :
+                // strafe right one tile
+                encoderDrive(1,90,24,1.5);
+                break;
+            default:
+                // hope it's middle, attempting to recheck
+                finalMessage = robot.message;
+        }
+    }
+
+    /*
+     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+     */
+    @Override
+    public void loop() {
+    }
+
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
+        isStopped = true;
     }
 
     /**
@@ -182,13 +207,13 @@ public class AutonDriving extends LinearOpMode {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                   (runtime.seconds() < timeoutS) &&
-                   (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newFrontLeftTarget,  newFrontRightTarget, newBackLeftTarget, newBackRightTarget);
                 telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
-                                            robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                        robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -215,8 +240,8 @@ public class AutonDriving extends LinearOpMode {
      * @param timeoutS seconds until robot gives up on life
      */
     public void encoderDriveSimple(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
+                                   double leftInches, double rightInches,
+                                   double timeoutS) {
         int newfLeftTarget;
         int newfRightTarget;
         int newbLeftTarget;
@@ -279,40 +304,6 @@ public class AutonDriving extends LinearOpMode {
 
             sleep(250);   // optional pause after each move.
         }
-    }
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
     }
 
     /**
@@ -436,6 +427,7 @@ public class AutonDriving extends LinearOpMode {
         robot.fRMotor.setPower(rightSpeed);
         robot.bRMotor.setPower(rightSpeed);
     }
+
     public void stopAllMotion(){
         robot.fLMotor.setPower(0);
         robot.fRMotor.setPower(0);
@@ -461,5 +453,35 @@ public class AutonDriving extends LinearOpMode {
     public double getRawHeading() {
         Orientation angles   = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
+    }
+
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    public final boolean opModeIsActive() {
+        boolean isActive = !isStopped && hasStarted;
+        if (isActive) {
+            idle();
+        }
+        return isActive;
+    }
+    public final void idle() {
+        // Otherwise, yield back our thread scheduling quantum and give other threads at
+        // our priority level a chance to run
+        Thread.yield();
+    }
+    public class SimplePipeline extends OpenCvPipeline {
+        public Mat processFrame(Mat input){
+            String decoded = robot.det.detectAndDecode(input);
+            if (decoded.length() > 5){
+                robot.found = true;
+                robot.message = decoded;
+            }
+            return input;
+        }
     }
 }
