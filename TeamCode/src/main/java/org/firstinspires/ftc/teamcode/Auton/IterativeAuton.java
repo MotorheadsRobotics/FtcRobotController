@@ -96,6 +96,8 @@ public class IterativeAuton extends OpMode
      */
     @Override
     public void init_loop() {
+        telemetry.addData("Message: ", robot.message);
+        telemetry.update();
     }
 
     /*
@@ -152,6 +154,7 @@ public class IterativeAuton extends OpMode
                 telemetry.addData("Message: ", "QR Code still not found. Giving up. ");
             }
         }
+        // path done
     }
 
     /*
