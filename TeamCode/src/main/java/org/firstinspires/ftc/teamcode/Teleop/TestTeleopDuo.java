@@ -155,14 +155,14 @@ public class TestTeleopDuo extends LinearOpMode {
 
             // Stack Mode Iteration
             if(gamepad2.dpad_right){
-                if(currentPreset < 3) {
-                    currentPreset++;
+                if(currentStackPreset < 3) {
+                    currentStackPreset++;
                 }
                 mode = "STACK";
             }
             else if(gamepad2.dpad_left){
-                if(currentPreset > 0){
-                    currentPreset--;
+                if(currentStackPreset > 0){
+                    currentStackPreset--;
                 }
                 mode = "STACK";
             }
