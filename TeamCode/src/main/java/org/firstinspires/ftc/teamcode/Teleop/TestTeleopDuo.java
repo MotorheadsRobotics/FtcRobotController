@@ -227,11 +227,15 @@ public class TestTeleopDuo extends LinearOpMode {
 //            } else {
 //                robot.horMotor.setPower(0);
 //            }
-//            // Send telemetry messages to explain controls and show robot status
-//            telemetry.addData("Arm Up/Down", "Trigger Buttons");
-//            telemetry.addData("Arm Forward/Backward", "Y / X Buttons");
+//            // Send telemetry messages to explain controls
+//            telemetry.addData("Lift Up/Down", "Triggers");
+//            telemetry.addData("Lift Adjustment", "Bumpers");
+//            telemetry.addData("Lift Terminal Presets", "Dpad Up/Down");
+//            telemetry.addData("Lift Stack Presets", "Dpad Left/Right");
+//            telemetry.addData("Claw", "A button");
 //            telemetry.addData("-", "-------");
 //            telemetry.update();
+
 
             // Pace this loop so hands move at a reasonable speed.
             sleep(75);
