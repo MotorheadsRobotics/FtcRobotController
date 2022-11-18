@@ -49,10 +49,13 @@ public class TestTeleopDuo extends LinearOpMode {
 
     public static int[] heights = new int[] {0, 2, 15, 23, 32};
     public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
+    public static int maxHeight = 11880;
+    public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
     public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
     public int currentPreset = 0;
+    public int currentStackPreset = 0;
     public static int countsPerInch = 330;
-    public boolean manualMode = true;
+    public String mode = "MANUAL";
     private static double LIFTMOTORPOWER = 1.0;
 
     @Override
@@ -140,33 +143,47 @@ public class TestTeleopDuo extends LinearOpMode {
                 if(currentPreset < 4) {
                     currentPreset++;
                 }
-                manualMode = false;
+                mode = "PRESET";
             }
             else if(gamepad2.dpad_down){
                 if(currentPreset > 0){
                     currentPreset--;
                 }
-                manualMode = false;
+                mode = "PRESET";
+            }
+
+            // Stack Mode Iteration
+            if(gamepad2.dpad_right){
+                if(currentPreset < 3) {
+                    currentPreset++;
+                }
+                mode = "STACK";
+            }
+            else if(gamepad2.dpad_left){
+                if(currentPreset > 0){
+                    currentPreset--;
+                }
+                mode = "STACK";
             }
 
             // Check if we should be in manual mode
             if(gamepad2.right_trigger > 0.3 || gamepad2.left_trigger > 0.3) {
-                manualMode = true;
+                mode = "MANUAL";
             }
 
             // Move Lifts
-            if(manualMode){
+            if(mode.equals("MANUAL")){
                 telemetry.addData("Manual Mode", true);
                 telemetry.addData("Current Preset", heightNames[currentPreset]);
 
                 robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                if(gamepad2.left_trigger > 0.3){
+                if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (0 + offsetCounts) && robot.upMotorR.getCurrentPosition() > (0 + offsetCounts)){
                     robot.upMotorL.setPower(-LIFTMOTORPOWER);
                     robot.upMotorR.setPower(-LIFTMOTORPOWER);
                 }
-                else if(gamepad2.right_trigger > 0.3){
+                else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (maxHeight + offsetCounts)){
                     robot.upMotorL.setPower(LIFTMOTORPOWER);
                     robot.upMotorR.setPower(LIFTMOTORPOWER);
                 }
@@ -175,7 +192,7 @@ public class TestTeleopDuo extends LinearOpMode {
                     robot.upMotorR.setPower(0);
                 }
             }
-            else { // Preset Mode
+            else if(mode.equals("PRESET")) { // Preset Mode 1
                 telemetry.addData("Preset Mode", true);
                 telemetry.addData("Current Preset", heightNames[currentPreset]);
                 robot.upMotorL.setTargetPosition(heightsCounts[currentPreset] + offsetCounts);
@@ -186,7 +203,18 @@ public class TestTeleopDuo extends LinearOpMode {
 
                 robot.upMotorL.setPower(LIFTMOTORPOWER);
                 robot.upMotorR.setPower(LIFTMOTORPOWER);
-                // might need to code in the run_to_position function because i dont know if DcMotor.RunMode.RUN_TO_POSITION only finishes exits the while loop once done.
+            }
+            else { // Preset Mode 2: Stacks
+                telemetry.addData("Stack Mode", true);
+                telemetry.addData("Current Preset", stackHeights[currentStackPreset]);
+                robot.upMotorL.setTargetPosition(stackHeights[currentStackPreset] + offsetCounts);
+                robot.upMotorR.setTargetPosition(stackHeights[currentStackPreset] + offsetCounts);
+
+                robot.upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                robot.upMotorL.setPower(LIFTMOTORPOWER);
+                robot.upMotorR.setPower(LIFTMOTORPOWER);
             }
             telemetry.update();
 //
