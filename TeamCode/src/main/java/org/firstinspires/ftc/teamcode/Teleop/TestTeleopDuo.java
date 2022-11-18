@@ -51,6 +51,7 @@ public class TestTeleopDuo extends LinearOpMode {
     public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
     public static int maxHeight = 11880;
     public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
+    public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
     public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
     public int currentPreset = 0;
     public int currentStackPreset = 0;
@@ -206,7 +207,7 @@ public class TestTeleopDuo extends LinearOpMode {
             }
             else { // Preset Mode 2: Stacks
                 telemetry.addData("Stack Mode", true);
-                telemetry.addData("Current Preset", stackHeights[currentStackPreset]);
+                telemetry.addData("Current Preset", stackHeightNames[currentStackPreset]);
                 robot.upMotorL.setTargetPosition(stackHeights[currentStackPreset] + offsetCounts);
                 robot.upMotorR.setTargetPosition(stackHeights[currentStackPreset] + offsetCounts);
 
