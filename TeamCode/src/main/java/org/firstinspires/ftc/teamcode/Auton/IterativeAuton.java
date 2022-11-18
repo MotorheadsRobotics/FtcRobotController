@@ -106,24 +106,51 @@ public class IterativeAuton extends OpMode
         hasStarted = true;
         runtime.reset();
         telemetry.addData("Message: ", robot.message);
+        telemetry.update();
+        sleep(1000);
         finalMessage = robot.message;
 
         encoderDrive(1,0,29, 2);
-        switch(finalMessage){
-            case "https://left.com" :
-                // strafe left one tile
-                encoderDrive(1,270,24,1.5);
-                break;
-            case "https://middle.com" :
-                // no need to move
-                break;
-            case "https://right.com" :
-                // strafe right one tile
-                encoderDrive(1,90,24,1.5);
-                break;
-            default:
-                // hope it's middle, attempting to recheck
-                finalMessage = robot.message;
+        try {
+            switch (finalMessage) {
+                case "https://left.com":
+                    // strafe left one tile
+                    encoderDrive(1, 270, 24, 1.5);
+                    break;
+                case "https://middle.com":
+                    // no need to move
+                    break;
+                case "https://right.com":
+                    // strafe right one tile
+                    encoderDrive(1, 90, 24, 1.5);
+                    break;
+                default:
+                    // hope it's middle, attempting to recheck
+                    throw new NullPointerException();
+            }
+        } catch(NullPointerException e){
+            telemetry.addData("Message: ", "QR Code not found. Trying again. ");
+            finalMessage = robot.message;
+            try {
+                switch (finalMessage) {
+                    case "https://left.com":
+                        // strafe left one tile
+                        encoderDrive(1, 270, 24, 1.5);
+                        break;
+                    case "https://middle.com":
+                        // no need to move
+                        break;
+                    case "https://right.com":
+                        // strafe right one tile
+                        encoderDrive(1, 90, 24, 1.5);
+                        break;
+                    default:
+                        // hope it's middle, attempting to recheck
+                        throw new NullPointerException();
+                }
+            }catch(NullPointerException exception){
+                telemetry.addData("Message: ", "QR Code still not found. Giving up. ");
+            }
         }
     }
 
