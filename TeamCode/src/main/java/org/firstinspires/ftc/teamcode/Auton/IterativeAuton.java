@@ -113,7 +113,10 @@ public class IterativeAuton extends OpMode
         finalMessage = robot.message;
 
         encoderDrive(1,0,29, 2);
-        try {
+        if(finalMessage == null){
+            finalMessage = robot.message;
+        }
+        if(finalMessage != null){
             switch (finalMessage) {
                 case "https://left.com":
                     // strafe left one tile
@@ -128,30 +131,8 @@ public class IterativeAuton extends OpMode
                     break;
                 default:
                     // hope it's middle, attempting to recheck
-                    throw new NullPointerException();
-            }
-        } catch(NullPointerException e){
-            telemetry.addData("Message: ", "QR Code not found. Trying again. ");
-            finalMessage = robot.message;
-            try {
-                switch (finalMessage) {
-                    case "https://left.com":
-                        // strafe left one tile
-                        encoderDrive(1, 270, 24, 1.5);
-                        break;
-                    case "https://middle.com":
-                        // no need to move
-                        break;
-                    case "https://right.com":
-                        // strafe right one tile
-                        encoderDrive(1, 90, 24, 1.5);
-                        break;
-                    default:
-                        // hope it's middle, attempting to recheck
-                        throw new NullPointerException();
-                }
-            }catch(NullPointerException exception){
-                telemetry.addData("Message: ", "QR Code still not found. Giving up. ");
+                    telemetry.addData("We got used by another team :(", "unfortunate L");
+                    telemetry.update();
             }
         }
         // path done
@@ -373,6 +354,35 @@ public class IterativeAuton extends OpMode
     }
 
     /**
+     * turns at 10% speed (or less) until reaching desired target
+     * @param heading +ve turns the robot counterclockwise, -ve rotates clockwise
+     */
+    public void turnToHeading3(double heading){
+        double currentHeading = getRawHeading();
+        double errorABS = Math.abs(heading - currentHeading);
+        while(errorABS > 1){
+            double error = (heading - currentHeading) / 1800;
+            while(error > 180) error -=360;
+            while(error <= -180) error +=360;
+            double speed = Range.clip(error, -0.1, 0.1);
+            if(speed < 0.02 && speed > 0){
+                speed = 0.02;
+            }
+            if(speed > -0.02 && speed < 0){
+                speed = -0.02;
+            }
+            turnRobot(-speed);
+            telemetry.addData("speed", speed);
+            telemetry.addData("heading", heading);
+            telemetry.addData("currentHeading", currentHeading);
+            telemetry.addData("abs error", errorABS);
+            telemetry.update();
+            currentHeading = getRawHeading();
+            errorABS = Math.abs(heading - currentHeading);
+        }
+        stopAllMotion();
+    }
+    /**
      *  Method to obtain & hold a heading for a finite amount of time
      *  Move will stop once the requested time has elapsed
      *  This function is useful for giving the robot a moment to stabilize it's heading between movements.
@@ -430,7 +440,9 @@ public class IterativeAuton extends OpMode
         while (headingError <= -180) headingError += 360;
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
-        return Range.clip(headingError * proportionalGain, -1, 1);
+//        return Range.clip(headingError * proportionalGain, -1, 1);
+        return 1 - 2 / (Math.exp(headingError / 30) + 1);
+
     }
 
     /**

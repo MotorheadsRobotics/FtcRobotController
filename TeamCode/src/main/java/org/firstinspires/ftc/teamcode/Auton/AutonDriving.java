@@ -59,7 +59,7 @@ public class AutonDriving extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * Math.PI);
+            (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -107,14 +107,26 @@ public class AutonDriving extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init();
-        // robot.initGyro();
+        robot.initGyro();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  180,  5, 0.55); // drive forwards 20 inches
-        telemetry.addData("Path", "Part 1/3 Done");
-        telemetry.update();
+        // turnToHeading(90,0.05,0.2); // rotate left 90 degrees
+        turnToHeading3(90);
+        // encoderDrive(0.5, 0, 1, 1);
         sleep(1000);
+        turnToHeading3(180);
+        sleep(1000);
+        turnToHeading3(-90);
+        sleep(1000);
+        turnToHeading3(-180);
+        sleep(1000);
+        turnToHeading3(0);
+        // encoderDrive(0.5, 270, 1, 1);
+
+        telemetry.addData("Path", "Done");
+        telemetry.update();
+        sleep(50);
     }
 
     /**
@@ -182,13 +194,13 @@ public class AutonDriving extends LinearOpMode {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                   (runtime.seconds() < timeoutS) &&
-                   (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newFrontLeftTarget,  newFrontRightTarget, newBackLeftTarget, newBackRightTarget);
                 telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
-                                            robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                        robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -215,8 +227,8 @@ public class AutonDriving extends LinearOpMode {
      * @param timeoutS seconds until robot gives up on life
      */
     public void encoderDriveSimple(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
+                                   double leftInches, double rightInches,
+                                   double timeoutS) {
         int newfLeftTarget;
         int newfRightTarget;
         int newbLeftTarget;
@@ -338,7 +350,7 @@ public class AutonDriving extends LinearOpMode {
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
 
             // Clip the speed to the maximum permitted value.
-            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+            turnSpeed = Range.clip(turnSpeed * maxTurnSpeed, -maxTurnSpeed, maxTurnSpeed);
 
             // Pivot in place by applying the turning correction
             turnRobot(turnSpeed);
@@ -348,6 +360,67 @@ public class AutonDriving extends LinearOpMode {
         }
 
         // Stop all motion;
+        stopAllMotion();
+    }
+    public void turnToHeading2(double heading, double minPower, double maxPower){
+        robotHeading = getRawHeading() - headingOffset;
+        headingError = heading - robotHeading;
+        while (headingError > 180) headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+        final double originalError = headingError;
+
+        while(opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)){
+            robotHeading = getRawHeading() - headingOffset;
+            headingError = heading - robotHeading;
+            while (headingError > 180) headingError -= 360;
+            while (headingError <= -180) headingError += 360;
+
+            double adjuster = Math.abs(headingError / 180);
+            double adjustedPower = Range.clip(adjuster, minPower, maxPower);
+
+            if(headingError > 0){
+                turnRobot(-adjustedPower);
+            }
+            else if(headingError < 0){
+                turnRobot(adjustedPower);
+            }
+            telemetry.addData("heading", robotHeading);
+            telemetry.addData("raw heading", getRawHeading());
+            telemetry.addData("error", headingError);
+            telemetry.addData("adjuster", adjuster);
+            telemetry.addData("adjustedPower", adjustedPower);
+            telemetry.update();
+        }
+        stopAllMotion();
+    }
+
+    /**
+     * turns at 10% speed (or less) until reaching desired target
+     * @param heading +ve turns the robot counterclockwise, -ve rotates clockwise
+     */
+    public void turnToHeading3(double heading){
+        double currentHeading = getRawHeading();
+        double errorABS = Math.abs(heading - currentHeading);
+        while(errorABS > 1){
+            double error = (heading - currentHeading) / 1800;
+            while(error > 180) error -=360;
+            while(error <= -180) error +=360;
+            double speed = Range.clip(error, -0.1, 0.1);
+            if(speed < 0.02 && speed > 0){
+                speed = 0.02;
+            }
+            if(speed > -0.02 && speed < 0){
+                speed = -0.02;
+            }
+            turnRobot(-speed);
+            telemetry.addData("speed", speed);
+            telemetry.addData("heading", heading);
+            telemetry.addData("currentHeading", currentHeading);
+            telemetry.addData("abs error", errorABS);
+            telemetry.update();
+            currentHeading = getRawHeading();
+            errorABS = Math.abs(heading - currentHeading);
+        }
         stopAllMotion();
     }
 
@@ -373,7 +446,7 @@ public class AutonDriving extends LinearOpMode {
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
 
             // Clip the speed to the maximum permitted value.
-            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+            // turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
 
             // Pivot in place by applying the turning correction
             turnRobot(turnSpeed);
@@ -409,7 +482,7 @@ public class AutonDriving extends LinearOpMode {
         while (headingError <= -180) headingError += 360;
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
-        return Range.clip(headingError * proportionalGain, -1, 1);
+        return 1 - 2 / (Math.exp(headingError / 30) + 1);
     }
 
     /**
