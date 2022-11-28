@@ -51,6 +51,7 @@ public class TestTeleopDuo extends LinearOpMode {
     public static int[] heights = new int[] {0, 2, 15, 23, 32};
     public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
     public static int maxHeight = 11880;
+    public static int minHeightForFlip = 2200;
     public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
     public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
     public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
@@ -68,6 +69,8 @@ public class TestTeleopDuo extends LinearOpMode {
         double flipPosition = 0;
         double time = 0;
         double verticalMotorPower = 1.0;
+        boolean isRotated = true;
+        boolean wasPressed = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -105,14 +108,21 @@ public class TestTeleopDuo extends LinearOpMode {
             robot.claw.setPosition(servoPosition);
 
             // Flipping mapped to y
-            if (gamepad2.y) {
+            if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
+                wasPressed = true;
                 while(gamepad2.y) {}
                 time = runtime.milliseconds();
             }
             robot.flipL.setPosition(1 - flipPosition);
             robot.flipR.setPosition(flipPosition);
-            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
+            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && wasPressed) {
+                isRotated = false;
+                wasPressed = false;
+            }
+
+            if(!isRotated && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
+                isRotated = true;
                 robot.rotate.setPosition(0.87 * (1 - flipPosition));
             }
 

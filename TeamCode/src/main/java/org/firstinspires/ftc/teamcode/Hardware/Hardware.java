@@ -125,7 +125,7 @@ public class Hardware {
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
