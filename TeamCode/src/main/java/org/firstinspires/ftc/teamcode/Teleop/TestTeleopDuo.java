@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
@@ -58,14 +59,15 @@ public class TestTeleopDuo extends LinearOpMode {
     public static int countsPerInch = 330;
     public String mode = "MANUAL";
     private static double LIFTMOTORPOWER = 1.0;
+    public ElapsedTime runtime = new ElapsedTime();
+    public static double FLIPDELAY = 1000; // milliseconds
 
     @Override
     public void runOpMode() {
-        double army          = 0;
-        double handOffset   = 0;
         double servoPosition = 0;
+        double flipPosition = 0;
+        double time = 0;
         double verticalMotorPower = 1.0;
-        double horizontalMotorPower = 1.0;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -84,31 +86,16 @@ public class TestTeleopDuo extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Drive robot via mecanum
-            // if (slow) {
-            //     //slow mode
-            //     robot.mecanumMove(0.1 * gamepad1.left_stick_x, 0.1 * gamepad1.left_stick_y, 0.1 * gamepad1.right_stick_x);
-            // }
-            // else {
-                //fast mode
-                robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-            // }
-            
-            //slow mode boolean change
-            // if (gamepad1.a) {
-            //     slow = !slow;
-            //     while (gamepad1.a) {
-            //     }
-            // }
-            
-            //lift presets
-            if (gamepad2.b) {
-                
-            }
+            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             
             // Test telemetry / encoders
             telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
-                    robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                    robot.fLMotor.getCurrentPosition(),
+                    robot.fRMotor.getCurrentPosition(),
+                    robot.bLMotor.getCurrentPosition(),
+                    robot.bRMotor.getCurrentPosition());
             telemetry.update();
+
             // Servo mapped to a
             if (gamepad2.a) {
                 servoPosition = 1 - servoPosition;
@@ -116,6 +103,18 @@ public class TestTeleopDuo extends LinearOpMode {
                 }
             }
             robot.claw.setPosition(servoPosition);
+
+            // Flipping mapped to y
+            if (gamepad2.y) {
+                flipPosition = 1 - flipPosition;
+                while(gamepad2.y) {}
+                time = runtime.milliseconds();
+            }
+            robot.flipL.setPosition(1 - flipPosition);
+            robot.flipR.setPosition(flipPosition);
+            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
+                robot.rotate.setPosition(0.87 * (1 - flipPosition));
+            }
 
             // Vertical Slides
             /*if (gamepad2.left_trigger > 0.3) {

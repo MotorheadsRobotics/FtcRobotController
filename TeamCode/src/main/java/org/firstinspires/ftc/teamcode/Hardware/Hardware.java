@@ -72,9 +72,11 @@ public class Hardware {
 
     public DcMotor upMotorL;
     public DcMotor upMotorR;
-    public DcMotor horMotor;
 
     public Servo claw;
+    public Servo flipL;
+    public Servo flipR;
+    public Servo rotate;
     public BNO055IMU imu;
 
     public OpenCvWebcam webcam;
@@ -175,6 +177,9 @@ public class Hardware {
 //        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
 //
         claw = myOpMode.hardwareMap.get(Servo.class, "claw");
+        flipL = myOpMode.hardwareMap.get(Servo.class, "flipL");
+        flipR = myOpMode.hardwareMap.get(Servo.class, "flipR");
+        rotate = myOpMode.hardwareMap.get(Servo.class, "rotate");
 //
         upMotorL.setDirection(DcMotor.Direction.FORWARD);
         upMotorR.setDirection(DcMotor.Direction.REVERSE);
@@ -185,6 +190,9 @@ public class Hardware {
 //        horMotor.setPower(0);
 //
         claw.setPosition(0);
+        flipL.setPosition(1);
+        flipR.setPosition(0);
+        rotate.setPosition(1);
 //
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
