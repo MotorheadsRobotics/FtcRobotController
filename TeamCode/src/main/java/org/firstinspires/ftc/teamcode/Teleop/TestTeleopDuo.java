@@ -68,6 +68,7 @@ public class TestTeleopDuo extends LinearOpMode {
         double servoPosition = 0;
         double flipPosition = 0;
         double time = 0;
+        double rotatePosition = 0;
         double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean wasPressed = false;
@@ -110,21 +111,17 @@ public class TestTeleopDuo extends LinearOpMode {
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
-                wasPressed = true;
                 while(gamepad2.y) {}
                 time = runtime.milliseconds();
             }
             robot.flipL.setPosition(1 - flipPosition);
             robot.flipR.setPosition(flipPosition);
-            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && wasPressed) {
-                isRotated = false;
-                wasPressed = false;
-            }
 
-            if(!isRotated && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
-                isRotated = true;
-                robot.rotate.setPosition(0.87 * (1 - flipPosition));
+            //separate button for rotate - gamepad x
+            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && gamepad2.x && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
+                rotatePosition = 0.87 - rotatePosition;
             }
+            robot.rotate.setPosition(rotatePosition);
 
             // Vertical Slides
             /*if (gamepad2.left_trigger > 0.3) {
