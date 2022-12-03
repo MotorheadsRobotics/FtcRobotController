@@ -72,6 +72,7 @@ public class TestTeleopDuo extends LinearOpMode {
         double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean wasPressed = false;
+        double speedMultiplier = 1;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -89,9 +90,30 @@ public class TestTeleopDuo extends LinearOpMode {
         int offsetCounts = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            // Increase speed mapped to left bumper
+            if (gamepad1.left_bumper) {
+                speedMultiplier /= 2;
+                while(gamepad1.left_bumper) {};
+                if (speedMultiplier < 0.0625) {
+                    speedMultiplier = 0.0625;
+                }
+            }
+
+            // Increase speed mapped to right bumper
+            if (gamepad1.right_bumper) {
+                speedMultiplier *= 2;
+                while(gamepad1.left_bumper) {};
+                if (speedMultiplier > 1) {
+                    speedMultiplier = 1;
+                }
+            }
+
             // Drive robot via mecanum
-            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-            
+            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
+
+            // Speed Multiplier Telemetry
+            telemetry.addData("Speed Multiplier: ", speedMultiplier);
+
             // Test telemetry / encoders
             telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
                     robot.fLMotor.getCurrentPosition(),
@@ -100,7 +122,7 @@ public class TestTeleopDuo extends LinearOpMode {
                     robot.bRMotor.getCurrentPosition());
             telemetry.update();
 
-            // Servo mapped to a
+            // Claw mapped to a
             if (gamepad2.a) {
                 servoPosition = 1 - servoPosition;
                 while(gamepad2.a) {

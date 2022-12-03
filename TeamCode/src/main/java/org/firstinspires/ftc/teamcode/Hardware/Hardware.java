@@ -205,7 +205,7 @@ public class Hardware {
         myOpMode.telemetry.update();
     }
 
-    public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
+    public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x, double speedMultiplier)
     {
         //variables
         double r = Math.hypot(left_stick_x, left_stick_y);
@@ -216,7 +216,7 @@ public class Hardware {
         final double v3 = r * Math.sin(robotAngle) - rightX;
         final double v4 = r * Math.cos(robotAngle) + rightX;
 
-        setDrivePower(v1, v2, v3, v4);
+        setDrivePower(v1 * speedMultiplier, v2 * speedMultiplier, v3 * speedMultiplier, v4 * speedMultiplier);
 
         myOpMode.telemetry.update();
     }
