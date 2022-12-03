@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -78,6 +79,9 @@ public class Hardware {
     public Servo flipR;
     public Servo rotate;
     public BNO055IMU imu;
+
+//    public TouchSensor upLSensor;
+//    public TouchSensor upRSensor;
 
     public OpenCvWebcam webcam;
     public QRCodeDetector det;
@@ -203,6 +207,24 @@ public class Hardware {
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
+
+//        //lift calibration code
+//        myOpMode.telemetry.addData(">", "Lift Calibrating");
+//        while (!upLSensor.isPressed() && !upRSensor.isPressed()) {
+//            upMotorL.setPower(-0.5);
+//            upMotorR.setPower(-0.5);
+//        }
+//
+//        upMotorL.setPower(0);
+//        upMotorR.setPower(0);
+//
+//        if (!upLSensor.isPressed() || !upRSensor.isPressed()) {
+//            myOpMode.telemetry.addData(">", "Lift Calibration Failed, Check Lift Alignment");
+//        }
+//        else {
+//            myOpMode.telemetry.addData(">", "Lift Calibration Success.");
+//        }
+//        myOpMode.telemetry.update();
     }
 
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x)
