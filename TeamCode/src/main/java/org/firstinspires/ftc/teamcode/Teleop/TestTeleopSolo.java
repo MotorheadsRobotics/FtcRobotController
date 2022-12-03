@@ -53,6 +53,7 @@ public class TestTeleopSolo extends LinearOpMode {
         double servoPosition = 0;
         double verticalMotorPower = 1.0;
         double horizontalMotorPower = 1.0;
+        double speedMult = 1;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -64,7 +65,7 @@ public class TestTeleopSolo extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Drive robot via mecanum
-            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMult);
 
             // Test telemetry / encoders
             telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
