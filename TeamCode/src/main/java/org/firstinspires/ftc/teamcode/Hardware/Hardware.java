@@ -80,8 +80,8 @@ public class Hardware {
     public Servo rotate;
     public BNO055IMU imu;
 
-//    public TouchSensor upLSensor;
-//    public TouchSensor upRSensor;
+    public TouchSensor upLSensor;
+    public TouchSensor upRSensor;
 
     public OpenCvWebcam webcam;
     public QRCodeDetector det;
@@ -184,7 +184,10 @@ public class Hardware {
         flipL = myOpMode.hardwareMap.get(Servo.class, "flipL");
         flipR = myOpMode.hardwareMap.get(Servo.class, "flipR");
         rotate = myOpMode.hardwareMap.get(Servo.class, "rotate");
-//
+
+        upLSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upLSensor");
+        upRSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upRSensor");
+
         upMotorL.setDirection(DcMotor.Direction.FORWARD);
         upMotorR.setDirection(DcMotor.Direction.REVERSE);
 //        horMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -208,23 +211,27 @@ public class Hardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
 
-//        //lift calibration code
-//        myOpMode.telemetry.addData(">", "Lift Calibrating");
-//        while (!upLSensor.isPressed() && !upRSensor.isPressed()) {
-//            upMotorL.setPower(-0.5);
-//            upMotorR.setPower(-0.5);
-//        }
-//
-//        upMotorL.setPower(0);
-//        upMotorR.setPower(0);
-//
-//        if (!upLSensor.isPressed() || !upRSensor.isPressed()) {
-//            myOpMode.telemetry.addData(">", "Lift Calibration Failed, Check Lift Alignment");
-//        }
-//        else {
-//            myOpMode.telemetry.addData(">", "Lift Calibration Success.");
-//        }
-//        myOpMode.telemetry.update();
+        //lift calibration code
+        myOpMode.telemetry.addData(">", "Lift Calibrating");
+        while (!upLSensor.isPressed() && !upRSensor.isPressed()) {
+            upMotorL.setPower(-0.1);
+            upMotorR.setPower(-0.1);
+        }
+
+        upMotorL.setPower(0);
+        upMotorR.setPower(0);
+
+        if (!upLSensor.isPressed() || !upRSensor.isPressed()) {
+            myOpMode.telemetry.addData(">", "Lift Calibration Failed, Check Lift Alignment");
+        }
+        else {
+            myOpMode.telemetry.addData(">", "Lift Calibration Success.");
+        }
+        myOpMode.telemetry.update();
+
+        stopAndResetLiftEncoders();
+        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x, double speedMultiplier)
@@ -255,6 +262,10 @@ public class Hardware {
         fRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void stopAndResetLiftEncoders() {
+        upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public class SimplePipeline extends OpenCvPipeline{
         public Mat processFrame(Mat input){

@@ -61,8 +61,10 @@ public class IterativeAuton extends OpMode
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
+//    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+//            (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     COUNTS_PER_INCH         = 1.0;
+
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -112,7 +114,7 @@ public class IterativeAuton extends OpMode
         sleep(1000);
         finalMessage = robot.message;
 
-        encoderDrive(1,0,29, 2);
+        encoderDrive(1,270,29, 2);
         if(finalMessage == null){
             finalMessage = robot.message;
         }
@@ -120,14 +122,14 @@ public class IterativeAuton extends OpMode
             switch (finalMessage) {
                 case "https://left.com":
                     // strafe left one tile
-                    encoderDrive(1, 270, 24, 1.5);
+                    encoderDrive(1, 180, 24, 1.5);
                     break;
                 case "https://middle.com":
                     // no need to move
                     break;
                 case "https://right.com":
                     // strafe right one tile
-                    encoderDrive(1, 90, 24, 1.5);
+                    encoderDrive(1, 0, 24, 1.5);
                     break;
                 default:
                     // hope it's middle, attempting to recheck
