@@ -196,7 +196,7 @@ public class Hardware {
         upMotorR.setPower(0);
 //        horMotor.setPower(0);
 //
-        claw.setPosition(0);
+        claw.setPosition(1);
         flipL.setPosition(1);
         flipR.setPosition(0);
         rotate.setPosition(1);

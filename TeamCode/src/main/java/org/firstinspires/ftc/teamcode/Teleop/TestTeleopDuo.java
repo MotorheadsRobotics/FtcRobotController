@@ -65,10 +65,10 @@ public class TestTeleopDuo extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double servoPosition = 0;
+        double clawPosition = 1;
         double flipPosition = 0;
         double time = 0;
-        double rotatePosition = 0;
+        double rotatePosition = 1;
         double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean wasPressed = false;
@@ -124,11 +124,11 @@ public class TestTeleopDuo extends LinearOpMode {
 
             // Claw mapped to a
             if (gamepad2.a) {
-                servoPosition = 1 - servoPosition;
+                clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {
                 }
             }
-            robot.claw.setPosition(servoPosition);
+            robot.claw.setPosition(clawPosition);
 
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state
