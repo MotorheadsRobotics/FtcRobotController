@@ -62,6 +62,8 @@ public class TestTeleopDuo extends LinearOpMode {
     private static double LIFTMOTORPOWER = 1.0;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1000; // milliseconds
+    public static double FLIP_CONSTANT = 0.9;
+    public static double ROTATE_CONSTANT = 0.87;
 
     @Override
     public void runOpMode() {
@@ -136,12 +138,16 @@ public class TestTeleopDuo extends LinearOpMode {
                 while(gamepad2.y) {}
                 time = runtime.milliseconds();
             }
-            robot.flipL.setPosition(1 - flipPosition);
-            robot.flipR.setPosition(flipPosition);
+            robot.flipL.setPosition(FLIP_CONSTANT * (1 - flipPosition));
+            robot.flipR.setPosition(FLIP_CONSTANT * flipPosition);
 
             //separate button for rotate - gamepad x
-            if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && gamepad2.x && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
-                rotatePosition = 0.87 - rotatePosition;
+            /*if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && gamepad2.x && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
+                rotatePosition = ROTATE_CONSTANT - rotatePosition;
+            }*/
+            if (gamepad2.x) {
+                rotatePosition = 1 - rotatePosition;
+                while(gamepad2.x) {}
             }
             robot.rotate.setPosition(rotatePosition);
 
