@@ -146,7 +146,7 @@ public class TestTeleopDuo extends LinearOpMode {
                 rotatePosition = ROTATE_CONSTANT - rotatePosition;
             }*/
             if (gamepad2.x) {
-                rotatePosition = 1 - rotatePosition;
+                rotatePosition = ROTATE_CONSTANT - rotatePosition;
                 while(gamepad2.x) {}
             }
             robot.rotate.setPosition(rotatePosition);
