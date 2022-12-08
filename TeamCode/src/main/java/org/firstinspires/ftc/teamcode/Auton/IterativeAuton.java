@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Auton;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -48,15 +49,15 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@Autonomous(name="Basic: Iterative OpMode", group="Iterative Opmode")
 @Disabled
 public class IterativeAuton extends OpMode
 {
     Hardware robot = new Hardware(this);
     ElapsedTime runtime = new ElapsedTime();
-    private String finalMessage = "";
-    private boolean hasStarted = false;
-    private boolean isStopped = false;
+    public String finalMessage = "";
+    public boolean hasStarted = false;
+    public boolean isStopped = false;
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
