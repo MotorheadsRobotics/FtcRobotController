@@ -77,7 +77,10 @@ public class Hardware {
     public Servo claw;
     public Servo flipL;
     public Servo flipR;
+    public static double FLIP_CONSTANT = 0.9;
     public Servo rotate;
+    public static double ROTATE_CONSTANT = 0.87;
+    public static int minHeightForFlip = 2200;
     public BNO055IMU imu;
 
     public TouchSensor upLSensor;
@@ -247,6 +250,22 @@ public class Hardware {
         setDrivePower(v1 * speedMultiplier, v2 * speedMultiplier, v3 * speedMultiplier, v4 * speedMultiplier);
 
         myOpMode.telemetry.update();
+    }
+
+    /**
+     * Sets the lift height to the given count number (floor = 0, ground = 660, low = 4950, middle = 7590, high = 10560)
+     * @param counts represents how high the lift should go, 330 counts = 1 inch
+     * @param liftPower how fast the lift should
+     */
+    public void setLift(int counts, double liftPower) {
+        upMotorL.setTargetPosition(counts);
+        upMotorR.setTargetPosition(counts);
+
+        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        upMotorL.setPower(liftPower);
+        upMotorR.setPower(liftPower);
     }
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.
     public void setDrivePower(double frontLeft, double frontRight, double backLeft, double backRight) {
