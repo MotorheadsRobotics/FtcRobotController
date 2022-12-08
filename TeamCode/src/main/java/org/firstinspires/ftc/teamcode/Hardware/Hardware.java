@@ -79,7 +79,7 @@ public class Hardware {
     public Servo flipR;
     public static double FLIP_CONSTANT = 0.9;
     public Servo rotate;
-    public static double ROTATE_CONSTANT = 0.87;
+    public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
     public BNO055IMU imu;
 
@@ -127,12 +127,12 @@ public class Hardware {
                  * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
                  *
                  * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * from the camera sensor can be roßtated such that it is always displayed with the image upright.
                  * For a front facing camera, rotation is defined assuming the user is looking at the screen.
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(720, 600, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
