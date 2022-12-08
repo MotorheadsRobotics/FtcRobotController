@@ -52,7 +52,7 @@ public class EncoderCountTesting extends LinearOpMode {
     Hardware robot = new Hardware(this);
     ElapsedTime runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
+    static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -85,7 +85,7 @@ public class EncoderCountTesting extends LinearOpMode {
         waitForStart();
 
         // turnToHeading(90,0.05,0.2); // rotate left 90 degrees
-        encoderDrive(1,0,10,3);
+        encoderDrive(1,0,1,3);
 
         telemetry.addData("Path", "Done");
         telemetry.update();
