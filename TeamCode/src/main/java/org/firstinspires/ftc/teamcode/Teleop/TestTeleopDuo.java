@@ -189,6 +189,7 @@ public class TestTeleopDuo extends LinearOpMode {
                 if(currentStackPreset < 3) {
                     currentStackPreset++;
                 }
+                while(gamepad2.dpad_right) {}
                 mode = "STACK";
             }
             else if(gamepad2.dpad_left){
@@ -196,6 +197,7 @@ public class TestTeleopDuo extends LinearOpMode {
                     currentStackPreset--;
                 }
                 mode = "STACK";
+                while(gamepad2.dpad_left) {}
             }
 
             // Check if we should be in manual mode

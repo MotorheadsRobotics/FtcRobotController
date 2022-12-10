@@ -18,10 +18,10 @@ public class EncoderTestAditya extends LinearOpMode {
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         for (DcMotor motor : motors) {
-            motor.setPower(.6);
+            motor.setTargetPosition(motor.getCurrentPosition() + 1000);
         }
         for (DcMotor motor : motors) {
-            motor.setTargetPosition(motor.getCurrentPosition() + 1000);
+            motor.setPower(0.5);
         }
     }
 }
