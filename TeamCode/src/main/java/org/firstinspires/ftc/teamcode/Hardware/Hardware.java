@@ -296,6 +296,15 @@ public class Hardware {
         upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+
+    /**
+     * Flips claw to a specific point
+     * @param pos pos = 0 represents initialization state, pos = 1 represents flipped state
+     */
+    public void flipToPosition(double pos) {
+        flipL.setPosition(1 - pos);
+        flipR.setPosition(pos);
+    }
     public class SimplePipeline extends OpenCvPipeline{
         public Mat processFrame(Mat input){
             String decoded = det.detectAndDecode(input);
