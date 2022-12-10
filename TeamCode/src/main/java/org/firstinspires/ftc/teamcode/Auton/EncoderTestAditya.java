@@ -8,20 +8,22 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
 @Autonomous(name = "EncoderTestAditya", group = "Robot")
-public class EncoderTestAditya extends LinearOpMode {
-    Hardware robot = new Hardware(this);
-    ElapsedTime runtime = new ElapsedTime();
-    public DcMotor[] motors = new DcMotor[] {robot.bRMotor, robot.bLMotor, robot.fRMotor, robot.fLMotor};
+public class EncoderTestAditya extends IterativeAuton {
     @Override
-    public void runOpMode(){
-        for (DcMotor motor : motors) {
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        for (DcMotor motor : motors) {
-            motor.setTargetPosition(motor.getCurrentPosition() + 1000);
-        }
-        for (DcMotor motor : motors) {
-            motor.setPower(0.5);
-        }
+    public void start() {
+        runtime.reset();
+        run();
     }
+
+    public void run() {
+        robot.stopAndResetDriveEncoders();
+        robot.setDriveModeEncoder();
+        robot.fRMotor.setTargetPosition(1000);
+        robot.fLMotor.setTargetPosition(1000);
+        robot.bRMotor.setTargetPosition(1000);
+        robot.bLMotor.setTargetPosition(1000);
+        robot.setDriveModeRTP();
+        robot.setDrivePower(0.2, 0.2, 0.2, 0.2);
+    }
+
 }

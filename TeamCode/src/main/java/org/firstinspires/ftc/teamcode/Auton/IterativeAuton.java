@@ -61,10 +61,10 @@ public class IterativeAuton extends OpMode
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;         // Gearing up (more speed, less torque) --> ratio < 1.0
-    static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
-//    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-//            (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     COUNTS_PER_INCH         = 1.0;
+    static final double     WHEEL_DIAMETER_INCHES   = 2.95276 ;  // 96mm
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * Math.PI);
+//    static final double     COUNTS_PER_INCH         = 0.2;
 
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
@@ -164,10 +164,10 @@ public class IterativeAuton extends OpMode
             double v3 = inches * Math.sin(direction);
             double v4 = inches * Math.cos(direction);
 
-            newFrontLeftTarget = robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
-            newFrontRightTarget = robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
-            newBackLeftTarget = robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
-            newBackRightTarget = robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
+            newFrontLeftTarget = -robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
+            newFrontRightTarget = -robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
+            newBackLeftTarget = -robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
+            newBackRightTarget = -robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
 
             robot.fLMotor.setTargetPosition(newFrontLeftTarget);
             robot.fRMotor.setTargetPosition(newFrontRightTarget);
@@ -234,6 +234,10 @@ public class IterativeAuton extends OpMode
         int newBackLeftTarget;
         int newBackRightTarget;
         robot.stopAndResetDriveEncoders();
+        robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Starting at",  "%7d :%7d :%7d :%7d",
                 robot.fLMotor.getCurrentPosition(),
@@ -254,10 +258,10 @@ public class IterativeAuton extends OpMode
             double v3 = inches * Math.sin(direction);
             double v4 = inches * Math.cos(direction);
 
-            newFrontLeftTarget = robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
-            newFrontRightTarget = robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
-            newBackLeftTarget = robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
-            newBackRightTarget = robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
+            newFrontLeftTarget = -robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
+            newFrontRightTarget = -robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
+            newBackLeftTarget = -robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
+            newBackRightTarget = -robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
 
             robot.fLMotor.setTargetPosition(newFrontLeftTarget);
             robot.fRMotor.setTargetPosition(newFrontRightTarget);
@@ -270,6 +274,11 @@ public class IterativeAuton extends OpMode
             robot.bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            robot.fLMotor.setTargetPosition(newFrontLeftTarget);
+            robot.fRMotor.setTargetPosition(newFrontRightTarget);
+            robot.bLMotor.setTargetPosition(newBackLeftTarget);
+            robot.bRMotor.setTargetPosition(newBackRightTarget);
+
             // reset the timeout time and start motion.
             runtime.reset();
             double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
@@ -280,6 +289,7 @@ public class IterativeAuton extends OpMode
             robot.bRMotor.setPower(forwardSlashSpeed);
         }
     }
+
 
     /**
      *

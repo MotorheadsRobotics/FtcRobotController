@@ -90,6 +90,7 @@ public class TestTeleopDuo extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Increase speed mapped to left bumper
+
             if (gamepad1.left_bumper) {
                 speedMultiplier /= 2;
                 while(gamepad1.left_bumper) {};
@@ -119,11 +120,10 @@ public class TestTeleopDuo extends LinearOpMode {
                     robot.fRMotor.getCurrentPosition(),
                     robot.bLMotor.getCurrentPosition(),
                     robot.bRMotor.getCurrentPosition());
-            telemetry.update();
 
             // Claw mapped to a
             if (gamepad2.a) {
-                clawPosition = 1 - clawPosition;
+                clawPosition = 0.75 - clawPosition;
                 while(gamepad2.a) {
                 }
             }

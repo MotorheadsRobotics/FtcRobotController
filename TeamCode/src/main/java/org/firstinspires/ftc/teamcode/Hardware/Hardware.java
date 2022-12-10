@@ -131,7 +131,7 @@ public class Hardware {
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(720, 600, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(1980, 1080, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -279,6 +279,18 @@ public class Hardware {
         fRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void setDriveModeEncoder() {
+        fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void setDriveModeRTP() {
+        fLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        fRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void stopAndResetLiftEncoders() {
         upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
