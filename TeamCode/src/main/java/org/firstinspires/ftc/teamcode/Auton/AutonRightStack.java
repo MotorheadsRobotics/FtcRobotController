@@ -67,6 +67,8 @@ public class AutonRightStack extends IterativeAuton {
         }
         // TODO: strafe back to next to terminal
         encoderDrive(0.3,90, 12,1);
+        // TODO: Move until cone is on top of high terminal
+        encoderDrive(0.5,0,6,1);
         robot.claw.setPosition(0);
 
     }
@@ -99,6 +101,9 @@ public class AutonRightStack extends IterativeAuton {
         robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // TODO: Move until cone is on top of high terminal
+        encoderDrive(0.5,180,6,1);
     }
     public void moveConeToHighTerminal(){
         robot.setLift(10560,LIFTMOTORPOWER);
@@ -130,6 +135,8 @@ public class AutonRightStack extends IterativeAuton {
                 robot.claw.setPosition(0); // open
             }
         }
+        // TODO: Move until cone is on top of high terminal
+        encoderDrive(0.5,0,6,1);
         robot.claw.setPosition(0); // open claw
         sleep(250);
     }

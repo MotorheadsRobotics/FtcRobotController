@@ -13,6 +13,7 @@ public class EncoderTestAditya extends IterativeAuton {
     public void start() {
         runtime.reset();
         run();
+        robot.flipToPosition(0.5);
     }
 
     public void run() {
