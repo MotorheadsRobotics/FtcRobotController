@@ -446,7 +446,7 @@ public class AutonDriving extends LinearOpMode {
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
 
             // Clip the speed to the maximum permitted value.
-            // turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+//            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
 
             // Pivot in place by applying the turning correction
             turnRobot(turnSpeed);

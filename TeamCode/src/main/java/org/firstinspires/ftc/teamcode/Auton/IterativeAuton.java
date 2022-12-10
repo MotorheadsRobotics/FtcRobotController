@@ -114,31 +114,6 @@ public class IterativeAuton extends OpMode
         telemetry.update();
         sleep(1000);
         finalMessage = robot.message;
-
-        encoderDrive(1,270,29, 2);
-        if(finalMessage == null){
-            finalMessage = robot.message;
-        }
-        if(finalMessage != null){
-            switch (finalMessage) {
-                case "https://left.com":
-                    // strafe left one tile
-                    encoderDrive(1, 180, 24, 1.5);
-                    break;
-                case "https://middle.com":
-                    // no need to move
-                    break;
-                case "https://right.com":
-                    // strafe right one tile
-                    encoderDrive(1, 0, 24, 1.5);
-                    break;
-                default:
-                    // hope it's middle, attempting to recheck
-                    telemetry.addData("We got used by another team :(", "unfortunate L");
-                    telemetry.update();
-            }
-        }
-        // path done
     }
 
     /*
@@ -243,6 +218,66 @@ public class IterativeAuton extends OpMode
             robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             sleep(250);   // optional pause after each move.
+        }
+    }
+
+    /**
+     * Method to drive at any given angle for a certain number of degrees. Maintains heading. Does not stop movement.
+     * @param speed desired magnitude speed for the robot
+     * @param direction forwards = 0, right = 90, backwards = 180, left = 270
+     * @param inches you know what this means
+     * @param timeoutS how many seconds until the robot gives up on this task
+     */
+    public void encoderDriveNoWaiting(double speed, double direction, double inches, double timeoutS) {
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newBackLeftTarget;
+        int newBackRightTarget;
+        robot.stopAndResetDriveEncoders();
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Starting at",  "%7d :%7d :%7d :%7d",
+                robot.fLMotor.getCurrentPosition(),
+                robot.fRMotor.getCurrentPosition(),
+                robot.bLMotor.getCurrentPosition(),
+                robot.bRMotor.getCurrentPosition());
+        telemetry.update();
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            // Determine new target position, and pass to motor controller
+
+            /** Direction: forwards = 0, right = 90, back = 180, left = 270 **/
+            // direction -= 90; direction *= -1; direction *= Math.PI/180;
+            direction = (90 - direction) * Math.PI / 180 - Math.PI / 4;
+            double v1 = inches * Math.cos(direction);
+            double v2 = inches * Math.sin(direction);
+            double v3 = inches * Math.sin(direction);
+            double v4 = inches * Math.cos(direction);
+
+            newFrontLeftTarget = robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
+            newFrontRightTarget = robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
+            newBackLeftTarget = robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
+            newBackRightTarget = robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
+
+            robot.fLMotor.setTargetPosition(newFrontLeftTarget);
+            robot.fRMotor.setTargetPosition(newFrontRightTarget);
+            robot.bLMotor.setTargetPosition(newBackLeftTarget);
+            robot.bRMotor.setTargetPosition(newBackRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
+            double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+            robot.fLMotor.setPower(forwardSlashSpeed);
+            robot.fRMotor.setPower(backwardsSlashSpeed);
+            robot.bLMotor.setPower(backwardsSlashSpeed);
+            robot.bRMotor.setPower(forwardSlashSpeed);
         }
     }
 

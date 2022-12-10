@@ -106,7 +106,6 @@ public class Hardware {
         // Borrowed from OpenCV's FTC documentation:
         int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-
         webcam.setPipeline(new SimplePipeline());
         det = new QRCodeDetector();
 
@@ -127,7 +126,7 @@ public class Hardware {
                  * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
                  *
                  * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be roßtated such that it is always displayed with the image upright.
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
                  * For a front facing camera, rotation is defined assuming the user is looking at the screen.
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
