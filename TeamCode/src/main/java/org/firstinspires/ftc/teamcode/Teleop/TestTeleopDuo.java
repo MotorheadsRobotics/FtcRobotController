@@ -49,6 +49,9 @@ public class TestTeleopDuo extends LinearOpMode {
     Hardware robot = new Hardware(this);
 
     public static int[] heights = new int[] {0, 2, 15, 23, 32};
+    public boolean claw = true;
+    public static double clawOpen = 0;
+    public static double clawClosed = 0.05;
     public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
     public static int maxHeight = 11880;
     public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
@@ -123,11 +126,17 @@ public class TestTeleopDuo extends LinearOpMode {
 
             // Claw mapped to a
             if (gamepad2.a) {
-                clawPosition = 0.75 - clawPosition;
-                while(gamepad2.a) {
-                }
+                clawPosition = 1 - clawPosition;
+                while(gamepad2.a) {}
             }
             robot.claw.setPosition(clawPosition);
+
+//            if (claw) {
+//                robot.claw.setPosition(clawClosed);
+//            }
+//            else {
+//                robot.claw.setPosition(clawOpen);
+//            }
 
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state

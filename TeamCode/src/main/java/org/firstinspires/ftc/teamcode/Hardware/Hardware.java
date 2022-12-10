@@ -215,8 +215,8 @@ public class Hardware {
 
         //lift calibration code
         myOpMode.telemetry.addData(">", "Lift Calibrating");
-        upMotorL.setPower(-0.1);
-        upMotorR.setPower(-0.1);
+        upMotorL.setPower(-0.2);
+        upMotorR.setPower(-0.2);
 
         while(!upLSensor.isPressed() && !upRSensor.isPressed()) {}
         upMotorL.setPower(0);
