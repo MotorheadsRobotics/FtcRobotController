@@ -82,6 +82,18 @@ public class Hardware {
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
     public BNO055IMU imu;
+    public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10890};
+    public static enum Heights{
+        HIGH(10890),
+        MEDIUM(7590),
+        LOW(4950),
+        GROUND(660),
+        FLOOR(0),
+
+        STACK5(1760);
+
+        Heights(int counts) {}
+    }
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;

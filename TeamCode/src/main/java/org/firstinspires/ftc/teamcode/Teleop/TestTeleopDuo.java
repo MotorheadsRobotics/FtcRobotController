@@ -52,7 +52,6 @@ public class TestTeleopDuo extends LinearOpMode {
     public boolean claw = true;
     public static double clawOpen = 0;
     public static double clawClosed = 0.05;
-    public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10560};
     public static int maxHeight = 11880;
     public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
     public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
@@ -239,7 +238,7 @@ public class TestTeleopDuo extends LinearOpMode {
                 telemetry.addData("Preset Mode", true);
                 telemetry.addData("Current Preset", heightNames[currentPreset]);
 
-                robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+                robot.setLift(robot.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
             }
             else { // Preset Mode 2: Stacks
                 telemetry.addData("Stack Mode", true);
