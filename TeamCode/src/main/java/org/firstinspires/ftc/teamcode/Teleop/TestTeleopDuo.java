@@ -66,6 +66,7 @@ public class TestTeleopDuo extends LinearOpMode {
         double rotatePosition = 1;
         double verticalMotorPower = 1.0;
         boolean isRotated = true;
+        boolean isFlipped = true;
         boolean wasPressed = false;
         double speedMultiplier = 1;
 
@@ -136,19 +137,28 @@ public class TestTeleopDuo extends LinearOpMode {
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
                 time = runtime.milliseconds();
+                isRotated = false;
+                isFlipped = false;
             }
-            robot.claw.setPosition(1);
-            robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
-            robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
 
-            //separate button for rotate - gamepad x
-            /*if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && gamepad2.x && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
-                rotatePosition = ROTATE_CONSTANT - rotatePosition;
-            }*/
-            if (gamepad2.x) {
-                rotatePosition = 1 - rotatePosition;
-                while(gamepad2.x) {}
+            if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
+                robot.claw.setPosition(1);
+                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                isFlipped = true;
             }
+
+            //auto rotate after flip
+            if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
+                rotatePosition = 1 - rotatePosition;
+                isRotated = true;
+            }
+
+//            //gamepad x flip
+//            if (gamepad2.x) {
+//                rotatePosition = 1 - rotatePosition;
+//                while(gamepad2.x) {}
+//            }
             robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
 
             // Vertical Slides
@@ -178,30 +188,32 @@ public class TestTeleopDuo extends LinearOpMode {
                 if(currentPreset < 5) {
                     currentPreset++;
                 }
+                while(gamepad2.dpad_up) {}
                 mode = "PRESET";
             }
             else if(gamepad2.dpad_down){
                 if(currentPreset > 0){
                     currentPreset--;
                 }
+                while(gamepad2.dpad_down) {}
                 mode = "PRESET";
             }
 //
-//            // Stack Mode Iteration
-//            if(gamepad2.dpad_right){
-//                if(currentStackPreset < 3) {
-//                    currentStackPreset++;
-//                }
-//                while(gamepad2.dpad_right) {}
-//                mode = "STACK";
-//            }
-//            else if(gamepad2.dpad_left){
-//                if(currentStackPreset > 0){
-//                    currentStackPreset--;
-//                }
-//                mode = "STACK";
-//                while(gamepad2.dpad_left) {}
-//            }
+            // Stack Mode Iteration
+            if(gamepad2.dpad_right){
+                if(currentStackPreset < 1) {
+                    currentStackPreset++;
+                }
+                while(gamepad2.dpad_right) {}
+                mode = "STACK";
+            }
+            else if(gamepad2.dpad_left){
+                if(currentStackPreset > 0){
+                    currentStackPreset--;
+                }
+                mode = "STACK";
+                while(gamepad2.dpad_left) {}
+            }
 
             // Check if we should be in manual mode
             if(gamepad2.right_trigger > 0.3 || gamepad2.left_trigger > 0.3) {
@@ -232,7 +244,6 @@ public class TestTeleopDuo extends LinearOpMode {
             else if(mode.equals("PRESET")) { // Preset Mode 1
                 telemetry.addData("Preset Mode", true);
                 telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
-
                 robot.setLift(Hardware.heightsCounts[currentPreset], LIFTMOTORPOWER);
             }
             else { // Preset Mode 2: Stacks
