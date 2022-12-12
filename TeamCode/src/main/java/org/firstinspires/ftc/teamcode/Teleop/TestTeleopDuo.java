@@ -48,19 +48,13 @@ public class TestTeleopDuo extends LinearOpMode {
     // Prefix any hardware functions with "robot." to access this class.
     Hardware robot = new Hardware(this);
 
-    public static int[] heights = new int[] {0, 2, 15, 23, 32};
-    public boolean claw = true;
-    public static double clawOpen = 0;
-    public static double clawClosed = 0.05;
-    public static int maxHeight = 11880;
-    public static int[] stackHeights = new int[] {440, 880, 1320, 1760};
-    public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
-    public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
+//  goal heights (in) {0, 2, 15, 23, 32}
+
     public int currentPreset = 0;
     public int currentStackPreset = 0;
     public static int countsPerInch = 330;
     public String mode = "MANUAL";
-    private static double LIFTMOTORPOWER = 1.0;
+    private static final double LIFTMOTORPOWER = 1.0;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1000; // milliseconds
 
@@ -95,7 +89,7 @@ public class TestTeleopDuo extends LinearOpMode {
 
             if (gamepad1.left_bumper) {
                 speedMultiplier /= 2;
-                while(gamepad1.left_bumper) {};
+                while(gamepad1.left_bumper) {}
                 if (speedMultiplier < 0.0625) {
                     speedMultiplier = 0.0625;
                 }
@@ -104,7 +98,7 @@ public class TestTeleopDuo extends LinearOpMode {
             // Increase speed mapped to right bumper
             if (gamepad1.right_bumper) {
                 speedMultiplier *= 2;
-                while(gamepad1.left_bumper) {};
+                while(gamepad1.left_bumper) {}
                 if (speedMultiplier > 1) {
                     speedMultiplier = 1;
                 }
@@ -143,18 +137,19 @@ public class TestTeleopDuo extends LinearOpMode {
                 while(gamepad2.y) {}
                 time = runtime.milliseconds();
             }
-            robot.flipL.setPosition(robot.FLIP_CONSTANT * (1 - flipPosition));
-            robot.flipR.setPosition(robot.FLIP_CONSTANT * flipPosition);
+            robot.claw.setPosition(1);
+            robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+            robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
 
             //separate button for rotate - gamepad x
             /*if(Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175 && gamepad2.x && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * minHeightForFlip) {
                 rotatePosition = ROTATE_CONSTANT - rotatePosition;
             }*/
             if (gamepad2.x) {
-                rotatePosition = robot.ROTATE_CONSTANT - rotatePosition;
+                rotatePosition = 1 - rotatePosition;
                 while(gamepad2.x) {}
             }
-            robot.rotate.setPosition(rotatePosition);
+            robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
 
             // Vertical Slides
             /*if (gamepad2.left_trigger > 0.3) {
@@ -180,7 +175,7 @@ public class TestTeleopDuo extends LinearOpMode {
 
             // dpad setting presets
             if(gamepad2.dpad_up){
-                if(currentPreset < 4) {
+                if(currentPreset < 5) {
                     currentPreset++;
                 }
                 mode = "PRESET";
@@ -191,22 +186,22 @@ public class TestTeleopDuo extends LinearOpMode {
                 }
                 mode = "PRESET";
             }
-
-            // Stack Mode Iteration
-            if(gamepad2.dpad_right){
-                if(currentStackPreset < 3) {
-                    currentStackPreset++;
-                }
-                while(gamepad2.dpad_right) {}
-                mode = "STACK";
-            }
-            else if(gamepad2.dpad_left){
-                if(currentStackPreset > 0){
-                    currentStackPreset--;
-                }
-                mode = "STACK";
-                while(gamepad2.dpad_left) {}
-            }
+//
+//            // Stack Mode Iteration
+//            if(gamepad2.dpad_right){
+//                if(currentStackPreset < 3) {
+//                    currentStackPreset++;
+//                }
+//                while(gamepad2.dpad_right) {}
+//                mode = "STACK";
+//            }
+//            else if(gamepad2.dpad_left){
+//                if(currentStackPreset > 0){
+//                    currentStackPreset--;
+//                }
+//                mode = "STACK";
+//                while(gamepad2.dpad_left) {}
+//            }
 
             // Check if we should be in manual mode
             if(gamepad2.right_trigger > 0.3 || gamepad2.left_trigger > 0.3) {
@@ -216,7 +211,7 @@ public class TestTeleopDuo extends LinearOpMode {
             // Move Lifts
             if(mode.equals("MANUAL")){
                 telemetry.addData("Manual Mode", true);
-                telemetry.addData("Current Preset", heightNames[currentPreset]);
+                telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
                 robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -225,7 +220,7 @@ public class TestTeleopDuo extends LinearOpMode {
                     robot.upMotorL.setPower(-LIFTMOTORPOWER);
                     robot.upMotorR.setPower(-LIFTMOTORPOWER);
                 }
-                else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (maxHeight + offsetCounts)){
+                else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts)){
                     robot.upMotorL.setPower(LIFTMOTORPOWER);
                     robot.upMotorR.setPower(LIFTMOTORPOWER);
                 }
@@ -236,14 +231,14 @@ public class TestTeleopDuo extends LinearOpMode {
             }
             else if(mode.equals("PRESET")) { // Preset Mode 1
                 telemetry.addData("Preset Mode", true);
-                telemetry.addData("Current Preset", heightNames[currentPreset]);
+                telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
-                robot.setLift(robot.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+                robot.setLift(Hardware.heightsCounts[currentPreset], LIFTMOTORPOWER);
             }
             else { // Preset Mode 2: Stacks
                 telemetry.addData("Stack Mode", true);
-                telemetry.addData("Current Preset", stackHeightNames[currentStackPreset]);
-                robot.setLift(stackHeights[currentStackPreset] + offsetCounts, LIFTMOTORPOWER);
+                telemetry.addData("Current Preset", Hardware.stackHeightNames[currentStackPreset]);
+                robot.setLift(Hardware.stackHeights[currentStackPreset], LIFTMOTORPOWER);
             }
             telemetry.update();
 //

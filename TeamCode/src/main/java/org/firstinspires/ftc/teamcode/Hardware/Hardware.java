@@ -54,6 +54,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.HashMap;
+
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
  * Also add a new OpMode, drawing from the Sample ConceptExternalHardwareClass.java; select TeleOp.
@@ -82,18 +84,11 @@ public class Hardware {
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
     public BNO055IMU imu;
-    public static int[] heightsCounts = new int[] {0, 660, 4950, 7590, 10890};
-    public static enum Heights{
-        HIGH(10890),
-        MEDIUM(7590),
-        LOW(4950),
-        GROUND(660),
-        FLOOR(0),
-
-        STACK5(1760);
-
-        Heights(int counts) {}
-    }
+    public static int[] heightsCounts = new int[] {0, 440, 880, 1320, 1760, 10890};
+    public static int maxHeight = 11880;
+    public static int[] stackHeights = new int[] {4950, 7590};
+    public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
+    public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;
