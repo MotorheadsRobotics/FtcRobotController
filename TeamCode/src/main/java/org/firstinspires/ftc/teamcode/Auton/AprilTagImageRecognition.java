@@ -71,7 +71,7 @@ public class AprilTagImageRecognition extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
