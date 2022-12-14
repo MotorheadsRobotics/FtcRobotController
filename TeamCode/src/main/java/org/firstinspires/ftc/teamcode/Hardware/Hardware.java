@@ -83,9 +83,6 @@ public class Hardware {
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
-    public static double countsPerMotorRev = 384.5;
-    public static double RPM = 435;
-    public static double countsPerSecond = countsPerMotorRev * RPM / 60;
     public BNO055IMU imu;
     public static int[] heightsCounts = new int[] {0, 440, 880, 1320, 1760, 10890};
     public static int maxHeight = 11880;
