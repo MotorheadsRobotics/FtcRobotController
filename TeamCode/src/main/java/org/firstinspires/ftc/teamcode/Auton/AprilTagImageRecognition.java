@@ -50,7 +50,7 @@ public class AprilTagImageRecognition extends LinearOpMode
     double cy = 248.997;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.04;
 
     int left = 1; // Tag ID 1 from the 36h11 family for left movement
     int middle = 2; // Tag ID 2 from the 36h11 family for middle movement
@@ -81,7 +81,7 @@ public class AprilTagImageRecognition extends LinearOpMode
             }
         });
 
-        telemetry.setMsTransmissionInterval(100);
+        // telemetry.setMsTransmissionInterval(50); - this code is creating errors on phone - need to check why
 
         /*
          * The INIT-loop:
