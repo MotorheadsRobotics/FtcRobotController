@@ -81,7 +81,7 @@ public class AprilTagImageRecognition extends LinearOpMode
             }
         });
 
-        // telemetry.setMsTransmissionInterval(50);
+        telemetry.setMsTransmissionInterval(100);
 
         /*
          * The INIT-loop:
