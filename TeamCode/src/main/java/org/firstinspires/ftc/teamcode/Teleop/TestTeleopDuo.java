@@ -63,7 +63,9 @@ public class TestTeleopDuo extends LinearOpMode {
         double clawPosition = 1;
         double flipPosition = 0;
         double time = 0;
+        double liftTime = runtime.milliseconds();
         double rotatePosition = 1;
+        double liftConst = 0;
         double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean isFlipped = true;
@@ -225,21 +227,26 @@ public class TestTeleopDuo extends LinearOpMode {
                 telemetry.addData("Manual Mode", true);
                 telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
-                robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (0 + offsetCounts) && robot.upMotorR.getCurrentPosition() > (0 + offsetCounts)){
-                    robot.upMotorL.setPower(-LIFTMOTORPOWER);
-                    robot.upMotorR.setPower(-LIFTMOTORPOWER);
+                if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (offsetCounts) && robot.upMotorR.getCurrentPosition() > (offsetCounts) && runtime.milliseconds() - liftTime > 1000){
+                    liftConst = gamepad2.left_trigger;
+                    robot.upMotorL.setTargetPosition((int) (robot.upMotorL.getCurrentPosition() - liftConst * Hardware.countsPerSecond));
+                    robot.upMotorR.setTargetPosition((int) (robot.upMotorL.getCurrentPosition() - liftConst * Hardware.countsPerSecond));
+                    liftTime = runtime.milliseconds();
+
                 }
                 else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts)){
-                    robot.upMotorL.setPower(LIFTMOTORPOWER);
-                    robot.upMotorR.setPower(LIFTMOTORPOWER);
+                    liftConst = gamepad1.left_trigger;
+                    robot.upMotorL.setTargetPosition((int) (robot.upMotorL.getCurrentPosition() + liftConst * Hardware.countsPerSecond));
+                    robot.upMotorR.setTargetPosition((int) (robot.upMotorL.getCurrentPosition() + liftConst * Hardware.countsPerSecond));
+                    liftTime = runtime.milliseconds();
                 }
-                else{
-                    robot.upMotorL.setPower(0);
-                    robot.upMotorR.setPower(0);
-                }
+
+                robot.upMotorR.setPower(liftConst);
+                robot.upMotorL.setPower(liftConst);
+
             }
             else if(mode.equals("PRESET")) { // Preset Mode 1
                 telemetry.addData("Preset Mode", true);
