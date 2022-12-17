@@ -44,13 +44,13 @@ public class AprilTagImageRecognition extends LinearOpMode
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    double fx = 821.993;
+    double fy = 821.993;
+    double cx = 330.489;
+    double cy = 248.997;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.04;
 
     int left = 1; // Tag ID 1 from the 36h11 family for left movement
     int middle = 2; // Tag ID 2 from the 36h11 family for middle movement
@@ -71,7 +71,7 @@ public class AprilTagImageRecognition extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -81,7 +81,7 @@ public class AprilTagImageRecognition extends LinearOpMode
             }
         });
 
-        telemetry.setMsTransmissionInterval(50);
+        // telemetry.setMsTransmissionInterval(50); - this code is creating errors on phone - need to check why
 
         /*
          * The INIT-loop:
