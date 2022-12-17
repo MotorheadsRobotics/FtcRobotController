@@ -87,8 +87,8 @@ public class Hardware {
     public static int[] heightsCounts = new int[] {0, 440, 880, 1320, 1760, 10890};
     public static int maxHeight = 11880;
     public static int[] stackHeights = new int[] {4950, 7590};
-    public static String[] stackHeightNames = new String[] {"Cone 2", "Cone 3", "Cone 4", "Cone 5"};
-    public static String[] heightNames = new String[] {"Floor", "Ground Terminal", "Low Terminal", "Medium Terminal", "High Terminal"};
+    public static String[] stackHeightNames = new String[] {"Low Terminal", "Medium Terminal"};
+    public static String[] heightNames = new String[] {"Floor", "Cone 2", "Cone 3", "Cone 4", "Cone 5", "High Terminal"};
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;

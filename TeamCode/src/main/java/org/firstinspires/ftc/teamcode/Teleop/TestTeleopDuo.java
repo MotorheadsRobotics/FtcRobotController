@@ -228,9 +228,9 @@ public class TestTeleopDuo extends LinearOpMode {
                 robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (0 + offsetCounts) && robot.upMotorR.getCurrentPosition() > (0 + offsetCounts)){
-                    robot.upMotorL.setPower(-LIFTMOTORPOWER);
-                    robot.upMotorR.setPower(-LIFTMOTORPOWER);
+                if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (offsetCounts) && robot.upMotorR.getCurrentPosition() > (offsetCounts)){
+                    robot.upMotorL.setPower(-0.7);
+                    robot.upMotorR.setPower(-0.7);
                 }
                 else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts)){
                     robot.upMotorL.setPower(LIFTMOTORPOWER);
