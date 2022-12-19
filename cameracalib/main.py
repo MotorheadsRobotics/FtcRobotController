@@ -72,28 +72,28 @@ for filename in images:
 	cv2.imshow('img', image)
 	cv2.waitKey(0)
 
-cv2.destroyAllWindows()
+	cv2.destroyAllWindows()
 
-h, w = image.shape[:2]
+	h, w = image.shape[:2]
 
 
 # Perform camera calibration by
 # passing the value of above found out 3D points (threedpoints)
 # and its corresponding pixel coordinates of the
 # detected corners (twodpoints)
-ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera(
-	threedpoints, twodpoints, grayColor.shape[::-1], None, None)
+	ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera(
+		threedpoints, twodpoints, grayColor.shape[::-1], None, None)
 
 
 # Displaying required output
-print(" Camera matrix:")
-print(matrix)
+	print(" Camera matrix:")
+	print(matrix)
 
-print("\n Distortion coefficient:")
-print(distortion)
+	print("\n Distortion coefficient:")
+	print(distortion)
 
-print("\n Rotation Vectors:")
-print(r_vecs)
+	print("\n Rotation Vectors:")
+	print(r_vecs)
 
-print("\n Translation Vectors:")
-print(t_vecs)
+	print("\n Translation Vectors:")
+	print(t_vecs)
