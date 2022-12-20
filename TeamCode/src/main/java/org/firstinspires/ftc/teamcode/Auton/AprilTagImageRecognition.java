@@ -44,17 +44,17 @@ public class AprilTagImageRecognition extends LinearOpMode
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 821.993;
-    double fy = 821.993;
-    double cx = 330.489;
-    double cy = 248.997;
+    double fx = 2.49539580e+03;
+    double fy = 2.49845758e+03;
+    double cx = 6.14724848e+02;
+    double cy = 3.40242180e+02;
 
     // UNITS ARE METERS
     double tagsize = 0.04;
 
-    int left = 1; // Tag ID 1 from the 36h11 family for left movement
-    int middle = 2; // Tag ID 2 from the 36h11 family for middle movement
-    int right = 3; // Tag ID 3 from the 36h11 family for right movement
+    int left = 0; // Tag ID 1 from the 36h11 family for left movement
+    int middle = 1; // Tag ID 2 from the 36h11 family for middle movement
+    int right = 2; // Tag ID 3 from the 36h11 family for right movement
 
     AprilTagDetection tagOfInterest = null;
 

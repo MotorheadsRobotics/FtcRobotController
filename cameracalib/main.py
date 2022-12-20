@@ -81,19 +81,23 @@ for filename in images:
 # passing the value of above found out 3D points (threedpoints)
 # and its corresponding pixel coordinates of the
 # detected corners (twodpoints)
-	ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera(
-		threedpoints, twodpoints, grayColor.shape[::-1], None, None)
+	try:
+		ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera(
+			threedpoints, twodpoints, grayColor.shape[::-1], None, None)
 
 
-# Displaying required output
-	print(" Camera matrix:")
-	print(matrix)
+	# Displaying required output
+		print(" Camera matrix:")
+		print(matrix)
 
-	print("\n Distortion coefficient:")
-	print(distortion)
+		print("\n Distortion coefficient:")
+		print(distortion)
 
-	print("\n Rotation Vectors:")
-	print(r_vecs)
+		print("\n Rotation Vectors:")
+		print(r_vecs)
 
-	print("\n Translation Vectors:")
-	print(t_vecs)
+		print("\n Translation Vectors:")
+		print(t_vecs)
+
+	except:
+		print("didn't work")
