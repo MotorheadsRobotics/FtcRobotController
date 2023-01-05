@@ -273,6 +273,17 @@ public class Hardware {
         upMotorL.setPower(liftPower);
         upMotorR.setPower(liftPower);
     }
+    public void setLift(int countsL, int countsR, double liftPower) {
+        upMotorL.setTargetPosition(countsL);
+        upMotorR.setTargetPosition(countsR);
+
+        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        upMotorL.setPower(liftPower);
+        upMotorR.setPower(liftPower);
+    }
+
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.
     public void setDrivePower(double frontLeft, double frontRight, double backLeft, double backRight) {
         // Output the values to the motor drives.

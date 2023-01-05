@@ -53,7 +53,7 @@ public class TestTeleopDuo extends LinearOpMode {
     public int currentPreset = 0;
     public int currentStackPreset = 0;
     public static int countsPerInch = 330;
-    public String mode = "MANUAL";
+    public String mode = "PRESET";
     private static final double LIFTMOTORPOWER = 1.0;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1000; // milliseconds
@@ -69,6 +69,8 @@ public class TestTeleopDuo extends LinearOpMode {
         boolean isFlipped = true;
         boolean wasPressed = false;
         double speedMultiplier = 1;
+        int liftPosL = 0, liftPosR = 0;
+        boolean needsToChange = true;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -111,26 +113,12 @@ public class TestTeleopDuo extends LinearOpMode {
             // Speed Multiplier Telemetry
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
-            // Test telemetry / encoders
-            telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
-                    robot.fLMotor.getCurrentPosition(),
-                    robot.fRMotor.getCurrentPosition(),
-                    robot.bLMotor.getCurrentPosition(),
-                    robot.bRMotor.getCurrentPosition());
-
             // Claw mapped to a
             if (gamepad2.a) {
                 clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {}
             }
             robot.claw.setPosition(clawPosition);
-
-//            if (claw) {
-//                robot.claw.setPosition(clawClosed);
-//            }
-//            else {
-//                robot.claw.setPosition(clawOpen);
-//            }
 
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state
@@ -141,7 +129,15 @@ public class TestTeleopDuo extends LinearOpMode {
                 isFlipped = false;
             }
 
-            if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
+            if(isFlipped){
+                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+            }
+            else if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
+                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+            }
+            else if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
                 robot.claw.setPosition(1);
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
@@ -229,16 +225,25 @@ public class TestTeleopDuo extends LinearOpMode {
                 robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 if(gamepad2.left_trigger > 0.3 && robot.upMotorL.getCurrentPosition() > (offsetCounts) && robot.upMotorR.getCurrentPosition() > (offsetCounts)){
-                    robot.upMotorL.setPower(-0.7);
-                    robot.upMotorR.setPower(-0.7);
+                    robot.upMotorL.setPower(-0.5);
+                    robot.upMotorR.setPower(-0.5);
+                    needsToChange = true;
                 }
                 else if(gamepad2.right_trigger > 0.3 && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts) && robot.upMotorL.getCurrentPosition() < (Hardware.maxHeight + offsetCounts)){
                     robot.upMotorL.setPower(LIFTMOTORPOWER);
                     robot.upMotorR.setPower(LIFTMOTORPOWER);
+                    needsToChange = true;
                 }
                 else{
-                    robot.upMotorL.setPower(0);
-                    robot.upMotorR.setPower(0);
+                    // record last known position
+                    if(needsToChange) {
+                        liftPosL = robot.upMotorL.getCurrentPosition();
+                        liftPosR = robot.upMotorL.getCurrentPosition();
+                        needsToChange = false;
+                        robot.setLift((liftPosL + liftPosR)/2, LIFTMOTORPOWER);
+                    }
+                    // set positions there
+
                 }
             }
             else if(mode.equals("PRESET")) { // Preset Mode 1
@@ -252,24 +257,6 @@ public class TestTeleopDuo extends LinearOpMode {
                 robot.setLift(Hardware.stackHeights[currentStackPreset], LIFTMOTORPOWER);
             }
             telemetry.update();
-//
-//            // Horizontal Slides
-//            if (gamepad1.y) {
-//                robot.horMotor.setPower(horizontalMotorPower);
-//            } else if (gamepad1.x) {
-//                robot.horMotor.setPower(-horizontalMotorPower);
-//            } else {
-//                robot.horMotor.setPower(0);
-//            }
-//            // Send telemetry messages to explain controls
-//            telemetry.addData("Lift Up/Down", "Triggers");
-//            telemetry.addData("Lift Adjustment", "Bumpers");
-//            telemetry.addData("Lift Terminal Presets", "Dpad Up/Down");
-//            telemetry.addData("Lift Stack Presets", "Dpad Left/Right");
-//            telemetry.addData("Claw", "A button");
-//            telemetry.addData("-", "-------");
-//            telemetry.update();
-
 
             // Pace this loop so hands move at a reasonable speed.
             sleep(75);

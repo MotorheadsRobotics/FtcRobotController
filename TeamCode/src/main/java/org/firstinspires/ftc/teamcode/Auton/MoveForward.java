@@ -8,7 +8,6 @@ public class MoveForward extends IterativeAuton {
     public void start() {
         runtime.reset();
         run();
-        robot.flipToPosition(0.5);
     }
 
     public void run() {
@@ -19,10 +18,10 @@ public class MoveForward extends IterativeAuton {
         int bLorig = robot.bLMotor.getCurrentPosition();
 
         robot.setDriveModeEncoder();
-        robot.fRMotor.setTargetPosition(-1000);
-        robot.fLMotor.setTargetPosition(-1000);
-        robot.bRMotor.setTargetPosition(-1000);
-        robot.bLMotor.setTargetPosition(-1000);
+        robot.fRMotor.setTargetPosition(-333);
+        robot.fLMotor.setTargetPosition(333);
+        robot.bRMotor.setTargetPosition(-333);
+        robot.bLMotor.setTargetPosition(333);
         robot.setDriveModeRTP();
         robot.setDrivePower(0.8, 0.8, 0.8, 0.8);
 
