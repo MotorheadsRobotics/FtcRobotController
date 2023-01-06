@@ -195,8 +195,8 @@ public class TestTeleopDuoNew extends LinearOpMode {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
-            robot.setLift(Hardware.heightsCounts[currentPreset], LIFTMOTORPOWER);
+            telemetry.addData("Current Preset", heightNames[currentPreset]);
+            robot.setLift(heightsCounts[currentPreset], LIFTMOTORPOWER);
 
             telemetry.update();
 
