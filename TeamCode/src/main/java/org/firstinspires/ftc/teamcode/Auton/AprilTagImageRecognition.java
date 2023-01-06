@@ -21,8 +21,11 @@
 
 package org.firstinspires.ftc.teamcode.Auton;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.apriltag.AprilTagDetection;
@@ -52,9 +55,9 @@ public class AprilTagImageRecognition extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.04;
 
-    int left = 0; // Tag ID 1 from the 36h11 family for left movement
-    int middle = 1; // Tag ID 2 from the 36h11 family for middle movement
-    int right = 2; // Tag ID 3 from the 36h11 family for right movement
+    int left = 1; // Tag ID 1 from the 36h11 family for left movement
+    int middle = 2; // Tag ID 2 from the 36h11 family for middle movement
+    int right = 3; // Tag ID 3 from the 36h11 family for right movement
 
     AprilTagDetection tagOfInterest = null;
 
