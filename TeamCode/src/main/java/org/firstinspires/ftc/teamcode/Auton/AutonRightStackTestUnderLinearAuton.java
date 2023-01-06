@@ -16,76 +16,17 @@ import java.util.ArrayList;
 
 public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
-
+    public AprilTagDetection tagOfInterest = null;
     @Override
     public void runOpMode() {
         robot.init();
         robot.initGyro();
         robot.initAprilTagDetection();
-        AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(Hardware.tagsize, Hardware.fx, Hardware.fy, Hardware.cx, Hardware.cy);
         runtime.reset();
         robot.flipToPosition(0.5);
-        AprilTagDetection tagOfInterest = null;
+
         // Wait for the game to start (driver presses PLAY)
-        while (!isStarted() && !isStopRequested())
-        {
-            ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
-
-            if(currentDetections.size() != 0)
-            {
-                boolean tagFound = false;
-
-                for(AprilTagDetection tag : currentDetections)
-                {
-                    if(tag.id == 1 || tag.id == 2 || tag.id == 3)
-                    {
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        break;
-                    }
-                }
-
-                if(tagFound)
-                {
-                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-                    tagToTelemetry(tagOfInterest);
-                }
-                else
-                {
-                    telemetry.addLine("Don't see tag of interest :(");
-
-                    if(tagOfInterest == null)
-                    {
-                        telemetry.addLine("(The tag has never been seen)");
-                    }
-                    else
-                    {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                        tagToTelemetry(tagOfInterest);
-                    }
-                }
-
-            }
-            else
-            {
-                telemetry.addLine("Don't see tag of interest :(");
-
-                if(tagOfInterest == null)
-                {
-                    telemetry.addLine("(The tag has never been seen)");
-                }
-                else
-                {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                    tagToTelemetry(tagOfInterest);
-                }
-
-            }
-
-            telemetry.update();
-            sleep(20);
-        }
-
+        tagOfInterest = getTag();
         /*
          * The START command just came in: now work off the latest snapshot acquired
          * during the init loop.
@@ -111,19 +52,22 @@ public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
         }
         else
         {
-            pathWithCamera(tagOfInterest);
+            basicPathWithCamera(tagOfInterest);
+            //todo: you need to make an actual path with camera that goes does the cone stuff then comes back.
+
         }
 
         sleep(50);
     }
 
-    public void pathWithCamera(AprilTagDetection tagOfInterest){
+    public void basicPathWithCamera(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
             encoderDrive(0.5, 0, 30,2);
             encoderDrive(0.5, 10,270,3);
         }
         else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 0, 30,2);
+            encoderDrive(0.5, 0,
+                    30,2);
         }
         else if(tagOfInterest.id == 3){
             encoderDrive(0.5, 0, 30,2);
@@ -244,17 +188,5 @@ public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
         robot.claw.setPosition(0); // open claw
         sleep(250);
     }
-
-    void tagToTelemetry(AprilTagDetection detection)
-    {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
-    }
-
 }
 
