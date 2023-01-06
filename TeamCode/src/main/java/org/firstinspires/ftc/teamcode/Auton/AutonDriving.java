@@ -80,54 +80,8 @@ public class AutonDriving extends LinearOpMode {
     private int     leftTarget    = 0;
     private int     rightTarget   = 0;
 
-    private static final String VUFORIA_KEY =
-            "AYy6NYn/////AAABmTW3q+TyLUMbg/IXWlIG3BkMMq0okH0hLmwj3CxhPhvUlEZHaOAmESqfePJ57KC2g6UdWLN7OYvc8ihGAZSUJ2JPWAsHQGv6GUAj4BlrMCjHvqhY0w3tV/Azw2wlPmls4FcUCRTzidzVEDy+dtxqQ7U5ZtiQhjBZetAcnLsCYb58dgwZEjTx2+36jiqcFYvS+FlNJBpbwmnPUyEEb32YBBZj4ra5jB0v4IW4wYYRKTNijAQKxco33VYSCbH0at99SqhXECURA55dtmmJxYpFlT/sMmj0iblOqoG/auapQmmyEEXt/T8hv9StyirabxhbVVSe7fPsAueiXOWVm0kCPO+KN/TyWYB9Hg/mSfnNu9i9";
-
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
-
-    private static final String[] LABELS = {
-            "Cyan",
-            "Magenta",
-            "Yellow"
-    };
-
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
-     * localization engine.
-     */
-    private VuforiaLocalizer vuforia;
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod;
-
     @Override
-    public void runOpMode() {
-        robot.init();
-        robot.initGyro();
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        // turnToHeading(90,0.05,0.2); // rotate left 90 degrees
-        turnToHeading3(90);
-        // encoderDrive(0.5, 0, 1, 1);
-        sleep(1000);
-        turnToHeading3(180);
-        sleep(1000);
-        turnToHeading3(-90);
-        sleep(1000);
-        turnToHeading3(-180);
-        sleep(1000);
-        turnToHeading3(0);
-        // encoderDrive(0.5, 270, 1, 1);
-
-        telemetry.addData("Path", "Done");
-        telemetry.update();
-        sleep(50);
-    }
+    public void runOpMode() {}
 
     /**
      * Method to drive at any given angle for a certain number of degrees. Maintains heading.
@@ -294,147 +248,74 @@ public class AutonDriving extends LinearOpMode {
     }
 
     /**
-     * Initialize the Vuforia localization engine.
+     * Method to drive at any given angle for a certain number of degrees. Maintains heading. Does not stop movement.
+     * @param speed desired magnitude speed for the robot
+     * @param direction forwards = 0, right = 90, backwards = 180, left = 270
+     * @param inches you know what this means
+     * @param timeoutS how many seconds until the robot gives up on this task
      */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+    public void encoderDriveNoWaiting(double speed, double direction, double inches, double timeoutS) {
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newBackLeftTarget;
+        int newBackRightTarget;
+        robot.stopAndResetDriveEncoders();
+        robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Starting at",  "%7d :%7d :%7d :%7d",
+                robot.fLMotor.getCurrentPosition(),
+                robot.fRMotor.getCurrentPosition(),
+                robot.bLMotor.getCurrentPosition(),
+                robot.bRMotor.getCurrentPosition());
+        telemetry.update();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            // Determine new target position, and pass to motor controller
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
+            /** Direction: forwards = 0, right = 90, back = 180, left = 270 **/
+            // direction -= 90; direction *= -1; direction *= Math.PI/180;
+            direction = (90 - direction) * Math.PI / 180 - Math.PI / 4;
+            double v1 = inches * Math.cos(direction);
+            double v2 = inches * Math.sin(direction);
+            double v3 = inches * Math.sin(direction);
+            double v4 = inches * Math.cos(direction);
 
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            newFrontLeftTarget = -robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
+            newFrontRightTarget = -robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
+            newBackLeftTarget = -robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
+            newBackRightTarget = -robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
 
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
-    }
+            robot.fLMotor.setTargetPosition(newFrontLeftTarget);
+            robot.fRMotor.setTargetPosition(newFrontRightTarget);
+            robot.bLMotor.setTargetPosition(newBackLeftTarget);
+            robot.bRMotor.setTargetPosition(newBackRightTarget);
 
-    /**
-     *  Method to spin on central axis to point in a new direction.
-     *  Move will stop if either of these conditions occur:
-     *  1) Move gets to the heading (angle)
-     *  2) Driver stops the opmode running.
-     *
-     * @param maxTurnSpeed Desired MAX speed of turn. (range 0 to +1.0)
-     * @param heading Absolute Heading Angle (in Degrees) relative to last gyro reset.
-     *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *              If a relative angle is required, add/subtract from current heading.
-     */
-    public void turnToHeading(double maxTurnSpeed, double heading) {
+            // Turn On RUN_TO_POSITION
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Run getSteeringCorrection() once to pre-calculate the current error
-        getSteeringCorrection(heading, P_DRIVE_GAIN);
+            robot.fLMotor.setTargetPosition(newFrontLeftTarget);
+            robot.fRMotor.setTargetPosition(newFrontRightTarget);
+            robot.bLMotor.setTargetPosition(newBackLeftTarget);
+            robot.bRMotor.setTargetPosition(newBackRightTarget);
 
-        // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
-
-            // Determine required steering to keep on heading
-            turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
-
-            // Clip the speed to the maximum permitted value.
-            turnSpeed = Range.clip(turnSpeed * maxTurnSpeed, -maxTurnSpeed, maxTurnSpeed);
-
-            // Pivot in place by applying the turning correction
-            turnRobot(turnSpeed);
-
-            // Display drive status for the driver.
-            sendTelemetry();
+            // reset the timeout time and start motion.
+            runtime.reset();
+            double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
+            double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+            robot.fLMotor.setPower(forwardSlashSpeed);
+            robot.fRMotor.setPower(backwardsSlashSpeed);
+            robot.bLMotor.setPower(backwardsSlashSpeed);
+            robot.bRMotor.setPower(forwardSlashSpeed);
         }
-
-        // Stop all motion;
-        stopAllMotion();
-    }
-    public void turnToHeading2(double heading, double minPower, double maxPower){
-        robotHeading = getRawHeading() - headingOffset;
-        headingError = heading - robotHeading;
-        while (headingError > 180) headingError -= 360;
-        while (headingError <= -180) headingError += 360;
-        final double originalError = headingError;
-
-        while(opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)){
-            robotHeading = getRawHeading() - headingOffset;
-            headingError = heading - robotHeading;
-            while (headingError > 180) headingError -= 360;
-            while (headingError <= -180) headingError += 360;
-
-            double adjuster = Math.abs(headingError / 180);
-            double adjustedPower = Range.clip(adjuster, minPower, maxPower);
-
-            if(headingError > 0){
-                turnRobot(-adjustedPower);
-            }
-            else if(headingError < 0){
-                turnRobot(adjustedPower);
-            }
-            telemetry.addData("heading", robotHeading);
-            telemetry.addData("raw heading", getRawHeading());
-            telemetry.addData("error", headingError);
-            telemetry.addData("adjuster", adjuster);
-            telemetry.addData("adjustedPower", adjustedPower);
-            telemetry.update();
-        }
-        stopAllMotion();
     }
 
-    /**
-     * turns at 10% speed (or less) until reaching desired target
-     * @param heading +ve turns the robot counterclockwise, -ve rotates clockwise
-     */
-    public void turnToHeading3(double heading){
-        double currentHeading = getRawHeading();
-        double errorABS = Math.abs(heading - currentHeading);
-        while(errorABS > 1){
-            double error = (heading - currentHeading) / 1800;
-            while(error > 180) error -=360;
-            while(error <= -180) error +=360;
-            double speed = Range.clip(error, -0.1, 0.1);
-            if(speed < 0.02 && speed > 0){
-                speed = 0.02;
-            }
-            if(speed > -0.02 && speed < 0){
-                speed = -0.02;
-            }
-            turnRobot(-speed);
-            telemetry.addData("speed", speed);
-            telemetry.addData("heading", heading);
-            telemetry.addData("currentHeading", currentHeading);
-            telemetry.addData("abs error", errorABS);
-            telemetry.update();
-            currentHeading = getRawHeading();
-            errorABS = Math.abs(heading - currentHeading);
-        }
-        stopAllMotion();
-    }
-
-    /**
-     *  Method to obtain & hold a heading for a finite amount of time
-     *  Move will stop once the requested time has elapsed
-     *  This function is useful for giving the robot a moment to stabilize it's heading between movements.
-     *
-     * @param maxTurnSpeed      Maximum differential turn speed (range 0 to +1.0)
-     * @param heading    Absolute Heading Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
-     * @param holdTime   Length of time (in seconds) to hold the specified heading.
-     */
     public void holdHeading(double maxTurnSpeed, double heading, double holdTime) {
 
         ElapsedTime holdTimer = new ElapsedTime();

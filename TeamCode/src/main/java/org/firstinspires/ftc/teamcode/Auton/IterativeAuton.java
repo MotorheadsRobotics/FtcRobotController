@@ -32,22 +32,17 @@ package org.firstinspires.ftc.teamcode.Auton;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 import org.opencv.core.Mat;
-import org.opencv.objdetect.QRCodeDetector;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous(name="Basic: Iterative OpMode", group="Iterative Opmode")
 @Disabled
@@ -91,7 +86,7 @@ public class IterativeAuton extends OpMode
     @Override
     public void init() {
         robot.init();
-        robot.initQRCodeSensor();
+        robot.initAprilTagDetection();
     }
 
     /*

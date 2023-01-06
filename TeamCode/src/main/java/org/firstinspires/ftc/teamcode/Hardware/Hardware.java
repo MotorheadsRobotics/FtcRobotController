@@ -29,32 +29,23 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Auton.IterativeAuton;
+import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
 import org.opencv.objdetect.QRCodeDetector;
 import org.opencv.core.Mat;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.HashMap;
 
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
@@ -98,6 +89,30 @@ public class Hardware {
     public boolean found;
     public String message;
 
+
+    OpenCvCamera camera;
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
+    static final double FEET_PER_METER = 3.28084;
+
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    public static double fx = 2.49539580e+03;
+    public static double fy = 2.49845758e+03;
+    public static double cx = 6.14724848e+02;
+    public static double cy = 3.40242180e+02;
+
+    // UNITS ARE METERS
+    public static double tagsize = 0.04;
+
+    int left = 1; // Tag ID 1 from the 36h11 family for left movement
+    int middle = 2; // Tag ID 2 from the 36h11 family for middle movement
+    int right = 3; // Tag ID 3 from the 36h11 family for right movement
+
+    AprilTagDetection tagOfInterest = null;
+
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Hardware(OpMode opmode) {
         myOpMode = opmode;
@@ -109,44 +124,25 @@ public class Hardware {
         imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
     }
-    public void initQRCodeSensor(){
+    public void initAprilTagDetection(){
         // Borrowed from OpenCV's FTC documentation:
         int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(new SimplePipeline());
-        det = new QRCodeDetector();
+        camera = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        camera.setPipeline(aprilTagDetectionPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                /*
-                 * Tell the webcam to start streaming images to us! Note that you must make sure
-                 * the resolution you specify is supported by the camera. If it is not, an exception
-                 * will be thrown.
-                 *
-                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-                 * supports streaming from the webcam in the uncompressed YUV image format. This means
-                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-                 *
-                 * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
-                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-                 * away from the user.
-                 */
-                webcam.startStreaming(1980, 1080, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode)
             {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+
             }
         });
 
