@@ -123,7 +123,6 @@ public class TestTeleopDuoNew extends LinearOpMode {
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
-                time = runtime.milliseconds();
                 isRotated = false;
                 isFlipped = false;
             }
@@ -140,6 +139,7 @@ public class TestTeleopDuoNew extends LinearOpMode {
                 robot.claw.setPosition(1);
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                time = runtime.milliseconds();
                 isFlipped = true;
             }
 

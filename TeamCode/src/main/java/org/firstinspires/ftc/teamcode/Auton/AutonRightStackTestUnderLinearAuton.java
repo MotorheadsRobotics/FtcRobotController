@@ -107,18 +107,29 @@ public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
         /* Actually do something useful */
         if(tagOfInterest == null)
         {
-
+            pathWithoutCamera();
         }
         else
         {
-            /*
-             * Insert your autonomous code here, probably using the tag pose to decide your configuration.
-             */
+            pathWithCamera(tagOfInterest);
         }
 
         sleep(50);
     }
 
+    public void pathWithCamera(AprilTagDetection tagOfInterest){
+        if(tagOfInterest.id == 1){
+            encoderDrive(0.5, 0, 30,2);
+            encoderDrive(0.5, 10,270,3);
+        }
+        else if(tagOfInterest.id == 2){
+            encoderDrive(0.5, 0, 30,2);
+        }
+        else if(tagOfInterest.id == 3){
+            encoderDrive(0.5, 0, 30,2);
+            encoderDrive(0.5, 10,90,3);
+        }
+    }
     public void pathWithoutCamera() {
         robot.claw.setPosition(1); // close claw
         moveConeToHighTerminal();
