@@ -256,8 +256,14 @@ public class AutonDriving extends LinearOpMode {
      */
     public void turnDegrees(double speed, double degrees, double timeoutS){
         // 90 degrees = 666 counts
+        double oldHeading = getRawHeading();
         degrees *= COUNTS_PER_DEGREE;
         encoderDriveSimple(speed, -degrees, degrees,timeoutS);
+        double newHeading = getRawHeading();
+        telemetry.addData("Old Heading", oldHeading);
+        telemetry.addData("New Heading", newHeading);
+        telemetry.update();
+        sleep(1000);
     }
 
     /**
