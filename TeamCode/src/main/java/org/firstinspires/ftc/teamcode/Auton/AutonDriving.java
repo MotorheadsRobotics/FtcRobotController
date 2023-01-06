@@ -60,6 +60,7 @@ public class AutonDriving extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 3.77952756 ;  // 96mm
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     COUNTS_PER_DEGREE       = 7.4;
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -245,6 +246,18 @@ public class AutonDriving extends LinearOpMode {
 
             sleep(250);   // optional pause after each move.
         }
+    }
+
+    /**
+     * turnDegrees turns the robot in place counterclockwise by the number of degrees
+     * @param speed
+     * @param degrees +ve is counterclockwise, -ve is clockwise
+     * @param timeoutS amount of time until program gives up
+     */
+    public void turnDegrees(double speed, double degrees, double timeoutS){
+        // 90 degrees = 666 counts
+        degrees *= COUNTS_PER_DEGREE;
+        encoderDriveSimple(speed, -degrees, degrees,timeoutS);
     }
 
     /**
