@@ -7,8 +7,7 @@ public class MoveToTargetSquare extends AutonRightStackTestUnderLinearAuton{
     @Override
     public void runOpMode() {
         robot.init();
-        robot.initAprilTagDetection();
-        tagOfInterest = getTag();
+        tagOfInterest = getTag(robot.initAprilTagDetection());
         basicPathWithCamera(tagOfInterest);
     }
 }

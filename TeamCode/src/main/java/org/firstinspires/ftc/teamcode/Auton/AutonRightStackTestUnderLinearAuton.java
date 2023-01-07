@@ -1,16 +1,10 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
 
-import static org.firstinspires.ftc.teamcode.Auton.AprilTagImageRecognition.FEET_PER_METER;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 import org.openftc.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
-
-import java.util.ArrayList;
 
 @Autonomous(name="Autonomous Right Stack Linear Auton", group="Robot")
 
@@ -21,12 +15,11 @@ public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
     public void runOpMode() {
         robot.init();
         robot.initGyro();
-        robot.initAprilTagDetection();
         runtime.reset();
         robot.flipToPosition(0.5);
 
         // Wait for the game to start (driver presses PLAY)
-        tagOfInterest = getTag();
+        tagOfInterest = getTag(robot.initAprilTagDetection());
         /*
          * The START command just came in: now work off the latest snapshot acquired
          * during the init loop.
