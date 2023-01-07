@@ -124,7 +124,7 @@ public class Hardware {
         imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
     }
-    public void initAprilTagDetection(){
+    public AprilTagDetectionPipeline initAprilTagDetection(){
         // Borrowed from OpenCV's FTC documentation:
         int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -146,8 +146,9 @@ public class Hardware {
             }
         });
 
-        myOpMode.telemetry.addData(">", "QRCodeReader Initialized");
+        myOpMode.telemetry.addData(">", "AprilTagReader Initialized");
         myOpMode.telemetry.update();
+        return aprilTagDetectionPipeline;
     }
     public void init()    {
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");

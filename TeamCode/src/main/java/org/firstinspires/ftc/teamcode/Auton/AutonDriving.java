@@ -176,11 +176,10 @@ public abstract class AutonDriving extends LinearOpMode {
         }
     }
 
-    public AprilTagDetection getTag() {
+    public AprilTagDetection getTag(AprilTagDetectionPipeline pipeline) {
         AprilTagDetection tagOfInterest = null;
         while (!isStarted() && !isStopRequested())
         {
-            AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(Hardware.tagsize, Hardware.fx, Hardware.fy, Hardware.cx, Hardware.cy);
             ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
             if(currentDetections.size() != 0)
             {
@@ -483,7 +482,7 @@ public abstract class AutonDriving extends LinearOpMode {
     /**
      *  Display the various control parameters while driving
      */
-    private void sendTelemetry() {
+    public void sendTelemetry() {
         telemetry.addData("Motion", "Turning");
 
         telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
