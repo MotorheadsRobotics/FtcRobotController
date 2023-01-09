@@ -55,16 +55,16 @@ public class AutonRightStackTestUnderLinearAuton extends AutonDriving{
 
     public void basicPathWithCamera(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 0, 30,2);
-            encoderDrive(0.5, 10,270,3);
+            encoderDrive(0.5, 270, 30,2);
+            encoderDrive(0.5, 0,24,3);
         }
         else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 0,
+            encoderDrive(0.5, 270,
                     30,2);
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 0, 30,2);
-            encoderDrive(0.5, 10,90,3);
+            encoderDrive(0.5, 270, 30,2);
+            encoderDrive(0.5, 180,24,3);
         }
     }
     public void pathWithoutCamera() {
