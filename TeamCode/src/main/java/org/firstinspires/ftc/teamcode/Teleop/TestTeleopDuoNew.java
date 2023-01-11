@@ -131,11 +131,11 @@ public class TestTeleopDuoNew extends LinearOpMode {
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
             }
-            else if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
+            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
             }
-            else if(!isFlipped && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
+            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
                 robot.claw.setPosition(1);
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
@@ -147,6 +147,11 @@ public class TestTeleopDuoNew extends LinearOpMode {
             if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
                 rotatePosition = 1 - rotatePosition;
                 isRotated = true;
+            }
+
+            if(gamepad2.x){
+                rotatePosition = 1 - rotatePosition;
+                while(gamepad2.x){}
             }
             robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
 
@@ -163,7 +168,12 @@ public class TestTeleopDuoNew extends LinearOpMode {
             }
 
             // dpad setting presets
-            if(gamepad2.dpad_up){
+            if(gamepad2.left_bumper){
+                offsetCounts = 0;
+                currentPreset = 5;
+                while(gamepad2.left_bumper) {}
+            }
+            else if(gamepad2.dpad_up){
                 offsetCounts = 0;
                 if(currentPreset < 5) {
                     currentPreset++;

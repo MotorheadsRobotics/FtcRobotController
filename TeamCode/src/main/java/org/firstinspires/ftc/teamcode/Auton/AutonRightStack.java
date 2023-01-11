@@ -45,7 +45,7 @@ public class AutonRightStack extends AutonDriving{
         }
         else
         {
-            basicPathWithCamera(tagOfInterest);
+            squarePathSignal(tagOfInterest);
             //todo: you need to make an actual path with camera that goes does the cone stuff then comes back.
 
         }
@@ -53,11 +53,11 @@ public class AutonRightStack extends AutonDriving{
         sleep(50);
     }
 
-    public void basicPathWithCamera(AprilTagDetection tagOfInterest){
+    public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
             encoderDrive(0.5, 90, 50,2);
             encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 0,35,3);
+            encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
             encoderDrive(0.5, 90,
@@ -66,16 +66,16 @@ public class AutonRightStack extends AutonDriving{
         else if(tagOfInterest.id == 3){
             encoderDrive(0.5, 90, 50,2);
             encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 180,35,3);
+            encoderDrive(0.5, 180,34,3);
         }
     }
     public void pathWithoutCamera() {
         robot.claw.setPosition(1); // close claw
-        moveConeToHighTerminal();
-        for(int numTimes = 4; numTimes > 3; numTimes--) { // change to numTimes >= 0 to do all five cones
-            moveToStack(numTimes);
-            moveBackToHighTerminal();
-        }
+        moveConeToHighTerminal(false);
+//        for(int numTimes = 4; numTimes > 3; numTimes--) { // change to numTimes >= 0 to do all five cones
+//            moveToStack(numTimes);
+//            moveBackToHighTerminal();
+//        }
     }
 
     public void moveBackToHighTerminal() {
@@ -148,13 +148,13 @@ public class AutonRightStack extends AutonDriving{
         // TODO: Move until cone is on top of high terminal
         encoderDrive(0.5,180,6,1);
     }
-    public void moveConeToHighTerminal(){
+    public void moveConeToHighTerminal(boolean isRightSide){
         robot.setLift(10560,LIFTMOTORPOWER);
         boolean dontFlip = true;
         robot.flipToPosition(1); // flip
         // TODO: initial movement, should get robot to right next to the high terminal
         //  (robot should be positioned with claw facing right, centered in the tile)
-        encoderDriveNoWaiting(0.3,90,82,2);
+        encoderDriveNoWaiting(0.3,90,110,2);
         boolean dontStop = true;
 
         while(dontStop || dontFlip){
@@ -175,11 +175,13 @@ public class AutonRightStack extends AutonDriving{
             }
             if(!dontFlip){
                 robot.rotate.setPosition(0); // rotate
-                robot.claw.setPosition(0); // open
             }
         }
+        if(!isRightSide)
+            turnDegrees(0.5,180,1);
         // TODO: Move until cone is on top of high terminal
-        encoderDrive(0.5,0,6,1);
+        int direction = isRightSide ? 0 : 180;
+        encoderDrive(0.5,direction,6,1);
         robot.claw.setPosition(0); // open claw
         sleep(250);
     }
