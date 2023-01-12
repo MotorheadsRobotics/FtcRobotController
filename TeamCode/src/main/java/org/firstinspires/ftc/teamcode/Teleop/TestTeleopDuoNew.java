@@ -51,7 +51,7 @@ public class TestTeleopDuoNew extends LinearOpMode {
     public static int countsPerInch = 89; // 330
     private static final double LIFTMOTORPOWER = 1.0;
     public ElapsedTime runtime = new ElapsedTime();
-    public static double FLIPDELAY = 1000; // milliseconds
+    public static double FLIPDELAY = 1100; // milliseconds
 
     public static int[] heightsCounts = new int[] {0, 119, 237, 356, 475, 2937, 1335, 2047};
     public static int maxHeight = 3204;
