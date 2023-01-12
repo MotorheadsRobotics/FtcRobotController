@@ -87,6 +87,7 @@ public class AutonRightStack extends AutonDriving{
 
     public void moveConeToHighTerminalSimple(){
         robot.setLift(10560,LIFTMOTORPOWER);
+        while(robot.upMotorL.getCurrentPosition() < 10500){}
         encoderDrive(0.5,90,105,3);
         encoderDrive(0.5,180,6,1);
         robot.claw.setPosition(0); // open claw
