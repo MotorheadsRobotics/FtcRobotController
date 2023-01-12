@@ -45,12 +45,15 @@ public class AutonRightStack extends AutonDriving{
         }
         else
         {
-            squarePathSignal(tagOfInterest);
+            pathWithCamera(tagOfInterest);
             //todo: you need to make an actual path with camera that goes does the cone stuff then comes back.
-
         }
 
         sleep(50);
+    }
+
+    public void pathWithCamera(AprilTagDetection tagOfInterest){
+
     }
 
     public void pathWithoutCamera() {
