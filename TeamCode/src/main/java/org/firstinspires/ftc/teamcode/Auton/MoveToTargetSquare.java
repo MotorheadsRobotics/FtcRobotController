@@ -8,6 +8,8 @@ public class MoveToTargetSquare extends AutonRightStack {
     public void runOpMode() {
         robot.init();
         tagOfInterest = getTag(robot.initAprilTagDetection());
-        squarePathSignal(tagOfInterest);
+        if (tagOfInterest != null) {
+            squarePathSignal(tagOfInterest);
+        }
     }
 }

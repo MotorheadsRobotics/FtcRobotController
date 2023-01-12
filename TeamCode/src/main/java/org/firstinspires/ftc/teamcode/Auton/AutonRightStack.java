@@ -53,22 +53,6 @@ public class AutonRightStack extends AutonDriving{
         sleep(50);
     }
 
-    public void squarePathSignal(AprilTagDetection tagOfInterest){
-        if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 0,34,3);
-        }
-        else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 90,
-                    50,2);
-        }
-        else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 180,34,3);
-        }
-    }
     public void pathWithoutCamera() {
         robot.claw.setPosition(1); // close claw
         moveConeToHighTerminal(false);
