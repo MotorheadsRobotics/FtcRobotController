@@ -329,6 +329,33 @@ public abstract class AutonDriving extends LinearOpMode {
     }
 
     /**
+     * setLift (Autonomous)
+     * @param counts
+     * @param liftPower
+     */
+    public void setLift(int counts, double liftPower, double timeoutS) {
+        robot.upMotorL.setTargetPosition(counts);
+        robot.upMotorR.setTargetPosition(counts);
+
+        robot.upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.upMotorL.setPower(liftPower);
+        robot.upMotorR.setPower(liftPower);
+
+        while (opModeIsActive() &&
+                (runtime.seconds() < timeoutS) &&
+                (robot.upMotorL.isBusy() && robot.upMotorR.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  " %7d", counts);
+            telemetry.addData("Currently at",  " at %7d :%7d",
+                    robot.upMotorL.getCurrentPosition(), robot.upMotorR.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
+    /**
      * turnDegrees turns the robot in place counterclockwise by the number of degrees
      * @param speed
      * @param degrees +ve is counterclockwise, -ve is clockwise
