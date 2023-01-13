@@ -33,26 +33,20 @@ import static org.firstinspires.ftc.teamcode.Auton.AprilTagImageRecognition.FEET
 
 import android.annotation.SuppressLint;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.opencv.core.Mat;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public abstract class AutonDriving extends LinearOpMode {
@@ -82,6 +76,10 @@ public abstract class AutonDriving extends LinearOpMode {
     private double  driveSpeed    = 0;
     private double  turnSpeed     = 0;
     private double  leftSpeed     = 0;
+    private double  fLSpeed       = 0;
+    private double  fRSpeed       = 0;
+    private double  bLSpeed       = 0;
+    private double  bRSpeed       = 0;
     private double  rightSpeed    = 0;
     private int     leftTarget    = 0;
     private int     rightTarget   = 0;
@@ -240,7 +238,7 @@ public abstract class AutonDriving extends LinearOpMode {
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 50,2);
+            encoderDrive(0.5, 90, 45,2);
             encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
@@ -329,6 +327,46 @@ public abstract class AutonDriving extends LinearOpMode {
     }
 
     /**
+     * gyroStrafeDrive(Autonomous)
+     * @param speed maximum speed of travel, the ideal speed the robot should move at
+     * @param distance distance robot needs to move...
+     * @param heading in this ideal heading.
+     * this function should have the robot strafe given the three parameters above, and should
+     * actively maintain its heading in this process.
+     */
+    public void gyroStrafeDrive(double speed, double heading, double distance) {
+        speed = Math.abs(speed); // whether speed is positive or negative, it works.
+        double holdHeading = getRawHeading(); // what heading we need to hold to is defined by what direction robot is facing right now.
+        encoderDriveNoWaiting(speed, heading, distance); // set encoder drive running
+        double fLSpeedCurrent;
+        double fRSpeedCurrent;
+        double bLSpeedCurrent;
+        double bRSpeedCurrent;
+        while (opModeIsActive() && robot.bRMotor.isBusy() && robot.bLMotor.isBusy() && robot.fRMotor.isBusy() && robot.fLMotor.isBusy()){
+            turnSpeed = getSteeringCorrection(holdHeading,P_DRIVE_GAIN); // get steering correction with respect to our hold heading
+            if (distance < 0) {
+                turnSpeed *= -1.0; // apparently if your distance is negative you need opposite turning... I'm not really gonna question this.
+            }
+            fLSpeedCurrent = fLSpeed - turnSpeed; // motor base speeds returned by encoderDrive are modified by turnspeed
+            bLSpeedCurrent = bLSpeed - turnSpeed; // new variables avoid changing static base values
+            fRSpeedCurrent = fRSpeed + turnSpeed;
+            bRSpeedCurrent = bRSpeed + turnSpeed;
+            double max = Math.max(Math.max(fLSpeedCurrent, bLSpeedCurrent), Math.max(fRSpeedCurrent, bRSpeedCurrent));
+            if (max > 1.0)
+            {
+                // if highest speed is above 1, scale them all down
+                fLSpeedCurrent /= max;
+                bLSpeedCurrent /= max;
+                fRSpeedCurrent /= max;
+                bRSpeedCurrent /= max;
+            }
+            robot.fLMotor.setPower(fLSpeedCurrent);
+            robot.bLMotor.setPower(bLSpeedCurrent);
+            robot.fRMotor.setPower(fRSpeedCurrent);
+            robot.bRMotor.setPower(bRSpeedCurrent); // variable power.
+        }
+    }
+    /**
      * setLift (Autonomous)
      * @param counts
      * @param liftPower
@@ -378,9 +416,8 @@ public abstract class AutonDriving extends LinearOpMode {
      * @param speed desired magnitude speed for the robot
      * @param direction forwards = 0, right = 90, backwards = 180, left = 270
      * @param inches you know what this means
-     * @param timeoutS how many seconds until the robot gives up on this task
      */
-    public void encoderDriveNoWaiting(double speed, double direction, double inches, double timeoutS) {
+    public void encoderDriveNoWaiting(double speed, double direction, double inches) {
         int newFrontLeftTarget;
         int newFrontRightTarget;
         int newBackLeftTarget;
@@ -435,6 +472,10 @@ public abstract class AutonDriving extends LinearOpMode {
             runtime.reset();
             double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
             double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+            fLSpeed = forwardSlashSpeed;
+            bRSpeed = fLSpeed;
+            fRSpeed = backwardsSlashSpeed;
+            bLSpeed = fRSpeed;
             robot.fLMotor.setPower(forwardSlashSpeed);
             robot.fRMotor.setPower(backwardsSlashSpeed);
             robot.bLMotor.setPower(backwardsSlashSpeed);
@@ -489,7 +530,8 @@ public abstract class AutonDriving extends LinearOpMode {
         while (headingError <= -180) headingError += 360;
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
-        return 1 - 2 / (Math.exp(headingError / 30) + 1);
+        //return 1 - 2 / (Math.exp(headingError / 30) + 1); this is what you had
+        return Range.clip(headingError * proportionalGain, -1, 1);
     }
 
     /**

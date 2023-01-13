@@ -42,21 +42,39 @@ public class AutonRightStack extends AutonDriving{
         if(tagOfInterest == null)
         {
             pathWithoutCamera();
-            telemetry.addData("Path Complete", "decent");
+            telemetry.addData("Path Complete", "Yay! ");
             telemetry.update();
             sleep(10000);
         }
         else
         {
             pathWithCamera(tagOfInterest);
-            //todo: you need to make an actual path with camera that goes does the cone stuff then comes back.
+            telemetry.addData("Path Complete", "Yay! ");
+            telemetry.update();
+            sleep(10000);
         }
 
         sleep(50);
     }
 
     public void pathWithCamera(AprilTagDetection tagOfInterest){
+        robot.claw.setPosition(1);
+        moveConeToHighTerminalSimple();
+        sleep(3000);
+        encoderDrive(0.25,0,15,5);
+        encoderDrive(0.25,270,55,5);
 
+        if(tagOfInterest.id == 1){
+            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 0,34,3);
+        }
+        else if(tagOfInterest.id == 2){
+
+        }
+        else if(tagOfInterest.id == 3){
+            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 180,34,3);
+        }
     }
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
@@ -86,11 +104,16 @@ public class AutonRightStack extends AutonDriving{
     }
 
     public void moveConeToHighTerminalSimple(){
-        encoderDrive(0.5,90,105,3);
+        gyroStrafeDrive(0.25,90,105);
         setLift(2937,LIFTMOTORPOWER, 3);
-        encoderDrive(0.5,180,6,1);
+        sleep(1000);
+        robot.flipToPosition(0);
+
+        gyroStrafeDrive(0.25,180,15);
         robot.claw.setPosition(0); // open claw
         sleep(250);
+        telemetry.addData("Path Part 1: ", "Done");
+        telemetry.update();
     }
     public void moveBackToHighTerminal() {
         robot.claw.setPosition(1);
@@ -98,7 +121,7 @@ public class AutonRightStack extends AutonDriving{
         boolean dontFlip = true;
         sleep(100);
         // TODO: This the movement back from stack to terminal, should be opposite of moveToStack encoder functions
-        encoderDriveNoWaiting(0.3,180,48,3);
+        encoderDriveNoWaiting(0.3,180,48);
         boolean dontStop = true;
         robot.flipToPosition(1); // flip
 
@@ -138,7 +161,7 @@ public class AutonRightStack extends AutonDriving{
         robot.claw.setPosition(1);
         robot.rotate.setPosition(1);
         // TODO: begin moving toward stack, inches need to get robot to wall stack
-        encoderDriveNoWaiting(0.3,0,48,3);
+        encoderDriveNoWaiting(0.3,0,48);
         //prepare claw to pick up cones
         sleep(250);
         robot.flipToPosition(0); // back to normal flipped state
@@ -168,7 +191,7 @@ public class AutonRightStack extends AutonDriving{
         robot.flipToPosition(1); // flip
         // TODO: initial movement, should get robot to right next to the high terminal
         //  (robot should be positioned with claw facing right, centered in the tile)
-        encoderDriveNoWaiting(0.7,90,125,3);
+        encoderDriveNoWaiting(0.7,90,125);
         boolean dontStop = true;
 
         while(dontStop || dontFlip){
