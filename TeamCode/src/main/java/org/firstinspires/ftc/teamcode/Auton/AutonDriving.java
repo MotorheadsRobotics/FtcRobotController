@@ -364,6 +364,10 @@ public abstract class AutonDriving extends LinearOpMode {
             robot.bLMotor.setPower(bLSpeedCurrent);
             robot.fRMotor.setPower(fRSpeedCurrent);
             robot.bRMotor.setPower(bRSpeedCurrent); // variable power.
+
+            telemetry.addData("Heading Target: ", holdHeading);
+            telemetry.addData("Current Heading: ", turnSpeed);
+            telemetry.update();
         }
     }
     /**
@@ -433,7 +437,7 @@ public abstract class AutonDriving extends LinearOpMode {
                 robot.fRMotor.getCurrentPosition(),
                 robot.bLMotor.getCurrentPosition(),
                 robot.bRMotor.getCurrentPosition());
-        telemetry.update();
+//        telemetry.update();
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
