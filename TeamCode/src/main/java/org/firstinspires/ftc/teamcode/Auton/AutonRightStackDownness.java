@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Autonomous Right Stack", group="Robot")
+@Autonomous(name="++ HELOO ++ Autonomous Right Stack", group="Robot")
 
-public class AutonRightStack extends AutonDriving{
+public class AutonRightStackDownness extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
@@ -61,7 +61,7 @@ public class AutonRightStack extends AutonDriving{
         robot.claw.setPosition(1);
         moveConeToHighTerminalSimple();
         sleep(3000);
-        encoderDrive(0.5, 0, 9,5);
+        encoderDrive(0.5, 0, 13,5);
         encoderDrive(0.5,270,55,5);
 
         if(tagOfInterest.id == 1){
@@ -76,7 +76,7 @@ public class AutonRightStack extends AutonDriving{
             encoderDrive(0.5, 180,34,3);
         }
 
-        setLift(0,0.3,5);
+        setLift(0,0.8,5);
     }
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
@@ -121,14 +121,23 @@ public class AutonRightStack extends AutonDriving{
     }
 
     public void moveConeToHighTerminalSimple(){
-        encoderDrive(0.5, 90, 104.5,5);
+        encoderDrive(0.5, 90, 109.5,5);
+        encoderDrive(0.5, 270, 6,5);
+
         setLift(2937,LIFTMOTORPOWER, 3);
         sleep(1500);
         robot.flipToPosition(0);
 
-        encoderDrive(0.5, 180, 9,5);
+        encoderDrive(0.5, 180, 12.5,5);
+
+        setLift(2550,LIFTMOTORPOWER,1); // added
+
         sleep(500);
         robot.claw.setPosition(0); // open claw
+        sleep(500);
+
+        setLift(3000,LIFTMOTORPOWER,1);
+
         sleep(250);
         telemetry.addData("Path Part 1: ", "Done");
         telemetry.update();

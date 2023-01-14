@@ -173,6 +173,88 @@ public abstract class AutonDriving extends LinearOpMode {
             sleep(250);   // optional pause after each move.
         }
     }
+    public void encoderDriveSketch(double speed, double direction, double inches, double timeoutS, double adjustment) {
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newBackLeftTarget;
+        int newBackRightTarget;
+        robot.stopAndResetDriveEncoders();
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Starting at",  "%7d :%7d :%7d :%7d",
+                robot.fLMotor.getCurrentPosition(),
+                robot.fRMotor.getCurrentPosition(),
+                robot.bLMotor.getCurrentPosition(),
+                robot.bRMotor.getCurrentPosition());
+        telemetry.update();
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            // Determine new target position, and pass to motor controller
+
+            /** Direction: forwards = 0, right = 90, back = 180, left = 270 **/
+            // direction -= 90; direction *= -1; direction *= Math.PI/180;
+            direction = (90 - direction) * Math.PI / 180 - Math.PI / 4;
+            double v1 = inches * Math.cos(direction);
+            double v2 = inches * Math.sin(direction);
+            double v3 = inches * Math.sin(direction);
+            double v4 = inches * Math.cos(direction);
+
+            newFrontLeftTarget = robot.fLMotor.getCurrentPosition() + (int)(v1 * COUNTS_PER_INCH);
+            newFrontRightTarget = robot.fRMotor.getCurrentPosition() + (int)(v2 * COUNTS_PER_INCH);
+            newBackLeftTarget = robot.bLMotor.getCurrentPosition() + (int)(v3 * COUNTS_PER_INCH);
+            newBackRightTarget = robot.bRMotor.getCurrentPosition() + (int)(v4 * COUNTS_PER_INCH);
+
+            robot.fLMotor.setTargetPosition(newFrontLeftTarget);
+            robot.fRMotor.setTargetPosition(newFrontRightTarget);
+            robot.bLMotor.setTargetPosition(newBackLeftTarget);
+            robot.bRMotor.setTargetPosition(newBackRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
+            double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+            robot.fLMotor.setPower(forwardSlashSpeed+adjustment);
+            robot.fRMotor.setPower(backwardsSlashSpeed-adjustment);
+            robot.bLMotor.setPower(backwardsSlashSpeed+adjustment);
+            robot.bRMotor.setPower(forwardSlashSpeed-adjustment);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newFrontLeftTarget,  newFrontRightTarget, newBackLeftTarget, newBackRightTarget);
+                telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
+                        robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.fLMotor.setPower(0);
+            robot.fRMotor.setPower(0);
+            robot.bLMotor.setPower(0);
+            robot.bRMotor.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            sleep(250);   // optional pause after each move.
+        }
+    }
 
     public AprilTagDetection getTag(AprilTagDetectionPipeline pipeline) {
         AprilTagDetection tagOfInterest = null;

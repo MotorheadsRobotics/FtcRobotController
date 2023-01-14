@@ -41,8 +41,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="TestTeleopDuoNew", group="Robot")
-public class TestTeleopDuoNew extends LinearOpMode {
+@TeleOp(name="No Lift Calibration", group="Robot")
+public class TeleopDuoNoCalibration extends LinearOpMode {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -72,7 +72,7 @@ public class TestTeleopDuoNew extends LinearOpMode {
         boolean needsToChange = true;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init();
+        robot.initWithoutCalibration();
 
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
@@ -89,18 +89,18 @@ public class TestTeleopDuoNew extends LinearOpMode {
         while (opModeIsActive()) {
             // Increase speed mapped to left bumper
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_trigger > 0.3) {
                 speedMultiplier /= 2;
-                while(gamepad1.left_bumper) {}
+                while(gamepad1.left_trigger > 0.3) {}
                 if (speedMultiplier < 0.0625) {
                     speedMultiplier = 0.0625;
                 }
             }
 
             // Increase speed mapped to right bumper
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_trigger > 0.3) {
                 speedMultiplier *= 2;
-                while(gamepad1.left_bumper) {}
+                while(gamepad1.right_trigger > 0.3) {}
                 if (speedMultiplier > 1) {
                     speedMultiplier = 1;
                 }
@@ -161,10 +161,10 @@ public class TestTeleopDuoNew extends LinearOpMode {
 
             // Offset Calculations using bumpers
             if(gamepad2.left_trigger > 0.3){
-                offsetCounts -= 55;
+                offsetCounts -= 45;
             }
             else if(gamepad2.right_trigger > 0.3){
-                offsetCounts += 55;
+                offsetCounts += 45;
             }
 
             // dpad setting presets

@@ -217,7 +217,78 @@ public class Hardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
 
+        calibrateLift();
         //lift calibration code
+    }
+    public void initWithoutCalibration(){
+        fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
+        fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");
+        bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
+        bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
+
+        fLMotor.setDirection(DcMotor.Direction.FORWARD);
+        fRMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.FORWARD);
+        bRMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        fLMotor.setPower(0);
+        bLMotor.setPower(0);
+        fRMotor.setPower(0);
+        bRMotor.setPower(0);
+
+        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+        fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        bRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        fLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        /** Non-drive Motors **/
+        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
+        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
+//        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
+//
+        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
+        flipL = myOpMode.hardwareMap.get(Servo.class, "flipL");
+        flipR = myOpMode.hardwareMap.get(Servo.class, "flipR");
+        rotate = myOpMode.hardwareMap.get(Servo.class, "rotate");
+
+        upLSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upLSensor");
+        upRSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upRSensor");
+
+        upMotorL.setDirection(DcMotor.Direction.FORWARD);
+        upMotorR.setDirection(DcMotor.Direction.REVERSE);
+//        horMotor.setDirection(DcMotor.Direction.FORWARD);
+//
+        upMotorL.setPower(0);
+        upMotorR.setPower(0);
+//        horMotor.setPower(0);
+//
+        claw.setPosition(1);
+        flipL.setPosition(1);
+        flipR.setPosition(0);
+        rotate.setPosition(1);
+//
+        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        myOpMode.telemetry.addData(">", "Hardware Initialized");
+        myOpMode.telemetry.update();
+    }
+
+    public void calibrateLift(){
         myOpMode.telemetry.addData(">", "Lift Calibrating");
         upMotorL.setPower(-0.2);
         upMotorR.setPower(-0.2);
@@ -238,7 +309,6 @@ public class Hardware {
         upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x, double speedMultiplier)
     {
         //variables
@@ -264,8 +334,14 @@ public class Hardware {
         upMotorL.setTargetPosition(counts);
         upMotorR.setTargetPosition(counts);
 
-        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        try {
+            upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        catch(Exception e){
+            myOpMode.telemetry.addData("Motors failing", "use manual adjustments I guess");
+            myOpMode.telemetry.update();
+        }
 
         upMotorL.setPower(liftPower);
         upMotorR.setPower(liftPower);
