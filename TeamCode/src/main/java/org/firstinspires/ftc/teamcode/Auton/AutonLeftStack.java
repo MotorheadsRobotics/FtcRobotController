@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Autonomous Right Stack", group="Robot")
+@Autonomous(name="Left Stack Regular", group="Robot")
 
-public class AutonRightStack extends AutonDriving{
+public class AutonLeftStack extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override

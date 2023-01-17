@@ -41,8 +41,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="No Lift Calibration", group="Robot")
-public class TeleopDuoNoCalibration extends LinearOpMode {
+@TeleOp(name="Duo No Calibration", group="Robot")
+public class DuoNoCalibration extends LinearOpMode {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
