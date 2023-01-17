@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Left Stack Regular", group="Robot")
+@Autonomous(name="Right Stack Regular", group="Robot")
 
-public class AutonLeftStack extends AutonDriving{
+public class AutonRightStack extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
@@ -61,17 +61,17 @@ public class AutonLeftStack extends AutonDriving{
         moveConeToHighTerminalSimple();
         sleep(3000);
         encoderDrive(0.5, 0, 13,5);
-        encoderDrive(0.5,270,55,5);
+        encoderDrive(0.5,90,55,5);
 
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
 
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 180,34,3);
         }
 
@@ -80,17 +80,17 @@ public class AutonLeftStack extends AutonDriving{
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 270, 50,2);
+            encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 90,
+            encoderDrive(0.5, 270,
                     50,2);
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
+            encoderDrive(0.5, 270, 50,2);
+            encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 180,34,3);
         }
     }
@@ -106,8 +106,8 @@ public class AutonLeftStack extends AutonDriving{
     }
 
     public void moveConeToHighTerminalSimple(){
-        encoderDrive(0.5, 90, 109.5,5);
-        encoderDrive(0.5, 270, 6,5);
+        encoderDrive(0.5, 270, 109.5,5);
+        encoderDrive(0.5, 90, 6,5);
 
         setLift(2937,LIFTMOTORPOWER, 3);
         sleep(1500);
@@ -163,11 +163,10 @@ public class AutonLeftStack extends AutonDriving{
         // TODO: Move until cone is on top of high terminal
         encoderDrive(0.5,0,6,1);
         robot.claw.setPosition(0);
-
     }
     public void moveToStack(int numTimes) {
         // TODO: move out of the way into center of tile
-        encoderDrive(0.3,270, 12,1);
+        encoderDrive(0.3,90, 12,1);
         //move lift back down
         robot.setLift(numTimes * 440,LIFTMOTORPOWER); // stack cone #5
         robot.claw.setPosition(1);
@@ -203,7 +202,7 @@ public class AutonLeftStack extends AutonDriving{
         robot.flipToPosition(1); // flip
         // TODO: initial movement, should get robot to right next to the high terminal
         //  (robot should be positioned with claw facing right, centered in the tile)
-        encoderDriveNoWaiting(0.7,90,125);
+        encoderDriveNoWaiting(0.7,270,125);
         boolean dontStop = true;
 
         while(dontStop || dontFlip){
@@ -226,7 +225,7 @@ public class AutonLeftStack extends AutonDriving{
                 robot.rotate.setPosition(0); // rotate
             }
         }
-        encoderDrive(0.7,270,20,1);
+        encoderDrive(0.7,90,20,1);
         if(!isRightSide)
             turnDegrees(0.5,180,1);
         // TODO: Move until cone is on top of high terminal
@@ -236,4 +235,3 @@ public class AutonLeftStack extends AutonDriving{
         sleep(250);
     }
 }
-
