@@ -70,6 +70,7 @@ public class TeleopDuoNoCalibration extends LinearOpMode {
         double speedMultiplier = 1;
         int liftPosL = 0, liftPosR = 0;
         boolean needsToChange = true;
+        boolean lock = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.initWithoutCalibration();
@@ -106,8 +107,12 @@ public class TeleopDuoNoCalibration extends LinearOpMode {
                 }
             }
 
+            if(gamepad2.left_stick_button && gamepad2.right_stick_button){
+                lock = !lock;
+            }
             // Drive robot via mecanum
-            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
+            if(!lock)
+                robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
 
             // Speed Multiplier Telemetry
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
