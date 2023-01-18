@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Left Stack New", group="Robot")
+@Autonomous(name="Right Stack New", group="Robot")
 
-public class AutonLeftStackTest extends AutonDriving{
+public class RightStackTest extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
@@ -59,7 +59,7 @@ public class AutonLeftStackTest extends AutonDriving{
 
     public void pathWithCamera(AprilTagDetection tagOfInterest){
         robot.claw.setPosition(1);
-        moveConeToHighTerminal(false);
+        moveConeToHighTerminal(true);
         sleep(3000);
         encoderDrive(0.5, 0, 13,5);
         encoderDrive(0.5,270,55,5);
