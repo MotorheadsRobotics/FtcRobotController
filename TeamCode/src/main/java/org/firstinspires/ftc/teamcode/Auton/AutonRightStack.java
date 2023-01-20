@@ -60,7 +60,7 @@ public class AutonRightStack extends AutonDriving{
         robot.claw.setPosition(1);
         moveConeToHighTerminalSimple();
         sleep(3000);
-        encoderDrive(0.5, 0, 13,5);
+        encoderDrive(0.5, 180, 13,5);
         encoderDrive(0.5,90,55,5);
 
         if(tagOfInterest.id == 1){
@@ -80,16 +80,16 @@ public class AutonRightStack extends AutonDriving{
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 270, 50,2);
+            encoderDrive(0.5, 270, 54,2);
             encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
             encoderDrive(0.5, 270,
-                    50,2);
+                    54,2);
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 270, 50,2);
+            encoderDrive(0.5, 270, 54,2);
             encoderDrive(0.5, 90, 4, 2);
             encoderDrive(0.5, 180,34,3);
         }
@@ -106,14 +106,16 @@ public class AutonRightStack extends AutonDriving{
     }
 
     public void moveConeToHighTerminalSimple(){
-        encoderDrive(0.5, 270, 109.5,5);
-        encoderDrive(0.5, 90, 6,5);
+        encoderDrive(0.5, 90, 109.5,5);
+        encoderDrive(0.5, 270, 2,5);
 
         setLift(2937,LIFTMOTORPOWER, 3);
         sleep(1500);
-        robot.flipToPosition(0);
+        robot.flipToPosition(1);
+        sleep(1000);
+        robot.rotate.setPosition(0);
 
-        encoderDrive(0.5, 180, 12.5,5);
+        encoderDrive(0.5, 0, 12.5,5);
 
         setLift(2550,LIFTMOTORPOWER,1); // added
 

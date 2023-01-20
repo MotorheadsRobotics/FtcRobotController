@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Right Stack New", group="Robot")
+@Autonomous(name="Left Stack New", group="Robot")
 
-public class RightStackTest extends AutonDriving{
+public class LeftStackTest extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
@@ -59,40 +59,51 @@ public class RightStackTest extends AutonDriving{
 
     public void pathWithCamera(AprilTagDetection tagOfInterest){
         robot.claw.setPosition(1);
-        moveConeToHighTerminal(true);
-        sleep(3000);
-        encoderDrive(0.5, 0, 13,5);
-        encoderDrive(0.5,270,55,5);
+        moveConeToHighTerminal(false);
+
+//        for(int numTimes = 4; numTimes > 3; numTimes--) { // change to numTimes >= 0 to do all five cones
+//            moveToStack(numTimes);
+//            moveBackToHighTerminal();
+//        }
+
+        encoderDrive(0.5, 180, 11,5);
+        setLift(5,0.8,5);
+        encoderDriveNoWaiting(1,90,55);
+        robot.claw.setPosition(1);
+        robot.flipToPosition(0);
+        boolean dontStop = true, dontFlip = true;
+
+        while(dontStop || dontFlip){
+            dontStop = robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy();
+            dontFlip = robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() < 2 * robot.minHeightForFlip;
+            if(!dontStop) {
+                // Stop all motion;
+                robot.fLMotor.setPower(0);
+                robot.fRMotor.setPower(0);
+                robot.bLMotor.setPower(0);
+                robot.bRMotor.setPower(0);
+
+                // Turn off RUN_TO_POSITION
+                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            if(!dontFlip){
+                robot.rotate.setPosition(1); // rotate
+            }
+        }
 
         if(tagOfInterest.id == 1){
             encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 0,34,3);
+            encoderDrive(0.5, 180,34,3);
         }
         else if(tagOfInterest.id == 2){
 
         }
         else if(tagOfInterest.id == 3){
             encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 180,34,3);
-        }
-
-        setLift(0,0.8,5);
-    }
-
-    public void squarePathSignal(AprilTagDetection tagOfInterest){
-        if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 0,34,3);
-        }
-        else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 90,
-                    50,2);
-        }
-        else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 90, 50,2);
-            encoderDrive(0.5, 270, 4, 2);
-            encoderDrive(0.5, 180,34,3);
         }
     }
 
@@ -103,6 +114,8 @@ public class RightStackTest extends AutonDriving{
 //            moveToStack(numTimes);
 //            moveBackToHighTerminal();
 //        }
+        encoderDrive(0.5, 180, 11,5);
+        encoderDrive(1,270,55,5);
     }
     public void moveConeToHighTerminal(boolean isRightSide){
         robot.setLift(2937,LIFTMOTORPOWER);
@@ -110,7 +123,7 @@ public class RightStackTest extends AutonDriving{
         robot.flipToPosition(1); // flip
         // TODO: initial movement, should get robot to right next to the high terminal
         //  (robot should be positioned with claw facing right, centered in the tile)
-        encoderDriveNoWaiting(0.5,90,109.5);
+        encoderDriveNoWaiting(0.9,90,109.5);
         boolean dontStop = true;
 
         while(dontStop || dontFlip){
@@ -133,12 +146,13 @@ public class RightStackTest extends AutonDriving{
                 robot.rotate.setPosition(0); // rotate
             }
         }
-        encoderDrive(0.5,270,6,1);
+        encoderDrive(0.5,270,2,1);
         if(!isRightSide)
-            turnDegrees(0.5,180,1);
+            turnDegrees(1,40,1);
         // TODO: Move until cone is on top of high terminal
-        int direction = isRightSide ? 0 : 180;
-        encoderDrive(0.5,direction,13,1);
+        int direction = isRightSide ? 180 : 0;
+        encoderDrive(0.75,direction,12.5,1);
+        downDropUp();
         robot.claw.setPosition(0); // open claw
         sleep(250);
     }
@@ -234,6 +248,12 @@ public class RightStackTest extends AutonDriving{
         // TODO: Move until cone is on top of high terminal
         encoderDrive(0.5,180,6,1);
     }
-
+    private void downDropUp(){
+        setLift(2550,LIFTMOTORPOWER,1);
+        sleep(500);
+        robot.claw.setPosition(0); // open claw
+        sleep(200);
+        setLift(3000,LIFTMOTORPOWER,1);
+    }
 }
 

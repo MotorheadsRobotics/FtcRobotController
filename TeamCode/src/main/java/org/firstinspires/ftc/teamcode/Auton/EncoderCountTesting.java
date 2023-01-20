@@ -85,8 +85,8 @@ public class EncoderCountTesting extends AutonDriving {
         waitForStart();
 
         // turnToHeading(90,0.05,0.2); // rotate left 90 degrees
-        encoderDrive(1,0,1,3);
-
+//        encoderDrive(1,0,1,3);
+        turnDegrees(1,666,10);
         telemetry.addData("Path", "Done");
         telemetry.update();
         sleep(50);

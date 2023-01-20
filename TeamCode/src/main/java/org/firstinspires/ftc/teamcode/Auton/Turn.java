@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="Left Stack Regular", group="Robot")
+@Autonomous(name="Turn", group="Robot")
 
-public class AutonLeftStack extends AutonDriving{
+public class Turn extends AutonDriving{
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
@@ -40,7 +41,7 @@ public class AutonLeftStack extends AutonDriving{
         /* Actually do something useful */
         if(tagOfInterest == null)
         {
-            pathWithoutCamera();
+            turnDegrees(1,40,5);
             telemetry.addData("Path Complete", "Yay! ");
             telemetry.update();
             sleep(10000);
@@ -58,7 +59,7 @@ public class AutonLeftStack extends AutonDriving{
 
     public void pathWithCamera(AprilTagDetection tagOfInterest){
         robot.claw.setPosition(1);
-        moveConeToHighTerminalSimple();
+        moveConeToHighTerminal(false);
         sleep(3000);
         encoderDrive(0.5, 0, 11,5);
         encoderDrive(0.5,270,55,5);
@@ -75,21 +76,21 @@ public class AutonLeftStack extends AutonDriving{
             encoderDrive(0.5, 180,34,3);
         }
 
-        setLift(0,0.8,5);
+        setLift(5,0.8,5);
     }
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 54,2);
+            encoderDrive(0.5, 90, 50,2);
             encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
             encoderDrive(0.5, 90,
-                    54,2);
+                    50,2);
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 90, 54,2);
+            encoderDrive(0.5, 90, 50,2);
             encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 180,34,3);
         }
@@ -97,22 +98,54 @@ public class AutonLeftStack extends AutonDriving{
 
     public void pathWithoutCamera() {
         robot.claw.setPosition(1); // close claw
-//        moveConeToHighTerminal(false);
-        moveConeToHighTerminalSimple();
+        moveConeToHighTerminal(false);
 //        for(int numTimes = 4; numTimes > 3; numTimes--) { // change to numTimes >= 0 to do all five cones
 //            moveToStack(numTimes);
 //            moveBackToHighTerminal();
 //        }
-        sleep(3000);
-        encoderDrive(0.5, 0, 13,5);
-        encoderDrive(0.5,270,55,5);
-
-        setLift(5,0.8,5);
     }
+    public void moveConeToHighTerminal(boolean isRightSide){
+        robot.setLift(2937,LIFTMOTORPOWER);
+        boolean dontFlip = true;
+        robot.flipToPosition(1); // flip
+        // TODO: initial movement, should get robot to right next to the high terminal
+        //  (robot should be positioned with claw facing right, centered in the tile)
+        encoderDriveNoWaiting(0.5,90,109.5);
+        boolean dontStop = true;
 
+        while(dontStop || dontFlip){
+            dontStop = robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy();
+            dontFlip = robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() < 2 * robot.minHeightForFlip;
+            if(!dontStop) {
+                // Stop all motion;
+                robot.fLMotor.setPower(0);
+                robot.fRMotor.setPower(0);
+                robot.bLMotor.setPower(0);
+                robot.bRMotor.setPower(0);
+
+                // Turn off RUN_TO_POSITION
+                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            if(!dontFlip){
+                robot.rotate.setPosition(0); // rotate
+            }
+        }
+        encoderDrive(0.5,270,2,1);
+        if(!isRightSide)
+            turnDegrees(0.5,180,1);
+        // TODO: Move until cone is on top of high terminal
+        int direction = isRightSide ? 0 : 180;
+        encoderDrive(0.5,direction,12.5,1);
+        downDropUp();
+        robot.claw.setPosition(0); // open claw
+        sleep(250);
+    }
     public void moveConeToHighTerminalSimple(){
         encoderDrive(0.5, 90, 109.5,5);
-        encoderDrive(0.5, 270, 2,5);
+        encoderDrive(0.5, 270, 6,5);
 
         setLift(2937,LIFTMOTORPOWER, 3);
         sleep(1500);
@@ -202,43 +235,12 @@ public class AutonLeftStack extends AutonDriving{
         // TODO: Move until cone is on top of high terminal
         encoderDrive(0.5,180,6,1);
     }
-    public void moveConeToHighTerminal(boolean isRightSide){
-        robot.setLift(10560,LIFTMOTORPOWER);
-        boolean dontFlip = true;
-        robot.flipToPosition(1); // flip
-        // TODO: initial movement, should get robot to right next to the high terminal
-        //  (robot should be positioned with claw facing right, centered in the tile)
-        encoderDriveNoWaiting(0.7,90,125);
-        boolean dontStop = true;
-
-        while(dontStop || dontFlip){
-            dontStop = robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy();
-            dontFlip = robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() < 2 * robot.minHeightForFlip;
-            if(!dontStop) {
-                // Stop all motion;
-                robot.fLMotor.setPower(0);
-                robot.fRMotor.setPower(0);
-                robot.bLMotor.setPower(0);
-                robot.bRMotor.setPower(0);
-
-                // Turn off RUN_TO_POSITION
-                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            if(!dontFlip){
-                robot.rotate.setPosition(0); // rotate
-            }
-        }
-        encoderDrive(0.7,270,20,1);
-        if(!isRightSide)
-            turnDegrees(0.5,180,1);
-        // TODO: Move until cone is on top of high terminal
-        int direction = isRightSide ? 0 : 180;
-        encoderDrive(0.5,direction,6,1);
+    private void downDropUp(){
+        setLift(2550,LIFTMOTORPOWER,1);
+        sleep(500);
         robot.claw.setPosition(0); // open claw
-        sleep(250);
+        sleep(200);
+        setLift(3000,LIFTMOTORPOWER,1);
     }
 }
 
