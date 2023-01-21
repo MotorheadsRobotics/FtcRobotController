@@ -250,9 +250,8 @@ public class LeftStackTest extends AutonDriving{
     }
     private void downDropUp(){
         setLift(2550,LIFTMOTORPOWER,1);
-        sleep(500);
         robot.claw.setPosition(0); // open claw
-        sleep(200);
+        sleep(150);
         setLift(3000,LIFTMOTORPOWER,1);
     }
 }

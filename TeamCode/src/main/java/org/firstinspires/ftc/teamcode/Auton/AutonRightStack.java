@@ -59,23 +59,25 @@ public class AutonRightStack extends AutonDriving{
     public void pathWithCamera(AprilTagDetection tagOfInterest){
         robot.claw.setPosition(1);
         moveConeToHighTerminalSimple();
-        sleep(3000);
-        encoderDrive(0.5, 180, 13,5);
-        encoderDrive(0.5,90,55,5);
+        encoderDrive(0.5, 180, 9,2);
+        robot.flipToPosition(0);
+        sleep(700);
+        robot.setLift(5,0.8);
+        sleep(400);
+        robot.rotate.setPosition(1);
+        encoderDrive(0.5,270,55,3);
 
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 90, 4, 2);
+            encoderDrive(0.5, 90, 4, 1);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
 
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 90, 4, 2);
+            encoderDrive(0.5, 90, 4, 1);
             encoderDrive(0.5, 180,34,3);
         }
-
-        setLift(0,0.8,5);
     }
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
@@ -107,21 +109,20 @@ public class AutonRightStack extends AutonDriving{
 
     public void moveConeToHighTerminalSimple(){
         encoderDrive(0.5, 90, 109.5,5);
-        encoderDrive(0.5, 270, 2,5);
+        encoderDrive(0.5, 270, 6,5);
 
         setLift(2937,LIFTMOTORPOWER, 3);
-        sleep(1500);
         robot.flipToPosition(1);
         sleep(1000);
         robot.rotate.setPosition(0);
 
-        encoderDrive(0.5, 0, 12.5,5);
+        encoderDrive(0.5, 0, 12.5,2);
 
         setLift(2550,LIFTMOTORPOWER,1); // added
 
         sleep(500);
         robot.claw.setPosition(0); // open claw
-        sleep(500);
+        sleep(150);
 
         setLift(3000,LIFTMOTORPOWER,1);
 
