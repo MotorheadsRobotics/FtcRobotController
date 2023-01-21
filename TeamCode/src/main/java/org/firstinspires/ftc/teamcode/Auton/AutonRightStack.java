@@ -80,17 +80,17 @@ public class AutonRightStack extends AutonDriving{
 
     public void squarePathSignal(AprilTagDetection tagOfInterest){
         if(tagOfInterest.id == 1){
-            encoderDrive(0.5, 270, 54,2);
-            encoderDrive(0.5, 90, 4, 2);
+            encoderDrive(0.5, 90, 54,2);
+            encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 0,34,3);
         }
         else if(tagOfInterest.id == 2){
-            encoderDrive(0.5, 270,
+            encoderDrive(0.5, 90,
                     54,2);
         }
         else if(tagOfInterest.id == 3){
-            encoderDrive(0.5, 270, 54,2);
-            encoderDrive(0.5, 90, 4, 2);
+            encoderDrive(0.5, 90, 54,2);
+            encoderDrive(0.5, 270, 4, 2);
             encoderDrive(0.5, 180,34,3);
         }
     }
