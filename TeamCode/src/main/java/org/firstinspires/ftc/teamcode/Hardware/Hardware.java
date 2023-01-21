@@ -312,6 +312,7 @@ public class Hardware {
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x, double speedMultiplier)
     {
         //variables
+        setDriveModeEncoder();
         double r = Math.hypot(left_stick_x, left_stick_y);
         double robotAngle = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
         double rightX = right_stick_x;
