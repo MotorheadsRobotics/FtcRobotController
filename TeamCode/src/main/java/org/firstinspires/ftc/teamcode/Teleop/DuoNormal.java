@@ -123,28 +123,30 @@ public class DuoNormal extends LinearOpMode {
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
-                isRotated = false;
-                isFlipped = false;
+                isRotated = false; // queues rotation, waiting for flip to finish
+                isFlipped = false; // queues flipping, waiting for lift to be high enough
             }
 
-            if(isFlipped){
+            if(isFlipped){ // no flip action has been requested, hold position
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
             }
             else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
+                // flip action has been requested, but lift is not high enough yet, so hold previous position
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
             }
             else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
+                // flip action has been requested and is clear to go
                 robot.claw.setPosition(1);
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
-                time = runtime.milliseconds();
+                time = runtime.milliseconds(); // record current time and queue rotation
                 isFlipped = true;
             }
 
             //auto rotate after flip
-            if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
+            if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) { // wait FLIPDELAY = 1 second before rotating
                 rotatePosition = 1 - rotatePosition;
                 isRotated = true;
             }

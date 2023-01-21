@@ -371,11 +371,12 @@ public abstract class AutonDriving extends LinearOpMode {
         }
     }
     /**
-     * setLift (Autonomous)
+     * setLift (Autonomous), waits for
      * @param counts
      * @param liftPower
      */
     public void setLift(int counts, double liftPower, double timeoutS) {
+        runtime.reset();
         robot.upMotorL.setTargetPosition(counts);
         robot.upMotorR.setTargetPosition(counts);
 
