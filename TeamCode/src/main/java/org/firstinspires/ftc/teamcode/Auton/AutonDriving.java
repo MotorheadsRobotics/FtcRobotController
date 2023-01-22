@@ -42,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 import org.opencv.core.Mat;
 import org.openftc.apriltag.AprilTagDetection;
@@ -586,8 +587,7 @@ public abstract class AutonDriving extends LinearOpMode {
      * read the raw (un-offset Gyro heading) directly from the IMU
      */
     public double getRawHeading() {
-        Orientation angles   = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
+        return robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
     @SuppressLint("DefaultLocale")

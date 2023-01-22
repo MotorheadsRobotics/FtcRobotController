@@ -30,8 +30,10 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -74,7 +76,6 @@ public class Hardware {
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
-    public BNO055IMU imu;
     public static int[] heightsCounts = new int[] {0, 440, 880, 1320, 1760, 10890};
     public static int maxHeight = 11880;
     public static int[] stackHeights = new int[] {4950, 7590};
@@ -85,6 +86,7 @@ public class Hardware {
     public TouchSensor upRSensor;
 
     public OpenCvWebcam webcam;
+    public IMU imu;
     public QRCodeDetector det;
     public boolean found;
     public String message;
@@ -119,9 +121,11 @@ public class Hardware {
     }
 
     public void initGyro(){
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-        imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP)
+        );
+        imu = myOpMode.hardwareMap.get(IMU.class, "imu");
         imu.initialize(parameters);
     }
     public AprilTagDetectionPipeline initAprilTagDetection(){
