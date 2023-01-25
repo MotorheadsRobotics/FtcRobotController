@@ -5,12 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
 @Autonomous
-public class GyroTest extends RobotAutoDriveByGyro_Linear{
+public class GyroTest extends AutonDriving{
 
     @Override
     public void runOpMode() {
-            turnToHeading(0.3, 90);
-            telemetry.addLine(String.format("%d", getRawHeading()));
-            telemetry.update();
+        robot.init();
+        robot.initGyro();
+        gyroStrafeDrive(0.5, 90, 30);
+        telemetry.addData("Heading", robot.getRawHeading());
+        telemetry.update();
     }
 }
