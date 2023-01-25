@@ -337,7 +337,7 @@ public abstract class AutonDriving extends LinearOpMode {
      */
     public void gyroStrafeDrive(double speed, double heading, double distance) {
         speed = Math.abs(speed); // whether speed is positive or negative, it works.
-        double holdHeading = getRawHeading(); // what heading we need to hold to is defined by what direction robot is facing right now.
+        double holdHeading = robot.getRawHeading(); // what heading we need to hold to is defined by what direction robot is facing right now.
         encoderDriveNoWaiting(speed, heading, distance); // set encoder drive running
         double fLSpeedCurrent;
         double fRSpeedCurrent;
@@ -407,10 +407,10 @@ public abstract class AutonDriving extends LinearOpMode {
      */
     public void turnDegrees(double speed, double degrees, double timeoutS){
         // 90 degrees = 666 counts
-        double oldHeading = getRawHeading();
+        double oldHeading = robot.getRawHeading();
         degrees *= COUNTS_PER_DEGREE;
         encoderDriveSimple(speed, -degrees, degrees,timeoutS);
-        double newHeading = getRawHeading();
+        double newHeading = robot.getRawHeading();
         telemetry.addData("Old Heading", oldHeading);
         telemetry.addData("New Heading", newHeading);
         telemetry.update();
@@ -526,7 +526,7 @@ public abstract class AutonDriving extends LinearOpMode {
         targetHeading = desiredHeading;  // Save for telemetry
 
         // Get the robot heading by applying an offset to the IMU heading
-        robotHeading = getRawHeading() - headingOffset;
+        robotHeading = robot.getRawHeading() - headingOffset;
 
         // Determine the heading current error
         headingError = targetHeading - robotHeading;
@@ -583,13 +583,7 @@ public abstract class AutonDriving extends LinearOpMode {
         telemetry.update();
     }
 
-    /**
-     * read the raw (un-offset Gyro heading) directly from the IMU
-     */
-    public double getRawHeading() {
-        robot.initGyro();
-        return robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-    }
+
 
     @SuppressLint("DefaultLocale")
     public void tagToTelemetry(AprilTagDetection detection)

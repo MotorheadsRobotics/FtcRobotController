@@ -214,7 +214,7 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.addData("Preset Mode", true);
             telemetry.addData("Current Preset", heightNames[currentPreset]);
 
-//            telemetry.addLine(String.format("%d", getRawHeading()));
+            telemetry.addLine(String.format("%d", robot.getRawHeading()));
             robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();

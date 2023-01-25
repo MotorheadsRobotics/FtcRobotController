@@ -128,14 +128,14 @@ public class EncoderCountTesting extends AutonDriving {
         stopAllMotion();
     }
     public void turnToHeading2(double heading, double minPower, double maxPower){
-        robotHeading = getRawHeading() - headingOffset;
+        robotHeading = robot.getRawHeading() - headingOffset;
         headingError = heading - robotHeading;
         while (headingError > 180) headingError -= 360;
         while (headingError <= -180) headingError += 360;
         final double originalError = headingError;
 
         while(opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)){
-            robotHeading = getRawHeading() - headingOffset;
+            robotHeading = robot.getRawHeading() - headingOffset;
             headingError = heading - robotHeading;
             while (headingError > 180) headingError -= 360;
             while (headingError <= -180) headingError += 360;
@@ -150,7 +150,7 @@ public class EncoderCountTesting extends AutonDriving {
                 turnRobot(adjustedPower);
             }
             telemetry.addData("heading", robotHeading);
-            telemetry.addData("raw heading", getRawHeading());
+            telemetry.addData("raw heading", robot.getRawHeading());
             telemetry.addData("error", headingError);
             telemetry.addData("adjuster", adjuster);
             telemetry.addData("adjustedPower", adjustedPower);
@@ -164,7 +164,7 @@ public class EncoderCountTesting extends AutonDriving {
      * @param heading +ve turns the robot counterclockwise, -ve rotates clockwise
      */
     public void turnToHeading3(double heading){
-        double currentHeading = getRawHeading();
+        double currentHeading = robot.getRawHeading();
         double errorABS = Math.abs(heading - currentHeading);
         while(errorABS > 1){
             double error = (heading - currentHeading) / 1800;
@@ -183,7 +183,7 @@ public class EncoderCountTesting extends AutonDriving {
             telemetry.addData("currentHeading", currentHeading);
             telemetry.addData("abs error", errorABS);
             telemetry.update();
-            currentHeading = getRawHeading();
+            currentHeading = robot.getRawHeading();
             errorABS = Math.abs(heading - currentHeading);
         }
         stopAllMotion();
