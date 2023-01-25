@@ -11,7 +11,8 @@ public class GyroTest extends AutonDriving{
     public void runOpMode() {
         robot.init();
         robot.initGyro();
-        gyroStrafeDrive(0.5, 90, 30);
+        waitForStart();
+        gyroStrafeDrive(0.5, 0, 30);
         telemetry.addData("Heading", robot.getRawHeading());
         telemetry.update();
     }
