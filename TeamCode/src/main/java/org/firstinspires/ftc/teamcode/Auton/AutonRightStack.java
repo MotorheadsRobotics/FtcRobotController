@@ -108,27 +108,27 @@ public class AutonRightStack extends AutonDriving{
     }
 
     public void moveConeToHighTerminalSimple(){
-        encoderDrive(0.5, 90, 109.5,5);
-        encoderDrive(0.5, 270, 6,5);
-
-        setLift(2937,LIFTMOTORPOWER, 3);
-        robot.flipToPosition(1);
-        sleep(1000);
-        robot.rotate.setPosition(0);
-
-        encoderDrive(0.5, 0, 12.5,2);
-
-        setLift(2550,LIFTMOTORPOWER,1); // added
-
-        sleep(500);
-        robot.claw.setPosition(0); // open claw
-        sleep(150);
-
-        setLift(3000,LIFTMOTORPOWER,1);
-
-        sleep(250);
-        telemetry.addData("Path Part 1: ", "Done");
-        telemetry.update();
+        gyroStrafeDrive(0.5, 90, 109.5);
+//        encoderDrive(0.5, 270, 6,5);
+//
+//        setLift(2937,LIFTMOTORPOWER, 3);
+//        robot.flipToPosition(1);
+//        sleep(1000);
+//        robot.rotate.setPosition(0);
+//
+//        encoderDrive(0.5, 0, 12.5,2);
+//
+//        setLift(2550,LIFTMOTORPOWER,1); // added
+//
+//        sleep(500);
+//        robot.claw.setPosition(0); // open claw
+//        sleep(150);
+//
+//        setLift(3000,LIFTMOTORPOWER,1);
+//
+//        sleep(250);
+//        telemetry.addData("Path Part 1: ", "Done");
+//        telemetry.update();
     }
     public void moveBackToHighTerminal() {
         robot.claw.setPosition(1);

@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
 /**
@@ -42,7 +43,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  */
 
 @TeleOp(name="Duo No Calibration", group="Robot")
-public class DuoNoCalibration extends LinearOpMode {
+public class DuoNoCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -74,6 +75,7 @@ public class DuoNoCalibration extends LinearOpMode {
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.initWithoutCalibration();
+        robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
@@ -211,6 +213,8 @@ public class DuoNoCalibration extends LinearOpMode {
             // Move Lifts
             telemetry.addData("Preset Mode", true);
             telemetry.addData("Current Preset", heightNames[currentPreset]);
+
+//            telemetry.addLine(String.format("%d", getRawHeading()));
             robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();

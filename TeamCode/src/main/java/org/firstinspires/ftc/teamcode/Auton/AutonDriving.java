@@ -587,6 +587,7 @@ public abstract class AutonDriving extends LinearOpMode {
      * read the raw (un-offset Gyro heading) directly from the IMU
      */
     public double getRawHeading() {
+        robot.initGyro();
         return robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
