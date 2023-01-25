@@ -13,7 +13,7 @@ public class Turn extends AutonDriving{
     public AprilTagDetection tagOfInterest = null;
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.init(false);
         robot.initGyro();
         runtime.reset();
         robot.flipToPosition(0.5);

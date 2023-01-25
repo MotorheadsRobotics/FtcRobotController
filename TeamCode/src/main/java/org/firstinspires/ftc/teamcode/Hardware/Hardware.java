@@ -77,11 +77,7 @@ public class Hardware {
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2200;
-    public static int[] heightsCounts = new int[] {0, 440, 880, 1320, 1760, 10890};
-    public static int maxHeight = 11880;
-    public static int[] stackHeights = new int[] {4950, 7590};
-    public static String[] stackHeightNames = new String[] {"Low Terminal", "Medium Terminal"};
-    public static String[] heightNames = new String[] {"Floor", "Cone 2", "Cone 3", "Cone 4", "Cone 5", "High Terminal"};
+    private static double LIFTMOTORPOWER = 1.0;
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;
@@ -165,7 +161,7 @@ public class Hardware {
         myOpMode.telemetry.update();
         return aprilTagDetectionPipeline;
     }
-    public void init()    {
+    public void init(boolean calibrate)    {
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
         fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
@@ -232,75 +228,9 @@ public class Hardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
 
-        calibrateLift();
+        if(calibrate)
+            calibrateLift();
         //lift calibration code
-    }
-    public void initWithoutCalibration(){
-        fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
-        fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");
-        bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
-        bRMotor = myOpMode.hardwareMap.get(DcMotor.class, "bRMotor");
-
-        fLMotor.setDirection(DcMotor.Direction.FORWARD);
-        fRMotor.setDirection(DcMotor.Direction.REVERSE);
-        bLMotor.setDirection(DcMotor.Direction.FORWARD);
-        bRMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        fLMotor.setPower(0);
-        bLMotor.setPower(0);
-        fRMotor.setPower(0);
-        bRMotor.setPower(0);
-
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        fLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        fRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        bLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        bRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        fLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        /** Non-drive Motors **/
-        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
-        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
-//        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
-//
-        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
-        flipL = myOpMode.hardwareMap.get(Servo.class, "flipL");
-        flipR = myOpMode.hardwareMap.get(Servo.class, "flipR");
-        rotate = myOpMode.hardwareMap.get(Servo.class, "rotate");
-
-        upLSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upLSensor");
-        upRSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upRSensor");
-
-        upMotorL.setDirection(DcMotor.Direction.FORWARD);
-        upMotorR.setDirection(DcMotor.Direction.REVERSE);
-//        horMotor.setDirection(DcMotor.Direction.FORWARD);
-//
-        upMotorL.setPower(0);
-        upMotorR.setPower(0);
-//        horMotor.setPower(0);
-//
-        claw.setPosition(1);
-        flipL.setPosition(1);
-        flipR.setPosition(0);
-        rotate.setPosition(1);
-//
-        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        myOpMode.telemetry.addData(">", "Hardware Initialized");
-        myOpMode.telemetry.update();
     }
 
     public void calibrateLift(){
@@ -371,6 +301,27 @@ public class Hardware {
 
         upMotorL.setPower(liftPower);
         upMotorR.setPower(liftPower);
+    }
+    public void setLift(int counts, double liftPower, double timeoutS) {
+        runtime.reset();
+
+        upMotorL.setTargetPosition(counts);
+        upMotorR.setTargetPosition(counts);
+
+        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        upMotorL.setPower(liftPower);
+        upMotorR.setPower(liftPower);
+
+        while(upMotorL.isBusy() && upMotorR.isBusy() && runtime.seconds() < timeoutS){
+            // stay in the code
+        }
+    }
+    public void downDropUp(int height){
+        setLift(height - 400,LIFTMOTORPOWER,1);
+        claw.setPosition(0); // open
+        setLift(height + 55,LIFTMOTORPOWER,1);
     }
 
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.

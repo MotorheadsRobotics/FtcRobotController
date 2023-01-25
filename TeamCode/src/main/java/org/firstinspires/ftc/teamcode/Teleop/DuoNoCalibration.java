@@ -54,9 +54,9 @@ public class DuoNoCalibration extends AutonDriving {
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1100; // milliseconds
 
-    public static int[] heightsCounts = new int[] {0, 119, 237, 356, 475, 2937, 1335, 2047};
+    public static int[] heightsCounts = new int[] {0, 2937, 1335, 2047};
     public static int maxHeight = 3204;
-    public static String[] heightNames = new String[] {"Floor", "Cone 2", "Cone 3", "Cone 4", "Cone 5", "High Terminal", "Low Terminal", "Medium Terminal"};
+    public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
 
     @Override
     public void runOpMode() {
@@ -74,7 +74,7 @@ public class DuoNoCalibration extends AutonDriving {
         boolean lock = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.initWithoutCalibration();
+        robot.init(false);
         robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
@@ -113,14 +113,19 @@ public class DuoNoCalibration extends AutonDriving {
                 lock = !lock;
             }
             // Drive robot via mecanum
-            if(!lock)
-                robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
+            robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
+            if(lock)
+                robot.setDrivePower(0,0,0,0);
 
             // Speed Multiplier Telemetry
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
             // Claw mapped to a
-            if (gamepad2.a) {
+            if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
+                robot.downDropUp(heightsCounts[currentPreset]);
+                while(gamepad2.a) {}
+            }
+            else if(gamepad2.a) {
                 clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {}
             }
@@ -175,38 +180,24 @@ public class DuoNoCalibration extends AutonDriving {
             }
 
             // dpad setting presets
-            if(gamepad2.left_bumper){
+            if(gamepad2.dpad_up){
                 offsetCounts = 0;
-                currentPreset = 5;
-                while(gamepad2.left_bumper) {}
-            }
-            else if(gamepad2.dpad_up){
-                offsetCounts = 0;
-                if(currentPreset < 5) {
-                    currentPreset++;
-                }
+                currentPreset = 1;
                 while(gamepad2.dpad_up) {}
             }
             else if(gamepad2.dpad_down){
                 offsetCounts = 0;
-                if(currentPreset > 0 && currentPreset < 6){
-                    currentPreset--;
-                }
-                else if(currentPreset == 6 || currentPreset == 7){
-                    currentPreset = 4;
-                }
+                currentPreset = 0;
                 while(gamepad2.dpad_down) {}
             }
             else if(gamepad2.dpad_right){ // right is medium
                 offsetCounts = 0;
-                currentPreset = 7;
+                currentPreset = 3;
                 while(gamepad2.dpad_right) {}
             }
             else if(gamepad2.dpad_left){ // left is low
                 offsetCounts = 0;
-                if(currentPreset > 0){
-                    currentPreset = 6;
-                }
+                currentPreset = 2;
                 while(gamepad2.dpad_left) {}
             }
 

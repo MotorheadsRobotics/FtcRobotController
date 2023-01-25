@@ -29,11 +29,11 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 
 /**
@@ -42,7 +42,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  */
 
 @TeleOp(name="Duo Normal", group="Robot")
-public class DuoNormal extends LinearOpMode {
+public class DuoNormal extends AutonDriving {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -53,9 +53,9 @@ public class DuoNormal extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1100; // milliseconds
 
-    public static int[] heightsCounts = new int[] {0, 119, 237, 356, 475, 2937, 1335, 2047};
+    public static int[] heightsCounts = new int[] {0, 2937, 1335, 2047};
     public static int maxHeight = 3204;
-    public static String[] heightNames = new String[] {"Floor", "Cone 2", "Cone 3", "Cone 4", "Cone 5", "High Terminal", "Low Terminal", "Medium Terminal"};
+    public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
 
     @Override
     public void runOpMode() {
@@ -70,14 +70,16 @@ public class DuoNormal extends LinearOpMode {
         double speedMultiplier = 1;
         int liftPosL = 0, liftPosR = 0;
         boolean needsToChange = true;
+        boolean lock = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init();
+        robot.init(true);
+        robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        
+
         // boolean slow = false;
         robot.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -89,31 +91,40 @@ public class DuoNormal extends LinearOpMode {
         while (opModeIsActive()) {
             // Increase speed mapped to left bumper
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_trigger > 0.3) {
                 speedMultiplier /= 2;
-                while(gamepad1.left_bumper) {}
+                while(gamepad1.left_trigger > 0.3) {}
                 if (speedMultiplier < 0.0625) {
                     speedMultiplier = 0.0625;
                 }
             }
 
             // Increase speed mapped to right bumper
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_trigger > 0.3) {
                 speedMultiplier *= 2;
-                while(gamepad1.left_bumper) {}
+                while(gamepad1.right_trigger > 0.3) {}
                 if (speedMultiplier > 1) {
                     speedMultiplier = 1;
                 }
             }
 
+            if(gamepad2.left_stick_button && gamepad2.right_stick_button){
+                lock = !lock;
+            }
             // Drive robot via mecanum
             robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
+            if(lock)
+                robot.setDrivePower(0,0,0,0);
 
             // Speed Multiplier Telemetry
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
             // Claw mapped to a
-            if (gamepad2.a) {
+            if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
+                robot.downDropUp(heightsCounts[currentPreset]);
+                while(gamepad2.a) {}
+            }
+            else if(gamepad2.a) {
                 clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {}
             }
@@ -123,30 +134,28 @@ public class DuoNormal extends LinearOpMode {
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
-                isRotated = false; // queues rotation, waiting for flip to finish
-                isFlipped = false; // queues flipping, waiting for lift to be high enough
+                isRotated = false;
+                isFlipped = false;
             }
 
-            if(isFlipped){ // no flip action has been requested, hold position
+            if(isFlipped){
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
             }
             else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
-                // flip action has been requested, but lift is not high enough yet, so hold previous position
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
             }
             else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
-                // flip action has been requested and is clear to go
                 robot.claw.setPosition(1);
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
-                time = runtime.milliseconds(); // record current time and queue rotation
+                time = runtime.milliseconds();
                 isFlipped = true;
             }
 
             //auto rotate after flip
-            if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) { // wait FLIPDELAY = 1 second before rotating
+            if(!isRotated && Math.abs(runtime.milliseconds() - time - FLIPDELAY) <= 175) {
                 rotatePosition = 1 - rotatePosition;
                 isRotated = true;
             }
@@ -163,51 +172,39 @@ public class DuoNormal extends LinearOpMode {
 
             // Offset Calculations using bumpers
             if(gamepad2.left_trigger > 0.3){
-                offsetCounts -= 55;
+                offsetCounts -= 45;
             }
             else if(gamepad2.right_trigger > 0.3){
-                offsetCounts += 55;
+                offsetCounts += 45;
             }
 
             // dpad setting presets
-            if(gamepad2.left_bumper){
+            if(gamepad2.dpad_up){
                 offsetCounts = 0;
-                currentPreset = 5;
-                while(gamepad2.left_bumper) {}
-            }
-            else if(gamepad2.dpad_up){
-                offsetCounts = 0;
-                if(currentPreset < 5) {
-                    currentPreset++;
-                }
+                currentPreset = 1;
                 while(gamepad2.dpad_up) {}
             }
             else if(gamepad2.dpad_down){
                 offsetCounts = 0;
-                if(currentPreset > 0 && currentPreset < 6){
-                    currentPreset--;
-                }
-                else if(currentPreset == 6 || currentPreset == 7){
-                    currentPreset = 4;
-                }
+                currentPreset = 0;
                 while(gamepad2.dpad_down) {}
             }
             else if(gamepad2.dpad_right){ // right is medium
                 offsetCounts = 0;
-                currentPreset = 7;
+                currentPreset = 3;
                 while(gamepad2.dpad_right) {}
             }
             else if(gamepad2.dpad_left){ // left is low
                 offsetCounts = 0;
-                if(currentPreset > 0){
-                    currentPreset = 6;
-                }
+                currentPreset = 2;
                 while(gamepad2.dpad_left) {}
             }
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
             telemetry.addData("Current Preset", heightNames[currentPreset]);
+
+            telemetry.addData("Heading", robot.getRawHeading());
             robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
