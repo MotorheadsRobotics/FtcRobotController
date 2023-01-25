@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class MoveToTargetSquare extends AutonRightStack {
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.init(false);
         tagOfInterest = getTag(robot.initAprilTagDetection());
         robot.flipToPosition(0.5);
         if (tagOfInterest != null) {

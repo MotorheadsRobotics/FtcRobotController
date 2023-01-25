@@ -79,7 +79,7 @@ public class EncoderCountTesting extends AutonDriving {
 
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.init(true);
         robot.initGyro();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

@@ -9,7 +9,7 @@ public class GyroTest extends AutonDriving{
 
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.init(false);
         robot.initGyro();
         waitForStart();
         gyroStrafeDrive(0.5, 0, 30);
