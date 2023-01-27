@@ -122,7 +122,7 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(heightsCounts[currentPreset]);
+                robot.downDropUp(heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -135,7 +135,6 @@ public class DuoNoCalibration extends AutonDriving {
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
-                isRotated = false;
                 isFlipped = false;
             }
 
@@ -153,6 +152,7 @@ public class DuoNoCalibration extends AutonDriving {
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
                 time = runtime.milliseconds();
                 isFlipped = true;
+                isRotated = false;
             }
 
             //auto rotate after flip
@@ -166,6 +166,20 @@ public class DuoNoCalibration extends AutonDriving {
                 while(gamepad2.x){}
             }
             robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
+
+            // flip is asked for
+            // set new flip position
+            // queue a flip to occur
+            // hold until above height
+            // flip
+            // start delay, queue rotate
+            // hold until delay
+            // rotate
+
+
+
+
+
 
             // Lifts
             telemetry.addData("leftLiftPos", robot.upMotorL.getCurrentPosition());
