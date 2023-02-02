@@ -93,20 +93,13 @@ public class DuoNoCalibration extends AutonDriving {
             // Increase speed mapped to left bumper
 
             if (gamepad1.left_trigger > 0.3) {
-                speedMultiplier /= 2;
-                while(gamepad1.left_trigger > 0.3) {}
+                speedMultiplier = 0.3;
                 if (speedMultiplier < 0.0625) {
                     speedMultiplier = 0.0625;
                 }
             }
-
-            // Increase speed mapped to right bumper
-            if (gamepad1.right_trigger > 0.3) {
-                speedMultiplier *= 2;
-                while(gamepad1.right_trigger > 0.3) {}
-                if (speedMultiplier > 1) {
-                    speedMultiplier = 1;
-                }
+            else{
+                speedMultiplier = 1;
             }
 
             if(gamepad2.left_stick_button && gamepad2.right_stick_button){
