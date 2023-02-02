@@ -90,22 +90,14 @@ public class DuoNoCalibration extends AutonDriving {
         int offsetCounts = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            // Increase speed mapped to left bumper
-
-            if (gamepad1.left_trigger > 0.3) {
-                speedMultiplier = 0.3;
-                if (speedMultiplier < 0.0625) {
-                    speedMultiplier = 0.0625;
-                }
-            }
-            else{
-                speedMultiplier = 1;
-            }
-
+            // lock moving controls
             if(gamepad2.left_stick_button && gamepad2.right_stick_button){
                 lock = !lock;
             }
+
             // Drive robot via mecanum
+            // Slow mode mapped to left bumper
+            speedMultiplier = gamepad1.left_trigger > 0.3 ? 0.3 : 1;
             robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
             if(lock)
                 robot.setDrivePower(0,0,0,0);
