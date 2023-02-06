@@ -48,13 +48,13 @@ public class DuoNormal extends AutonDriving {
 //  goal heights (in) {0, 2, 15, 23, 32}
 
     public int currentPreset = 0;
-    public static int countsPerInch = 89; // 330
+    public static int countsPerInch = 83; // 330
     private static final double LIFTMOTORPOWER = 0.8;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1100; // milliseconds
 
-    public static int[] heightsCounts = new int[] {0, 2937, 1335, 2047};
-    public static int maxHeight = 3204;
+    public static int[] heightsCounts = new int[] {0, 2741, 1246, 1910};
+    public static int maxHeight = 2990;
     public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
 
     @Override
@@ -157,10 +157,10 @@ public class DuoNormal extends AutonDriving {
 
             // Offset Calculations using bumpers
             if(gamepad2.left_trigger > 0.3){
-                offsetCounts -= 45;
+                offsetCounts -= 42;
             }
             else if(gamepad2.right_trigger > 0.3){
-                offsetCounts += 45;
+                offsetCounts += 42;
             }
 
             // dpad setting presets

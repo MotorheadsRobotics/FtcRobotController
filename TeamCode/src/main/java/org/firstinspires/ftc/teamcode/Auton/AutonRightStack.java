@@ -111,20 +111,20 @@ public class AutonRightStack extends AutonDriving{
         gyroStrafeDrive(0.5, 90, 109.5);
 //        encoderDrive(0.5, 270, 6,5);
 //
-//        setLift(2937,LIFTMOTORPOWER, 3);
+//        setLift(2741,LIFTMOTORPOWER, 3);
 //        robot.flipToPosition(1);
 //        sleep(1000);
 //        robot.rotate.setPosition(0);
 //
 //        encoderDrive(0.5, 0, 12.5,2);
 //
-//        setLift(2550,LIFTMOTORPOWER,1); // added
+//        setLift(2380,LIFTMOTORPOWER,1); // added
 //
 //        sleep(500);
 //        robot.claw.setPosition(0); // open claw
 //        sleep(150);
 //
-//        setLift(3000,LIFTMOTORPOWER,1);
+//        setLift(2800,LIFTMOTORPOWER,1);
 //
 //        sleep(250);
 //        telemetry.addData("Path Part 1: ", "Done");
@@ -132,7 +132,7 @@ public class AutonRightStack extends AutonDriving{
     }
     public void moveBackToHighTerminal() {
         robot.claw.setPosition(1);
-        robot.setLift(10560,LIFTMOTORPOWER);
+        robot.setLift(2740,LIFTMOTORPOWER);
         boolean dontFlip = true;
         sleep(100);
         // TODO: This the movement back from stack to terminal, should be opposite of moveToStack encoder functions
@@ -200,7 +200,7 @@ public class AutonRightStack extends AutonDriving{
         encoderDrive(0.5,180,6,1);
     }
     public void moveConeToHighTerminal(boolean isRightSide){
-        robot.setLift(10560,LIFTMOTORPOWER);
+        robot.setLift(9855,LIFTMOTORPOWER);
         boolean dontFlip = true;
         robot.flipToPosition(1); // flip
         // TODO: initial movement, should get robot to right next to the high terminal

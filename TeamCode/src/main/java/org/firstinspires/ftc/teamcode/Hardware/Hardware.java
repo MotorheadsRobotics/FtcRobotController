@@ -76,7 +76,7 @@ public class Hardware {
     public static double FLIP_CONSTANT = 0.9;
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
-    public static int minHeightForFlip = 2200;
+    public static int minHeightForFlip = 2053;
     private static double LIFTMOTORPOWER = 1.0;
 
     public TouchSensor upLSensor;
@@ -320,9 +320,9 @@ public class Hardware {
     }
     public void downDropUp(int height){
         setDrivePower(0,0,0,0);
-        setLift(height - 400,LIFTMOTORPOWER,1);
+        setLift(height - 373,LIFTMOTORPOWER,1);
         claw.setPosition(0); // open
-        setLift(height + 55,LIFTMOTORPOWER,1);
+        setLift(height + 51,LIFTMOTORPOWER,1);
     }
 
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.
