@@ -171,12 +171,12 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.addData("rightLiftPos", robot.upMotorR.getCurrentPosition());
 
             // Offset Calculations using bumpers
-            if(gamepad2.left_trigger > 0.3){
+            if(gamepad2.left_trigger > 0.3)
                 offsetCounts -= 42;
-            }
-            else if(gamepad2.right_trigger > 0.3){
+
+            else if(gamepad2.right_trigger > 0.3)
                 offsetCounts += 42;
-            }
+
 
             // dpad setting presets
             if(gamepad2.dpad_up){
@@ -210,7 +210,7 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
-            sleep(75);
+            sleep(25);
         }
     }
 }
