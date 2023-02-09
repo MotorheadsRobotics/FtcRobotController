@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -49,6 +51,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
@@ -78,6 +82,16 @@ public class Hardware {
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2053;
     private static double LIFTMOTORPOWER = 1.0;
+
+    public static int groundInch = 0;
+    public static int lowInch = 15;
+    public static int midInch = 23;
+    public static int highInch = 35;
+    public static int maxHeightInch = 40;
+    public static int liftCountsPerInch = 83;
+    public static int[] heightsCounts = new int[] {groundInch * liftCountsPerInch, highInch * liftCountsPerInch, lowInch * liftCountsPerInch, midInch * liftCountsPerInch};
+    public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
+    public static int maxHeightCounts = maxHeightInch * liftCountsPerInch;
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;
@@ -322,6 +336,12 @@ public class Hardware {
         setDrivePower(0,0,0,0);
         setLift(height - 373,LIFTMOTORPOWER,1);
         claw.setPosition(0); // open
+        try {
+            sleep(150);
+        } catch (InterruptedException e) {
+            myOpMode.telemetry.addData("Try-Catch Failed", "Oops");
+            myOpMode.telemetry.update();
+        }
         setLift(height + 51,LIFTMOTORPOWER,1);
     }
 

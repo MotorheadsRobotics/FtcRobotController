@@ -49,14 +49,9 @@ public class DuoNoCalibration extends AutonDriving {
 //  goal heights (in) {0, 2, 15, 23, 32}
 
     public int currentPreset = 0;
-    public static int countsPerInch = 83; // 330
     private static final double LIFTMOTORPOWER = 0.8;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1100; // milliseconds
-
-    public static int[] heightsCounts = new int[] {0, 2741, 1246, 1910};
-    public static int maxHeight = 2990;
-    public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
 
     @Override
     public void runOpMode() {
@@ -107,7 +102,7 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(heightsCounts[currentPreset] + offsetCounts);
+                robot.downDropUp(Hardware.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -202,10 +197,10 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", heightNames[currentPreset]);
+            telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
             telemetry.addData("Heading", robot.getRawHeading());
-            robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            robot.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 

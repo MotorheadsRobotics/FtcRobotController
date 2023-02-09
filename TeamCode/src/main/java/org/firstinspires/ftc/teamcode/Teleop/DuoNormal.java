@@ -48,14 +48,9 @@ public class DuoNormal extends AutonDriving {
 //  goal heights (in) {0, 2, 15, 23, 32}
 
     public int currentPreset = 0;
-    public static int countsPerInch = 83; // 330
     private static final double LIFTMOTORPOWER = 0.8;
     public ElapsedTime runtime = new ElapsedTime();
     public static double FLIPDELAY = 1100; // milliseconds
-
-    public static int[] heightsCounts = new int[] {0, 2741, 1246, 1910};
-    public static int maxHeight = 2990;
-    public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
 
     @Override
     public void runOpMode() {
@@ -63,13 +58,9 @@ public class DuoNormal extends AutonDriving {
         double flipPosition = 0;
         double time = 0;
         double rotatePosition = 1;
-        double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean isFlipped = true;
-        boolean wasPressed = false;
         double speedMultiplier = 1;
-        int liftPosL = 0, liftPosR = 0;
-        boolean needsToChange = true;
         boolean lock = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
@@ -96,7 +87,7 @@ public class DuoNormal extends AutonDriving {
 
             // Drive robot via mecanum
             // Slow mode mapped to left bumper
-            speedMultiplier = gamepad1.left_trigger > 0.3 ? 0.3 : 1;
+            speedMultiplier = gamepad1.right_trigger > 0.3 ? 0.5 : 1;
             robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
             if(lock)
                 robot.setDrivePower(0,0,0,0);
@@ -106,7 +97,7 @@ public class DuoNormal extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(heightsCounts[currentPreset]);
+                robot.downDropUp(Hardware.heightsCounts[currentPreset]);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -187,15 +178,15 @@ public class DuoNormal extends AutonDriving {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", heightNames[currentPreset]);
+            telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
             telemetry.addData("Heading", robot.getRawHeading());
-            robot.setLift(heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            robot.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
-            sleep(75);
+            sleep(25);
         }
     }
 }
