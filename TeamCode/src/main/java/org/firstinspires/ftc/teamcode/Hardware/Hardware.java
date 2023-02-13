@@ -84,8 +84,8 @@ public class Hardware {
     private static double LIFTMOTORPOWER = 1.0;
 
     public static int groundInch = 0;
-    public static int lowInch = 15;
-    public static int midInch = 23;
+    public static int lowInch = 16;
+    public static int midInch = 25;
     public static int highInch = 35;
     public static int maxHeightInch = 40;
     public static int liftCountsPerInch = 83;

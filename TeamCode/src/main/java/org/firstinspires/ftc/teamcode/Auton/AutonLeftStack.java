@@ -119,7 +119,7 @@ public class AutonLeftStack extends AutonDriving{
 
         encoderDrive(0.5, 180, 12.5,2);
 
-        setLift((Hardware.highInch - 3)* Hardware.liftCountsPerInch,LIFTMOTORPOWER,1); // added
+        setLift((Hardware.highInch - 3) * Hardware.liftCountsPerInch,LIFTMOTORPOWER,1); // added
 
         robot.claw.setPosition(0); // open claw
         sleep(150);

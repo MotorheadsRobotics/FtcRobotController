@@ -68,6 +68,11 @@ public class DuoNoCalibration extends AutonDriving {
         boolean needsToChange = true;
         boolean lock = false;
 
+        boolean dpadUpPressed = false;
+        boolean dpadDownPressed = false;
+        boolean dpadLeftPressed = false;
+        boolean dpadRightPressed = false;
+
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init(false);
         robot.initGyro();
@@ -174,26 +179,26 @@ public class DuoNoCalibration extends AutonDriving {
 
 
             // dpad setting presets
-            if(gamepad2.dpad_up){
+            if(!gamepad2.dpad_up && dpadUpPressed){
                 offsetCounts = 0;
                 currentPreset = 1;
-                while(gamepad2.dpad_up) {}
             }
-            else if(gamepad2.dpad_down){
+            else if(!gamepad2.dpad_down && dpadDownPressed){
                 offsetCounts = 0;
                 currentPreset = 0;
-                while(gamepad2.dpad_down) {}
             }
-            else if(gamepad2.dpad_right){ // right is medium
+            else if(!gamepad2.dpad_right && dpadRightPressed){ // right is medium
                 offsetCounts = 0;
                 currentPreset = 3;
-                while(gamepad2.dpad_right) {}
             }
-            else if(gamepad2.dpad_left){ // left is low
+            else if(!gamepad2.dpad_left && dpadLeftPressed){ // left is low
                 offsetCounts = 0;
                 currentPreset = 2;
-                while(gamepad2.dpad_left) {}
             }
+            dpadUpPressed = gamepad2.dpad_up;
+            dpadDownPressed = gamepad2.dpad_down;
+            dpadLeftPressed = gamepad2.dpad_left;
+            dpadRightPressed = gamepad2.dpad_right;
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
