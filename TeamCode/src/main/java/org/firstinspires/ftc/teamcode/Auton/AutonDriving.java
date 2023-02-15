@@ -38,13 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
-import org.opencv.core.Mat;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
@@ -475,17 +469,19 @@ public abstract class AutonDriving extends LinearOpMode {
             robot.bRMotor.setTargetPosition(newBackRightTarget);
 
             // reset the timeout time and start motion.
-            runtime.reset();
-            double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
-            double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
-            fLSpeed = forwardSlashSpeed;
-            bRSpeed = fLSpeed;
-            fRSpeed = backwardsSlashSpeed;
-            bLSpeed = fRSpeed;
-            robot.fLMotor.setPower(forwardSlashSpeed);
-            robot.fRMotor.setPower(backwardsSlashSpeed);
-            robot.bLMotor.setPower(backwardsSlashSpeed);
-            robot.bRMotor.setPower(forwardSlashSpeed);
+            if (speed != 0) {
+                runtime.reset();
+                double forwardSlashSpeed = Math.abs(speed) * Math.cos(direction);
+                double backwardsSlashSpeed = Math.abs(speed) * Math.sin(direction);
+                fLSpeed = forwardSlashSpeed;
+                bRSpeed = fLSpeed;
+                fRSpeed = backwardsSlashSpeed;
+                bLSpeed = fRSpeed;
+                robot.fLMotor.setPower(forwardSlashSpeed);
+                robot.fRMotor.setPower(backwardsSlashSpeed);
+                robot.bLMotor.setPower(backwardsSlashSpeed);
+                robot.bRMotor.setPower(forwardSlashSpeed);
+            }
         }
     }
 
