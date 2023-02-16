@@ -2,15 +2,13 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.ColorScheme;
 import com.noahbres.meepmeep.core.entity.BotEntity;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.SampleMecanumDrive;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.awt.Color;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
@@ -22,8 +20,12 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-36, -65.75, Math.toRadians(0)))
-                                .lineTo(new Vector2d(-36,-24))
-                                .splineToLinearHeading(new Pose2d(-26.8,-2.8,Math.toRadians(225)),Math.toRadians(225))
+                                .setReversed(true)
+                                .strafeLeft(41.75)
+//                                .splineToConstantHeading(new Vector2d(-36,-36), Math.toRadians(90))
+//                                .splineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(225)), Math.toRadians(45))
+                                .splineToSplineHeading(new Pose2d(-26.8,-2.8,Math.toRadians(225)), Math.toRadians(45))
+//                                .splineTo(new Vector2d(-26.8,-2x.8),Math.toRadians(-45))
                                 .build()
                 );
 
