@@ -23,10 +23,7 @@ public abstract class AdiRunner extends AutonDriving{
         double targetHead = relHead + robot1.getRawHeading();
         double currentSpeed = speed;
         while (robot1.getRawHeading() != targetHead) {
-            currentSpeed = ((targetHead - robot1.getRawHeading()) / relHead + 0.4) * speed;
-            if (targetHead < 0) {
-                currentSpeed = -currentSpeed;
-            }
+            currentSpeed = getSteeringCorrection(relHead, P_TURN_GAIN);
             robot1.fLMotor.setPower(currentSpeed);
             robot1.bLMotor.setPower(currentSpeed);
             robot1.fRMotor.setPower(-currentSpeed);

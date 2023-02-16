@@ -63,7 +63,7 @@ public abstract class AutonDriving extends LinearOpMode {
     static final double     HEADING_THRESHOLD      = 1;
 
     private double          robotHeading  = 0;
-    private double          headingOffset = 0;
+    private double          headingOffset = -1;
     private double          headingError  = 0;
 
 
