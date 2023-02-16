@@ -24,8 +24,9 @@ public class LeftStackRunner extends AutonomousDriving {
                 .addDisplacementMarker(() -> {
                     // Lift to high preset
                 })
-                .strafeLeft(47.75)
-                .splineToSplineHeading(new Pose2d(-26.8,-2.8,Math.toRadians(225)), Math.toRadians(45))
+                .strafeLeft(50.75)
+                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
+                .lineTo(new Vector2d(-26.8,-2.8))
                 .addDisplacementMarker(() -> {
                     // downDropUp
                 })
