@@ -7,7 +7,7 @@ public class CurveTest extends AdiRunner{
     @Override
     public void runOpMode() {
         robot.init(false);
-        runtime.reset();
+        waitForStart();
         simpleCurveDrive(0.5, 50, 1.2);
     }
 }

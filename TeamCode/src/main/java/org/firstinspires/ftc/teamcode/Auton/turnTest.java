@@ -9,6 +9,7 @@ public class turnTest extends AdiRunner{
         robot.init(false);
         robot.initGyro();
         runtime.reset();
+        waitForStart();
         turnToIMU(90, 0.5, robot);
     }
 }
