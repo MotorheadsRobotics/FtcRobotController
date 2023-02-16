@@ -283,10 +283,12 @@ public abstract class AutonDriving extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            robot.fRMotor.setPower(Math.abs(speed));
-            robot.fLMotor.setPower(Math.abs(speed));
-            robot.bRMotor.setPower(Math.abs(speed));
-            robot.bLMotor.setPower(Math.abs(speed));
+            if (speed != 0) {
+                robot.fRMotor.setPower(Math.abs(speed));
+                robot.fLMotor.setPower(Math.abs(speed));
+                robot.bRMotor.setPower(Math.abs(speed));
+                robot.bLMotor.setPower(Math.abs(speed));
+            }
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -294,15 +296,17 @@ public abstract class AutonDriving extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (robot.fRMotor.isBusy() && robot.bLMotor.isBusy() && robot.fLMotor.isBusy() && robot.bRMotor.isBusy())) {
+            if (timeoutS != 0) {
+                while (opModeIsActive() &&
+                        (runtime.seconds() < timeoutS) &&
+                        (robot.fRMotor.isBusy() && robot.bLMotor.isBusy() && robot.fLMotor.isBusy() && robot.bRMotor.isBusy())) {
 
-                // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d :%7d :%7d", newfLeftTarget,  newfRightTarget, newbLeftTarget, newbRightTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d :%7d :%7d",
-                        robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
-                telemetry.update();
+                    // Display it for the driver.
+                    telemetry.addData("Running to", " %7d :%7d :%7d :%7d", newfLeftTarget, newfRightTarget, newbLeftTarget, newbRightTarget);
+                    telemetry.addData("Currently at", " at %7d :%7d :%7d :%7d",
+                            robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
+                    telemetry.update();
+                }
             }
 
             // Stop all motion;
