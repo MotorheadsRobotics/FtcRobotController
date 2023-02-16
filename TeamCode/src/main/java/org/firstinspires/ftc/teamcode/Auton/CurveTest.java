@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+@Autonomous
 public class CurveTest extends AdiRunner{
     @Override
     public void runOpMode() {
