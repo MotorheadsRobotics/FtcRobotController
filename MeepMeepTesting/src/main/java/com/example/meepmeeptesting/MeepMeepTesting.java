@@ -21,13 +21,39 @@ public class MeepMeepTesting {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-36, -65.75, Math.toRadians(0)))
                                 .setReversed(true)
+                                .addDisplacementMarker(() -> {
+                                    // Set Lift High Goal
+                                })
+                                .strafeLeft(47.75)
+                                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
+                                .lineTo(new Vector2d(-26.8,-2.8))
+                                .addDisplacementMarker(() -> {
+                                    // Down
+                                })
+                                .addDisplacementMarker(() -> {
+                                    // Drop
+                                })
+                                .addDisplacementMarker(() -> {
+                                    // Up
+                                })
 
-//                                .strafeLeft(53.75)
-//                                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
-//                                .lineTo(new Vector2d(-26.8,-2.8))
-                                .strafeLeft(53.75)
-                                .setTangent(Math.toRadians(90))
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(-45))
+                                .setReversed(false)
+                                .addTemporalMarker(() -> {
+                                    // Lift to cone 5
+                                })
+                                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                                .addDisplacementMarker(() -> {
+                                    // Claw Close
+                                })
+
+                                .setReversed(true)
+                                .addTemporalMarker(() -> {
+                                    // Lift to high goal
+                                })
+                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .addDisplacementMarker(() -> {
+                                    // Claw Close
+                                })
                                 .build()
                 );
 
