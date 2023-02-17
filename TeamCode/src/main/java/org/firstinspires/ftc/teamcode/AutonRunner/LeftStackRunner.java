@@ -44,6 +44,9 @@ public class LeftStackRunner extends AutonomousDriving {
                 .addDisplacementMarker(() -> {
                     lift.setLift(cone5, Lift.LIFTMOTORPOWER);
                 })
+                .addTemporalMarker(0, 0.2, () -> {
+                    lift.closeClaw();
+                })
                 .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
                 .build();
 
@@ -56,7 +59,7 @@ public class LeftStackRunner extends AutonomousDriving {
         if(isStopRequested()) return;
 
         robot.followTrajectory(track1);
-        lift.downDropUp(Lift.highInch * Lift.liftCountsPerInch);
+        lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
 //        robot.followTrajectory(track2);

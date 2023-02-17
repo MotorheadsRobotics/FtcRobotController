@@ -191,17 +191,10 @@ public class Lift {
         }
     }
 
-    public void downDropUp(int height){
+    public void downDrop(int height){
 //        setDrivePower(0,0,0,0);
         setLift(height - 373,LIFTMOTORPOWER,1);
         claw.setPosition(0); // open
-        try {
-            sleep(150);
-        } catch (InterruptedException e) {
-            myOpMode.telemetry.addData("Try-Catch Failed", "Oops");
-            myOpMode.telemetry.update();
-        }
-        setLift(height + 51,LIFTMOTORPOWER,1);
     }
 
     public void stopAndResetLiftEncoders() {
