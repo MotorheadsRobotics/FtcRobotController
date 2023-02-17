@@ -36,6 +36,7 @@ public class MeepMeepTesting {
                                 .addDisplacementMarker(() -> {
                                     // Up
                                 })
+                                .waitSeconds(1.2) // this represents the time downDropUp would take
 
                                 .setReversed(false)
                                 .addTemporalMarker(() -> {
@@ -45,6 +46,7 @@ public class MeepMeepTesting {
                                 .addDisplacementMarker(() -> {
                                     // Claw Close
                                 })
+                                .waitSeconds(0.3)
 
                                 .setReversed(true)
                                 .addTemporalMarker(() -> {
@@ -52,8 +54,98 @@ public class MeepMeepTesting {
                                 })
                                 .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
+                                    // DownDropUp
+                                })
+                                .waitSeconds(1.2)
+
+                                .setReversed(false)
+                                .addTemporalMarker(() -> {
+                                    // Lift to cone 4
+                                })
+                                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                                .addDisplacementMarker(() -> {
                                     // Claw Close
                                 })
+                                .waitSeconds(0.3)
+
+                                .setReversed(true)
+                                .addTemporalMarker(() -> {
+                                    // Lift to high goal
+                                })
+                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .addDisplacementMarker(() -> {
+                                    // DownDropUp
+                                })
+                                .waitSeconds(1.2)
+
+                                .setReversed(false)
+                                .addTemporalMarker(() -> {
+                                    // Lift to cone 3
+                                })
+                                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                                .addDisplacementMarker(() -> {
+                                    // Claw Close
+                                })
+                                .waitSeconds(0.3)
+
+                                .setReversed(true)
+                                .addTemporalMarker(() -> {
+                                    // Lift to high goal
+                                })
+                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .addDisplacementMarker(() -> {
+                                    // DownDropUp
+                                })
+                                .waitSeconds(1.2)
+
+                                .setReversed(false)
+                                .addTemporalMarker(() -> {
+                                    // Lift to cone 2
+                                })
+                                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                                .addDisplacementMarker(() -> {
+                                    // Claw Close
+                                })
+                                .waitSeconds(0.3)
+
+                                .setReversed(true)
+                                .addTemporalMarker(() -> {
+                                    // Lift to high goal
+                                })
+                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .addDisplacementMarker(() -> {
+                                    // DownDropUp
+                                })
+                                .waitSeconds(1.2)
+
+                                .setReversed(false)
+                                .addTemporalMarker(() -> {
+                                    // Lift to cone 1 (bottom)
+                                })
+                                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                                .addDisplacementMarker(() -> {
+                                    // Claw Close
+                                })
+                                .waitSeconds(0.3)
+
+                                .setReversed(true)
+                                .addTemporalMarker(() -> {
+                                    // Lift to high goal
+                                })
+                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .addDisplacementMarker(() -> {
+                                    // DownDropUp
+                                })
+                                .waitSeconds(1.2)
+
+                                .setReversed(false)
+                                // if middle
+//                                .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
+                                // if left or right
+                                .splineTo(new Vector2d(-36,-28),Math.toRadians(270))
+//                                .splineToConstantHeading(new Vector2d(-12,-36),Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-60,-36),Math.toRadians(180))
+
                                 .build()
                 );
 
