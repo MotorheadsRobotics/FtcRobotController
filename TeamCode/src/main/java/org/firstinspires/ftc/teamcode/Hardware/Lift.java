@@ -73,7 +73,7 @@ public class Lift {
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2053;
-    private static double LIFTMOTORPOWER = 1.0;
+    public static double LIFTMOTORPOWER = 1.0;
 
     public static int groundInch = 0;
     public static int lowInch = 16;
@@ -218,4 +218,10 @@ public class Lift {
         flipR.setPosition(pos);
     }
 
+    public void closeClaw(){
+        claw.setPosition(0);
+    }
+    public void openClaw(){
+        claw.setPosition(1);
+    }
 }

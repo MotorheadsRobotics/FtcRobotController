@@ -4,32 +4,45 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.Roadrunner.trajectorysequence.TrajectorySequence;
+import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="RoadRunner Test 1", group="Robot")
 public class LeftStackRunner extends AutonomousDriving {
+    AprilTagDetection tagOfInterest = null;
+
+    int cone1 = 0, cone2 = 42, cone3 = 83, cone4 = 125, cone5 = 166;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
+        lift.init(true);
+        lift.flipToPosition(0.5);
+        tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
         robot.setPoseEstimate(new Pose2d(-36,-65.75,0));
 
         Trajectory track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
                 .addDisplacementMarker(() -> {
-                    // TODO:Lift to high preset
+                    lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
                 })
                 .strafeLeft(47.75)
 //                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
 //                .lineTo(new Vector2d(-26.8,-2.8))
+                .build();
+
+        Trajectory track2 = robot.trajectoryBuilder(track1.end())
                 .addDisplacementMarker(() -> {
-                    // TODO:downDropUp
+                    lift.setLift(cone5, Lift.LIFTMOTORPOWER);
                 })
+                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
+                .build();
+
+        Trajectory track3 = robot.trajectoryBuilder(track2.end(), true)
+                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
                 .build();
 
         waitForStart();
@@ -37,6 +50,18 @@ public class LeftStackRunner extends AutonomousDriving {
         if(isStopRequested()) return;
 
         robot.followTrajectory(track1);
+        lift.downDropUp(Lift.highInch * Lift.liftCountsPerInch);
+        telemetry.addData("Path: ", "Track 1 Completed");
+        telemetry.update();
+//        robot.followTrajectory(track2);
+//        lift.closeClaw();
+//        sleep(100);
+//        lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
+//        sleep(200);
+//        telemetry.addData("Path: ", "Track 2 Completed");
+//        telemetry.update();
+//        robot.followTrajectory(track3);
+        // ...
 
         sleep(10000);
     }
