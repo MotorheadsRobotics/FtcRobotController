@@ -22,13 +22,13 @@ public class LeftStackRunner extends AutonomousDriving {
 
         Trajectory track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
                 .addDisplacementMarker(() -> {
-                    // Lift to high preset
+                    // TODO:Lift to high preset
                 })
                 .strafeLeft(47.75)
 //                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
 //                .lineTo(new Vector2d(-26.8,-2.8))
                 .addDisplacementMarker(() -> {
-                    // downDropUp
+                    // TODO:downDropUp
                 })
                 .build();
 
