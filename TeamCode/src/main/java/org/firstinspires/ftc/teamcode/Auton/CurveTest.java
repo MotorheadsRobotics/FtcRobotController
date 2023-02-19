@@ -9,5 +9,6 @@ public class CurveTest extends AdiRunner{
         robot.init(false);
         waitForStart();
         simpleCurveDrive(0.5, 50, 1.2);
+
     }
 }
