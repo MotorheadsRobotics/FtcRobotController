@@ -33,7 +33,7 @@ public class LeftStackRunner extends AutonomousDriving {
                     lift.flipToPosition(1);
                 })
                 .addTemporalMarker(0, 1.5, () -> {
-                    lift.rotate.setPosition(0);
+                    lift.setRotate(1);
                 })
                 .strafeLeft(47.75)
 //                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))

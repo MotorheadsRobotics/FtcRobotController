@@ -7,7 +7,7 @@ public abstract class AdiRunner extends AutonDriving{
 
     }
     public void simpleCurveDrive (double speed, double inches, double multipliertoLeft){
-        encoderDriveSimple(0, inches, inches * multipliertoLeft, 5);
+        encoderDriveSimple(0, inches, inches * multipliertoLeft, 0);
         double Rspeed = speed * multipliertoLeft;
         if (Rspeed > 1) {
             speed /= Rspeed;

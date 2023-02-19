@@ -70,7 +70,7 @@ public class Lift {
     private Servo flipL;
     private Servo flipR;
     public static double FLIP_CONSTANT = 0.9;
-    public Servo rotate;
+    private Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 2053;
     public static double LIFTMOTORPOWER = 1.0;
@@ -217,4 +217,10 @@ public class Lift {
     public void openClaw(){
         claw.setPosition(1);
     }
+
+    /**
+     * Sets rotato
+     * @param pos 0 represents initialization state, 1 represents the post-flip state
+     */
+    public void setRotate(double pos) {rotate.setPosition(1 - pos);}
 }
