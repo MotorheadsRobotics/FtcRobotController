@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import static java.lang.Thread.sleep;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,16 +42,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
-import org.opencv.objdetect.QRCodeDetector;
 import org.opencv.core.Mat;
+import org.opencv.objdetect.QRCodeDetector;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
@@ -374,6 +371,9 @@ public class Hardware {
     public void stopAndResetLiftEncoders() {
         upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public boolean isBusy() {
+        return fLMotor.isBusy() || fRMotor.isBusy() || bRMotor.isBusy() || bLMotor.isBusy();
     }
 
     /**

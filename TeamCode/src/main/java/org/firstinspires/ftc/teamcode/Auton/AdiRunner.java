@@ -6,17 +6,17 @@ public abstract class AdiRunner extends AutonDriving{
     public void curveDrive (double fastSpeed, double endRelHead , double smallLength) {
 
     }
-    public void simpleCurveDrive (double speed, double inches, double multipliertoLeft){
+    public void simpleCurveDrive (double speed, double inches, double multipliertoLeft, double timeoutS){
         encoderDriveSimple(0, inches, inches * multipliertoLeft, 0);
         double Rspeed = speed * multipliertoLeft;
         if (Rspeed > 1) {
             speed /= Rspeed;
             Rspeed = 1;
         }
-        robot.fRMotor.setPower(Rspeed);
-        robot.bRMotor.setPower(Rspeed);
-        robot.bLMotor.setPower(speed);
-        robot.fLMotor.setPower(speed);
+        double startTime = runtime.seconds();
+        robot.setDrivePower(speed, Rspeed, speed, Rspeed);
+        while (robot.isBusy() && timeoutS < runtime.seconds() - startTime){}
+        robot.setDrivePower(0, 0, 0, 0);
     }
     public void turnToIMU (double relHead, double speed, Hardware robot1) {
         double targetHead = relHead + robot1.getRawHeading();

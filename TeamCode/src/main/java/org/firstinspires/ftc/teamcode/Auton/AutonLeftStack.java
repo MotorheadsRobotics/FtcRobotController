@@ -13,9 +13,10 @@ public class AutonLeftStack extends AutonDriving{
     public AprilTagDetection tagOfInterest = null;
     @Override
     public void runOpMode() {
-        robot.init(false);
+        robot.init(true);
         robot.initGyro();
         runtime.reset();
+        sleep(250);
         robot.flipToPosition(0.5);
 
         // Wait for the game to start (driver presses PLAY)
@@ -114,7 +115,7 @@ public class AutonLeftStack extends AutonDriving{
         encoderDrive(0.5, 90, 109.5,5);
         encoderDrive(0.5, 270, 6,5);
 
-        setLift(Hardware.highInch * Hardware.liftCountsPerInch,LIFTMOTORPOWER, 3);
+        setLift(Hardware.maxHeightInch * Hardware.liftCountsPerInch,LIFTMOTORPOWER, 3);
         robot.flipToPosition(0);
 
         encoderDrive(0.5, 180, 12.5,2);

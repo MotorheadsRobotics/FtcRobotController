@@ -307,19 +307,18 @@ public abstract class AutonDriving extends LinearOpMode {
                             robot.fLMotor.getCurrentPosition(), robot.fRMotor.getCurrentPosition(), robot.bLMotor.getCurrentPosition(), robot.bRMotor.getCurrentPosition());
                     telemetry.update();
                 }
+                // Stop all motion;
+                robot.fLMotor.setPower(0);
+                robot.fRMotor.setPower(0);
+                robot.bLMotor.setPower(0);
+                robot.bRMotor.setPower(0);
+
+                // Turn off RUN_TO_POSITION
+                robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
-
-            // Stop all motion;
-            robot.fLMotor.setPower(0);
-            robot.fRMotor.setPower(0);
-            robot.bLMotor.setPower(0);
-            robot.bRMotor.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.fLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.bRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.bLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(250);   // optional pause after each move.
         }
