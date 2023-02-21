@@ -29,27 +29,11 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
-import static java.lang.Thread.sleep;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
-import org.opencv.core.Mat;
-import org.opencv.objdetect.QRCodeDetector;
-import org.openftc.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 /**
  * Or.. In OnBot Java, add a new file named RobotHardware.java, drawing from this Sample; select Not an OpMode.
@@ -191,6 +175,9 @@ public class Lift {
         }
     }
 
+    public void downDrop() {
+        downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);
+    }
     public void downDrop(int height){
 //        setDrivePower(0,0,0,0);
         setLift(height - 373,LIFTMOTORPOWER,1);
@@ -212,10 +199,10 @@ public class Lift {
     }
 
     public void closeClaw(){
-        claw.setPosition(0);
+        claw.setPosition(1);
     }
     public void openClaw(){
-        claw.setPosition(1);
+        claw.setPosition(0);
     }
 
     /**

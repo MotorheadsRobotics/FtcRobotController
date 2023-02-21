@@ -14,6 +14,11 @@ public class LeftStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
 
     int cone1 = 0, cone2 = 42, cone3 = 83, cone4 = 125, cone5 = 166;
+    int[] cones = new int[] {cone1, cone2, cone3, cone4, cone5};
+    Trajectory track2;
+    interface trackCreator {
+        void track2Mod(int cone);
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -25,31 +30,35 @@ public class LeftStackRunner extends AutonomousDriving {
         robot.setPoseEstimate(new Pose2d(-36,-65.75,0));
 
         Trajectory track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
-                .addDisplacementMarker(() -> {
-                    lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
-                })
-                .addTemporalMarker(0, 0.5, () -> {
-                    lift.flipToPosition(1);
-                })
-                .addTemporalMarker(0, 1.5, () -> {
-                    lift.setRotate(1);
-                })
+                .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
+                .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
+                .addTemporalMarker(1.5, () -> lift.setRotate(1))
                 .strafeLeft(47.75)
                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
                 .lineTo(new Vector2d(-26.8,-2.8))
                 .build();
 
-        Trajectory track2 = robot.trajectoryBuilder(track1.end())
-                .addDisplacementMarker(() -> {
-                    lift.setLift(cone5, Lift.LIFTMOTORPOWER);
-                })
-                .addTemporalMarker(0, 0.2, () -> {
-                    lift.closeClaw();
-                })
-                .splineTo(new Vector2d(-63.5,-12), Math.toRadians(180))
-                .build();
 
-        Trajectory track3 = robot.trajectoryBuilder(track2.end(), true)
+         trackCreator track2Mod = new trackCreator() {
+             @Override
+             public void track2Mod(int cone) {
+                 track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
+                         .addDisplacementMarker(() -> lift.setLift(cone, Lift.LIFTMOTORPOWER))
+                         .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
+                         .addTemporalMarker(0.3, () -> {
+                             lift.setRotate(0);
+                             lift.openClaw();
+                         })
+                         .addTemporalMarker(0.1, () -> lift.closeClaw())
+                         .splineTo(new Vector2d(-63.5, -12), Math.toRadians(180))
+                         .build();
+             }
+         };
+
+
+
+        Trajectory track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
+                .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
                 .build();
 
@@ -58,21 +67,20 @@ public class LeftStackRunner extends AutonomousDriving {
         if(isStopRequested()) return;
 
         robot.followTrajectory(track1);
-        sleep(1000);
-        lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
-//        robot.followTrajectory(track2);
-//        telemetry.addData("Path: ", "Track 2 Completed");
-//        telemetry.update();
-//        lift.closeClaw();
-//        sleep(100);
-//        lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
-//        sleep(200);
-//        robot.followTrajectory(track3);
-//        lift.downDropUp(Lift.highInch * Lift.liftCountsPerInch);
-        // ...
-
+        lift.downDrop();
+        track2Mod.track2Mod(cone5);
+        robot.followTrajectory(track2);
+        telemetry.addData("Path: ", "Track 2 Completed");
+        telemetry.update();
+        for (int i = 4; i >= 0; i--) {
+            lift.closeClaw();
+            sleep(100);
+            robot.followTrajectory(track3);
+            track2Mod.track2Mod(cones[i]);
+            robot.followTrajectory(track2);
+        }
         sleep(10000);
     }
 }
