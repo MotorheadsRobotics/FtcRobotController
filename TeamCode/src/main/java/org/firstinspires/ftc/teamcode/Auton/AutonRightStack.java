@@ -18,40 +18,7 @@ public class AutonRightStack extends AutonDriving{
         robot.flipToPosition(0.5);
 
         // Wait for the game to start (driver presses PLAY)
-        tagOfInterest = getTag(robot.initAprilTagDetection());
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
 
-        /* Update the telemetry */
-        if(tagOfInterest != null)
-        {
-            telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            telemetry.update();
-        }
-        else
-        {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
-
-        /* Actually do something useful */
-        if(tagOfInterest == null)
-        {
-            pathWithoutCamera();
-            telemetry.addData("Path Complete", "Yay! ");
-            telemetry.update();
-            sleep(10000);
-        }
-        else
-        {
-            pathWithCamera(tagOfInterest);
-            telemetry.addData("Path Complete", "Yay! ");
-            telemetry.update();
-            sleep(10000);
-        }
 
         sleep(50);
     }
