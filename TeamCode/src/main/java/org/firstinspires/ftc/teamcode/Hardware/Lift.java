@@ -181,7 +181,7 @@ public class Lift {
     public void downDrop(int height){
 //        setDrivePower(0,0,0,0);
         setLift(height - 373,LIFTMOTORPOWER,1);
-        claw.setPosition(0); // open
+        openClaw(); // open
     }
 
     public void stopAndResetLiftEncoders() {
