@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="RoadRunner Test Left Stack", group="Robot")
-public class LeftStackRunner extends AutonomousDriving {
+@Autonomous(name="Inefficient Runner", group="Robot")
+public class LeftStackRunnerSlower extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
 
     int cone1 = 0, cone2 = 42, cone3 = 83, cone4 = 125, cone5 = 166;
@@ -35,9 +35,13 @@ public class LeftStackRunner extends AutonomousDriving {
                     lift.setRotate(1);
                 })
                 .strafeLeft(47.75)
+                .build();
+
+        Trajectory midtrack = robot.trajectoryBuilder(track1.end(), true)
                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
                 .lineTo(new Vector2d(-26.8,-2.8))
                 .build();
+
 
         Trajectory track2 = robot.trajectoryBuilder(track1.end())
                 .addDisplacementMarker(() -> {
@@ -58,10 +62,11 @@ public class LeftStackRunner extends AutonomousDriving {
         if(isStopRequested()) return;
 
         robot.followTrajectory(track1);
-        sleep(1000);
+        robot.followTrajectory(midtrack);
         lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
+//        sleep(3000);
 //        robot.followTrajectory(track2);
 //        telemetry.addData("Path: ", "Track 2 Completed");
 //        telemetry.update();
