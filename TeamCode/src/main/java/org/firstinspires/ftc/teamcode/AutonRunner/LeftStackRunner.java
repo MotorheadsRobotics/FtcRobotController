@@ -13,14 +13,6 @@ import org.openftc.apriltag.AprilTagDetection;
 public class LeftStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
     //TODO: change lift presets to what they actually are.
-    int cone1 = 0, cone2 = 42, cone3 = 83, cone4 = 125, cone5 = 8 * Lift.liftCountsPerInch;
-    int[] cones = new int[] {cone1, cone2, cone3, cone4, cone5};
-    Trajectory track2;
-    Trajectory track3;
-    interface trackCreator {
-        void track2Mod(int cone);
-        void track3Update();
-    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,7 +23,7 @@ public class LeftStackRunner extends AutonomousDriving {
 
         robot.setPoseEstimate(new Pose2d(-36,-65.75,0));
 
-        Trajectory track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
+        track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
@@ -44,11 +36,11 @@ public class LeftStackRunner extends AutonomousDriving {
 
          trackCreator trackMod = new trackCreator() {
              @Override
-             public void track2Mod(int cone) {
+             public void track2Mod(double cone) {
                  //it's possible we may need to hardcode a start point instead of getting the current estimate.
                  // don't know which would cause less drift
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
-                         .addDisplacementMarker(() -> lift.setLift(cone, Lift.LIFTMOTORPOWER))
+                         .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                          .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);

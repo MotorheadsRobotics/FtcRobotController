@@ -4,18 +4,25 @@ import static org.firstinspires.ftc.teamcode.Auton.AprilTagImageRecognition.FEET
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
 
+
 public abstract class AutonomousDriving extends LinearOpMode {
+    Trajectory track2;
+    Trajectory track1;
+    Trajectory track3;
+    interface trackCreator {
+        void track2Mod(double cone);
+        void track3Update();
+    }
     Lift lift = new Lift(this);
     Camera tagDetector = new Camera(this);
 
@@ -92,6 +99,8 @@ public abstract class AutonomousDriving extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
+    double cone1 = 0, cone2 = 2.5 * Lift.liftCountsPerInch, cone3 = 4 * Lift.liftCountsPerInch, cone4 = 5.5 * Lift.liftCountsPerInch, cone5 = 7 * Lift.liftCountsPerInch;
+    double[] cones = new double[]{cone1, cone2, cone3, cone4, cone5};
 }
 
 
