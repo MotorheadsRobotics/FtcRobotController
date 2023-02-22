@@ -37,11 +37,12 @@ public class LeftStackRunner extends AutonomousDriving {
          trackCreator trackMod = new trackCreator() {
              @Override
              public void track2Mod(double cone) {
-                 //it's possible we may need to hardcode a start point instead of getting the current estimate.
+                 // it's possible we may need to hardcode a start point instead of getting the current estimate.
                  // don't know which would cause less drift
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                          .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                          .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
+                         sleep(200)
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);
                              lift.openClaw();
