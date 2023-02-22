@@ -58,7 +58,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          .addTemporalMarker(0.7, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-26.8, -2.8), Math.toRadians(45))
+                         .splineTo(new Vector2d(-26.3, -2.8), Math.toRadians(45))
                          .build();
              }
          };
