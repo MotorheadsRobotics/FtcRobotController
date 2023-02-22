@@ -17,7 +17,7 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setDimensions(11.75, 17)
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(130), Math.toRadians(360), 13.71)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-36, -65.75, Math.toRadians(0)))
                                 .setReversed(true)
@@ -26,7 +26,7 @@ public class MeepMeepTesting {
                                 })
                                 .strafeLeft(47.75)
                                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
-                                .lineTo(new Vector2d(-26.8,-2.8))
+                                .lineTo(new Vector2d(-27.0,-3.0))
                                 .addDisplacementMarker(() -> {
                                     // Down
                                 })
@@ -52,7 +52,7 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     // Lift to high goal
                                 })
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .splineTo(new Vector2d(-27.0,-3.0), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // DownDropUp
                                 })
@@ -72,7 +72,7 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     // Lift to high goal
                                 })
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .splineTo(new Vector2d(-27,-3), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // DownDropUp
                                 })
@@ -92,7 +92,7 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     // Lift to high goal
                                 })
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .splineTo(new Vector2d(-27,-3), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // DownDropUp
                                 })
@@ -112,7 +112,7 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     // Lift to high goal
                                 })
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .splineTo(new Vector2d(-27,-3), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // DownDropUp
                                 })
@@ -132,7 +132,7 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     // Lift to high goal
                                 })
-                                .splineTo(new Vector2d(-26.8,-2.8), Math.toRadians(45))
+                                .splineTo(new Vector2d(-27,-3), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // DownDropUp
                                 })

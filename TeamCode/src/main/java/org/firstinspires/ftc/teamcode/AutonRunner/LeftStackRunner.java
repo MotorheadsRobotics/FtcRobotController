@@ -38,7 +38,7 @@ public class LeftStackRunner extends AutonomousDriving {
                 .strafeLeft(47.75)
                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
                 //TODO: make robot not run into pole
-                .lineTo(new Vector2d(-26.4,-2.4))
+                .lineTo(new Vector2d(-27.0,-3.0))
                 .build();
 
 
