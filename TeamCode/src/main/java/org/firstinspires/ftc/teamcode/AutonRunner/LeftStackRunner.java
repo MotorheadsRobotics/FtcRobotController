@@ -48,7 +48,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          })
                          .addTemporalMarker(0.1, () -> lift.closeClaw())
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-61.5, -12), Math.toRadians(180))
+                         .splineTo(new Vector2d(-61.5, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
              @Override
@@ -68,38 +68,51 @@ public class LeftStackRunner extends AutonomousDriving {
         if(isStopRequested()) return;
 
         robot.followTrajectory(track1);
-        telemetry.addData("Path: ", "Track 1 Completed");
+        telemetry.addData("Path: ", "Track 1 Completed - Preloaded Cone");
         telemetry.update();
         lift.downDrop();
+
         for (int i = 4; i >= 0; i--) {
+            // Go towards cone stack
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2);
             lift.closeClaw();
             sleep(100);
+            telemetry.addData("Path: ", "Track 2 Completed - (" + (5 - i) + "/5)");
+            telemetry.update();
+
+            // Go back to high goal
             trackMod.track3Update();
             robot.followTrajectory(track3);
             lift.downDrop();
+            telemetry.addData("Path: ", "Track 3 Completed - (" + (5 - i) + "/5)");
+            telemetry.update();
         }
+
+        // Park in designated spot
         Trajectory track4 = null;
         switch (tagOfInterest.id) {
-            case 1:
+            case 1: // Park Left
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
                         .splineTo(new Vector2d(-36,-28),Math.toRadians(270))
                         .splineToConstantHeading(new Vector2d(-60,-36),Math.toRadians(180))
                         .build();
                 break;
-            case 3:
+            case 3: // Park Right
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
                         .splineTo(new Vector2d(-36,-28),Math.toRadians(270))
                         .splineToConstantHeading(new Vector2d(-12,-36),Math.toRadians(0))
                         .build();
                 break;
-            default:
+            default: // Park Middle / or guess middle if no tag found
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
                         .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
                         .build();
         }
         robot.followTrajectory(track4);
+        telemetry.addData("Path: ", "Track 4 Completed - Park");
+        telemetry.update();
+
         sleep(10000);
     }
 }
