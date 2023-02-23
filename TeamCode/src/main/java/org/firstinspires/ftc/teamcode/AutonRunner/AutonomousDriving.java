@@ -21,7 +21,7 @@ public abstract class AutonomousDriving extends LinearOpMode {
     Trajectory track3;
     interface trackCreator {
         void track2Mod(double cone);
-        void track3Update();
+        void track3Update(int offset);
     }
     Lift lift = new Lift(this);
     Camera tagDetector = new Camera(this);
