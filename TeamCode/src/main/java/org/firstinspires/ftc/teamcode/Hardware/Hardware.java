@@ -225,9 +225,9 @@ public class Hardware {
 //        horMotor.setPower(0);
 //
         claw.setPosition(1);
-        flipL.setPosition(1);
+        flipL.setPosition(FLIP_CONSTANT);
         flipR.setPosition(0);
-        rotate.setPosition(1);
+        rotate.setPosition(ROTATE_CONSTANT);
 //
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

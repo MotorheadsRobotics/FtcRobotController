@@ -42,7 +42,6 @@ import org.firstinspires.ftc.teamcode.Hardware.Lift;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@Disabled
 @TeleOp(name="Lift Test", group="Robot")
 public class TestLift extends LinearOpMode {
     Lift lift = new Lift(this);
