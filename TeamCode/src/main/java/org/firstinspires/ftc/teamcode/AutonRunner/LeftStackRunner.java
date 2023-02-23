@@ -42,24 +42,23 @@ public class LeftStackRunner extends AutonomousDriving {
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                          .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                          .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
-                         sleep(200)
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);
                              lift.openClaw();
                          })
                          .addTemporalMarker(0.1, () -> lift.closeClaw())
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-69, -12), Math.toRadians(180))
+                         .splineTo(new Vector2d(-61.5, -12), Math.toRadians(180))
                          .build();
              }
              @Override
              public void track3Update() {
                  track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                          .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
-                         .addTemporalMarker(0.7, () -> lift.setRotate(1))
+                         .addTemporalMarker(1.5, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-25.3, -2.8), Math.toRadians(45))
+                         .splineTo(new Vector2d(-27, -3), Math.toRadians(45))
                          .build();
              }
          };
