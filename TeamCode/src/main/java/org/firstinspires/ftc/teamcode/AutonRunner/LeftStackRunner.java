@@ -34,7 +34,7 @@ public class LeftStackRunner extends AutonomousDriving {
                 .build();
 
 
-         trackCreator trackMod = new trackCreator() {
+        trackCreator trackMod = new trackCreator() {
              @Override
              public void track2Mod(double cone) {
                  //it's possible we may need to hardcode a start point instead of getting the current estimate.
@@ -58,7 +58,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          .addTemporalMarker(0.7, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-26.8, -2.8), Math.toRadians(45))
+                         .splineTo(new Vector2d(-27.0, -3.0), Math.toRadians(45))
                          .build();
              }
          };
@@ -81,6 +81,7 @@ public class LeftStackRunner extends AutonomousDriving {
             lift.downDrop();
         }
         Trajectory track4 = null;
+
         switch (tagOfInterest.id) {
             case 1:
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
