@@ -77,7 +77,7 @@ public class Hardware {
     public static double FLIP_CONSTANT = 0.9;
     public Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
-    public static int minHeightForFlip = 2053;
+    public static int minHeightForFlip = 1300; // i don't think this number is right
     private static double LIFTMOTORPOWER = 1.0;
 
     public static int groundInch = 0;
@@ -225,9 +225,9 @@ public class Hardware {
 //        horMotor.setPower(0);
 //
         claw.setPosition(1);
-        flipL.setPosition(1);
+        flipL.setPosition(FLIP_CONSTANT);
         flipR.setPosition(0);
-        rotate.setPosition(1);
+        rotate.setPosition(ROTATE_CONSTANT);
 //
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
