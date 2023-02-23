@@ -55,7 +55,7 @@ public class LeftStackRunner extends AutonomousDriving {
              public void track3Update(int offset) {
                  track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                          .addDisplacementMarker(() -> lift.flipToPosition(1))
-                         .addTemporalMarker(0.4, () -> lift.setRotate(1))
+                         .addTemporalMarker(0.7, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
                          .splineTo(new Vector2d(-26.8, -2.8), Math.toRadians(45))
@@ -76,8 +76,9 @@ public class LeftStackRunner extends AutonomousDriving {
             robot.followTrajectory(track2);
             lift.closeClaw();
             sleep(100);
-            trackMod.track3Update((4 - i) * 200);
+            trackMod.track3Update((4 - i) * 166);
             robot.followTrajectory(track3);
+            sleep(200);
             lift.downDrop();
         }
         Trajectory track4 = null;
