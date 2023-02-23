@@ -54,8 +54,8 @@ public class Lift {
     private Servo claw;
     private Servo flipL;
     private Servo flipR;
-    public static double FLIP_CONSTANT = 0.8;
-    public static double FLIP_BASE = 0.1;
+    public static double FLIP_CONSTANT = 0.78;
+    public static double FLIP_BASE = 0.11;
     private Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 1300;
@@ -73,6 +73,7 @@ public class Lift {
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;
+    private double flipPosition = FLIP_BASE;
 
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -204,8 +205,12 @@ public class Lift {
      * @param pos pos = 0 represents initialization state, pos = 1 represents flipped state
      */
     public void flipToPosition(double pos) {
+        flipPosition = FLIP_BASE + FLIP_CONSTANT * pos;
         flipL.setPosition(FLIP_BASE + FLIP_CONSTANT * (1 - pos));
-        flipR.setPosition(FLIP_BASE + FLIP_CONSTANT * pos);
+        flipR.setPosition(flipPosition);
+    }
+    public double getFlipPosition(){
+        return flipPosition;
     }
 
     public void closeClaw(){

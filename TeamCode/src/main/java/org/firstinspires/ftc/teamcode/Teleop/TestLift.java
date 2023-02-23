@@ -55,6 +55,7 @@ public class TestLift extends LinearOpMode {
         double flipPosition = 0;
         double time = 0;
         double rotatePosition = 1;
+        double servoPosition = 0;
         boolean isRotated = true;
         boolean isFlipped = true;
         double speedMultiplier = 1;
@@ -118,13 +119,14 @@ public class TestLift extends LinearOpMode {
             telemetry.addData("leftLiftPos", lift.getCurrentLiftHeights()[0]);
             telemetry.addData("rightLiftPos", lift.getCurrentLiftHeights()[1]);
             telemetry.addData("position", position);
+            telemetry.addData("Servo Pos", lift.getFlipPosition());
 
             // Adjust Lift
             if(gamepad2.left_trigger > 0.3){
-                position -= 1;
+                servoPosition -= 0.01;
             }
             else if(gamepad2.right_trigger > 0.3){
-                position += 1;
+                servoPosition += 0.01;
             }
             else if(gamepad2.dpad_up){
                 position += 50;
@@ -143,6 +145,7 @@ public class TestLift extends LinearOpMode {
                 position = 0;
 
             lift.setLift(position, LIFTMOTORPOWER);
+//            lift.flipToPosition(servoPosition);
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
