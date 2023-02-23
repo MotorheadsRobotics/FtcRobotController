@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,7 +57,7 @@ public class Lift {
     public static double FLIP_CONSTANT = 0.9;
     private Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
-    public static int minHeightForFlip = 2053;
+    public static int minHeightForFlip = 1300;
     public static double LIFTMOTORPOWER = 1.0;
 
     public static int groundInch = 0;
@@ -175,6 +176,9 @@ public class Lift {
         }
     }
 
+    public boolean canFlip(){
+        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip;
+    }
     public void downDrop() {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);
     }
@@ -189,13 +193,18 @@ public class Lift {
         upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public void setMode(DcMotor.RunMode runMode){
+        upMotorL.setMode(runMode);
+        upMotorR.setMode(runMode);
+    }
+
     /**
      * Flips claw to a specific point
      * @param pos pos = 0 represents initialization state, pos = 1 represents flipped state
      */
     public void flipToPosition(double pos) {
-        flipL.setPosition(1 - pos);
-        flipR.setPosition(pos);
+        flipL.setPosition(FLIP_CONSTANT * (1 - pos));
+        flipR.setPosition(FLIP_CONSTANT * pos);
     }
 
     public void closeClaw(){
@@ -209,5 +218,8 @@ public class Lift {
      * Sets rotato
      * @param pos 0 represents initialization state, 1 represents the post-flip state
      */
-    public void setRotate(double pos) {rotate.setPosition(1 - pos);}
+    public void setRotate(double pos) {rotate.setPosition(ROTATE_CONSTANT * (1 - pos));}
+    public int[] getCurrentLiftHeights(){
+        return new int[] {upMotorL.getCurrentPosition(), upMotorR.getCurrentPosition()};
+    }
 }
