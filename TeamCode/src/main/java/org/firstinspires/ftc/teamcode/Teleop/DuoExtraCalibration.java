@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -43,7 +42,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  */
 
 @TeleOp(name="Duo No Calibration", group="Robot")
-public class DuoNoCalibration extends AutonDriving {
+public class DuoExtraCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -121,6 +120,11 @@ public class DuoNoCalibration extends AutonDriving {
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
                 isFlipped = false;
+            }
+
+            if (robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) {
+                robot.stopAndResetLiftEncoders();
+                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
             if(isFlipped){
