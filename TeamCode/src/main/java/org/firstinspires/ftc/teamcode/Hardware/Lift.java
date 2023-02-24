@@ -54,8 +54,8 @@ public class Lift {
     private Servo claw;
     private Servo flipL;
     private Servo flipR;
-    public static double FLIP_CONSTANT = 0.78;
-    public static double FLIP_BASE = 0.11;
+    public static double FLIP_CONSTANT = 0.72;
+    public static double FLIP_BASE = 0.18;
     private Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
     public static int minHeightForFlip = 1300;
@@ -167,8 +167,14 @@ public class Lift {
         upMotorL.setTargetPosition(counts);
         upMotorR.setTargetPosition(counts);
 
-        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        try {
+            upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        catch(Exception e){
+            myOpMode.telemetry.addData("Motors failing", "use manual adjustments I guess");
+            myOpMode.telemetry.update();
+        }
 
         upMotorL.setPower(liftPower);
         upMotorR.setPower(liftPower);

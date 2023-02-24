@@ -6,12 +6,11 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
-@Autonomous(name="RoadRunner Test Left Stack", group="Robot")
-public class LeftStackRunner extends AutonomousDriving {
+@Autonomous(name="Asynchronous", group="Robot")
+public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWorkButDibyadeepSaidWeCouldDoItInThirtyMinutes extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
     //TODO: change lift presets to what they actually are.
     double adjustment = 0.0;
