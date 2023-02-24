@@ -53,12 +53,13 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
                          .splineTo(new Vector2d(-61.0, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
+
              @Override
-             public void track3Update() {
+             public void track3Update(int offset) {
                  track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                          .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                          .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                         .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
+                         .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
                          .splineTo(new Vector2d(-27.6, -3.6), Math.toRadians(45))
                          .build();
@@ -84,7 +85,7 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
             telemetry.update();
 
             // Go back to high goal
-            trackMod.track3Update();
+            trackMod.track3Update((4 - i) * 166);
             robot.followTrajectory(track3);
             lift.downDrop();
             telemetry.addData("Path: ", "Track 3 Completed - (" + (5 - i) + "/5)");
