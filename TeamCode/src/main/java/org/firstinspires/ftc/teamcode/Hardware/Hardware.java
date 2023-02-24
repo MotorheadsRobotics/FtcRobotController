@@ -372,6 +372,11 @@ public class Hardware {
         upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+
+    public void setLiftMode(DcMotor.RunMode runMode){
+        upMotorL.setMode(runMode);
+        upMotorR.setMode(runMode);
+    }
     public boolean isBusy() {
         return fLMotor.isBusy() || fRMotor.isBusy() || bRMotor.isBusy() || bLMotor.isBusy();
     }
