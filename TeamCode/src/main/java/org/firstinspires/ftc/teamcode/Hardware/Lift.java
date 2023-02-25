@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -192,7 +191,7 @@ public class Lift {
     }
     public void downDrop(int height){
 //        setDrivePower(0,0,0,0);
-        setLift(height - 373,LIFTMOTORPOWER,1);
+        setLift(height - 373,LIFTMOTORPOWER/2,1);
         openClaw(); // open
     }
 
