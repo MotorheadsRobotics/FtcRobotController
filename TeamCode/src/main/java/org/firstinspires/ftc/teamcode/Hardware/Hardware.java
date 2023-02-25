@@ -328,7 +328,7 @@ public class Hardware {
     }
     public void downDropUp(int height){
         setDrivePower(0,0,0,0);
-        setLift(height - 373,LIFTMOTORPOWER,1);
+        setLift(height - 373,LIFTMOTORPOWER * 0.5,1);
         claw.setPosition(0); // open
         try {
             sleep(150);

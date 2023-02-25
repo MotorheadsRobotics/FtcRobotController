@@ -51,7 +51,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          })
                          .addTemporalMarker(0.2, () -> lift.closeClaw())
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-61.0, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
+                         .splineTo(new Vector2d(-63.0, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
              @Override
