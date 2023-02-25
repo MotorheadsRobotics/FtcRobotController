@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="Duo No Calibration", group="Robot")
+@TeleOp(name="Duo With Calibration", group="Robot")
 public class DuoExtraCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
 
@@ -74,7 +74,7 @@ public class DuoExtraCalibration extends AutonDriving {
         boolean dpadRightPressed = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init(false);
+        robot.init(true);
         robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
@@ -123,14 +123,14 @@ public class DuoExtraCalibration extends AutonDriving {
                 isFlipped = false;
             }
 
-//            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
-//                robot.stopAndResetLiftEncoders();
-//                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                bottom = true;
-//            }
-//            else {
-//                bottom = false;
-//            }
+            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
+                robot.stopAndResetLiftEncoders();
+                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                bottom = true;
+            }
+            else {
+                bottom = false;
+            }
 
             if(isFlipped){
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));

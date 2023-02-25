@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
@@ -114,6 +113,7 @@ public class LeftStackRunner extends AutonomousDriving {
                         .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
                         .build();
         }
+        lift.setLift(0, Lift.LIFTMOTORPOWER);
         robot.followTrajectory(track4);
         telemetry.addData("Path: ", "Track 4 Completed - Park");
         telemetry.update();

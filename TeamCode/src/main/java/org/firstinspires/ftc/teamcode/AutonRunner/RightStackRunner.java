@@ -100,6 +100,7 @@ public class RightStackRunner extends AutonomousDriving {
                         .splineTo(new Vector2d(36,-36),Math.toRadians(270))
                         .build();
         }
+        lift.setLift(0, Lift.LIFTMOTORPOWER);
         robot.followTrajectory(track4);
         sleep(10000);
     }

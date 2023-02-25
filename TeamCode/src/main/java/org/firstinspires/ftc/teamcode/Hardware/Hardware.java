@@ -299,6 +299,9 @@ public class Hardware {
             myOpMode.telemetry.addData("Motors failing", "use manual adjustments I guess");
             myOpMode.telemetry.update();
         }
+
+        upMotorL.setPower(liftPower);
+        upMotorR.setPower(liftPower);
     }
     public void setLift(int countsL, int countsR, double liftPower) {
         upMotorL.setTargetPosition(countsL);

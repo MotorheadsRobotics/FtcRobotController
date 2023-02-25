@@ -98,6 +98,8 @@ public class Lift {
         upMotorL.setPower(0);
         upMotorR.setPower(0);
 
+        claw.scaleRange(0.35, 1);
+
         claw.setPosition(1);
         flipL.setPosition(FLIP_BASE + FLIP_CONSTANT);
         flipR.setPosition(FLIP_BASE);
