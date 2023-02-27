@@ -12,6 +12,7 @@ import org.openftc.apriltag.AprilTagDetection;
 @Autonomous(name="RoadRunner Test Right Stack", group="Robot")
 public class RightStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
+    double adjustment = 0.0;
     //TODO: change lift presets to what they actually are.
 
 
@@ -22,16 +23,18 @@ public class RightStackRunner extends AutonomousDriving {
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
-        robot.setPoseEstimate(new Pose2d(36,-65.75,0));
+        robot.setPoseEstimate(new Pose2d(36,-65.25,0));
+        Vector2d coneSpot = new Vector2d(26.-5);
 
-        Trajectory track1 = robot.trajectoryBuilder(new Pose2d(36, -65.75,0), true)
+        Trajectory track1 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
                 .strafeLeft(47.75)
-                .splineToSplineHeading(new Pose2d(30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
+                .splineToSplineHeading(new Pose2d(30.8,-6.8,Math.toRadians(-45)), Math.toRadians(135))
                 //TODO: make robot not run into pole
-                .lineTo(new Vector2d(27.0,-3.0))
+//                .lineTo(coneSpot)
+                .splineTo(coneSpot, Math.PI + Math.atan((0 - coneSpot.getY())/(24-coneSpot.getX())))
                 .build();
 
 
@@ -40,26 +43,29 @@ public class RightStackRunner extends AutonomousDriving {
             public void track2Mod(double cone) {
                 //it's possible we may need to hardcode a start point instead of getting the current estimate.
                 // don't know which would cause less drift
+                robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(0,-adjustment)));
+                double num = 62.5;
                 track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                         .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
-                        .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.22, () -> lift.closeClaw())
                         .addTemporalMarker(0.3, () -> {
                             lift.setRotate(0);
                             lift.openClaw();
                         })
-                        .addTemporalMarker(0.1, () -> lift.closeClaw())
+                        .addTemporalMarker(0.2, () -> lift.closeClaw())
                         //TODO: Make robot not run into wall
-                        .splineTo(new Vector2d(61, -12), Math.toRadians(180))
+                        .splineTo(new Vector2d(num, -12), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
             }
             @Override
             public void track3Update(int offset) {
                 track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
-                        .addDisplacementMarker(() -> lift.flipToPosition(1))
-                        .addTemporalMarker(0.3, () -> lift.setRotate(1))
+                        .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
+                        .addTemporalMarker(1.5, () -> lift.setRotate(1))
                         .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                         //TODO: copy from track 1 to not have it run into pole
-                        .splineTo(new Vector2d(26.8, -2.8), Math.toRadians(45))
+                        .splineTo(new Vector2d(26.7, -2.9), Math.toRadians(135))
                         .build();
             }
         };
@@ -72,7 +78,7 @@ public class RightStackRunner extends AutonomousDriving {
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
         lift.downDrop();
-        for (int i = 4; i >= 0; i--) {
+        for (int i = 4; i >= 1; i--) {
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2);
             lift.closeClaw();
@@ -82,22 +88,26 @@ public class RightStackRunner extends AutonomousDriving {
             lift.downDrop();
         }
         Trajectory track4 = null;
+        if(tagOfInterest == null) {
+            tagOfInterest = new AprilTagDetection();
+            tagOfInterest.id = -1;
+        }
         switch (tagOfInterest.id) {
             case 1:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
-                        .splineTo(new Vector2d(36,-28),Math.toRadians(270))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
+                        .splineTo(new Vector2d(36,-26),Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(-60,-36),Math.toRadians(180))
                         .build();
                 break;
             case 3:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
-                        .splineTo(new Vector2d(36,-28),Math.toRadians(270))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
+                        .splineTo(new Vector2d(36,-26),Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(-12,-36),Math.toRadians(0))
                         .build();
                 break;
             default:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
-                        .splineTo(new Vector2d(36,-36),Math.toRadians(270))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
+                        .splineTo(new Vector2d(36,-36),Math.toRadians(90))
                         .build();
         }
         lift.setLift(0, Lift.LIFTMOTORPOWER);

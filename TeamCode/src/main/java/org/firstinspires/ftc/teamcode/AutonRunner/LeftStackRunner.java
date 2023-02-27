@@ -13,7 +13,7 @@ import org.openftc.apriltag.AprilTagDetection;
 public class LeftStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
     //TODO: change lift presets to what they actually are.
-    double adjustment = 0.0;
+    double adjustment = -0.35;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,17 +40,19 @@ public class LeftStackRunner extends AutonomousDriving {
              public void track2Mod(double cone) {
                  // it's possible we may need to hardcode a start point instead of getting the current estimate.
                  // don't know which would cause less drift
-                 robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(0,-adjustment)));
+                 robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(-adjustment,0)));
+                 double num = -63.5;
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                          .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
-                         .addTemporalMarker(0.15, () -> lift.flipToPosition(0))
+                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                         .addTemporalMarker(0.1, () -> lift.closeClaw())
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);
                              lift.openClaw();
                          })
                          .addTemporalMarker(0.2, () -> lift.closeClaw())
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-63.0, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
+                         .splineTo(new Vector2d(num, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
              @Override
@@ -60,7 +62,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          .addTemporalMarker(1.5, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-27.6, -3.6), Math.toRadians(45))
+                         .splineTo(new Vector2d(-27.6, -3.6), Math.toRadians(45)) // further away from the cone
                          .build();
              }
          };
@@ -79,12 +81,13 @@ public class LeftStackRunner extends AutonomousDriving {
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2);
             lift.closeClaw();
-            sleep(100);
+            sleep(300);
             telemetry.addData("Path: ", "Track 2 Completed - (" + (5 - i) + "/5)");
             telemetry.update();
 
             // Go back to high goal
-            trackMod.track3Update((4 - i) * 166);
+            int offset = 166;
+            trackMod.track3Update(offset);
             robot.followTrajectory(track3);
             lift.downDrop();
             telemetry.addData("Path: ", "Track 3 Completed - (" + (5 - i) + "/5)");
@@ -94,18 +97,28 @@ public class LeftStackRunner extends AutonomousDriving {
         // Park in designated spot
         Trajectory track4 = null;
         int loopIterations = 4;
-        robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(0,adjustment * loopIterations)));
+        robot.setPoseEstimate(robot.getPoseEstimate());
+        if(tagOfInterest == null) {
+            tagOfInterest = new AprilTagDetection();
+            tagOfInterest.id = -1;
+        }
         switch (tagOfInterest.id) {
             case 1: // Park Left
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
-                        .splineTo(new Vector2d(-36,-28),Math.toRadians(270))
-                        .splineToConstantHeading(new Vector2d(-60,-36),Math.toRadians(180))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate())
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER / 2))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.22, () -> lift.closeClaw())
+                        .addTemporalMarker(0.3, () -> {
+                            lift.setRotate(0);
+                        })
+                        //TODO: Make robot not run into wall
+                        .splineTo(new Vector2d(-65, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
                 break;
             case 3: // Park Right
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
-                        .splineTo(new Vector2d(-36,-28),Math.toRadians(270))
-                        .splineToConstantHeading(new Vector2d(-12,-36),Math.toRadians(0))
+                        .splineTo(new Vector2d(-36,-20),Math.toRadians(270))
+                        .splineToConstantHeading(new Vector2d(-12,-30),Math.toRadians(0))
                         .build();
                 break;
             default: // Park Middle / or guess middle if no tag found

@@ -99,7 +99,7 @@ public abstract class AutonomousDriving extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
-    double cone1 = 2, cone2 = 3.5 * Lift.liftCountsPerInch, cone3 = 4.5 * Lift.liftCountsPerInch, cone4 = 5.5 * Lift.liftCountsPerInch, cone5 = 6.5 * Lift.liftCountsPerInch;
+    double cone1 = 1, cone2 = 2.25 * Lift.liftCountsPerInch, cone3 = 3 * Lift.liftCountsPerInch, cone4 = 4 * Lift.liftCountsPerInch, cone5 = 5.5 * Lift.liftCountsPerInch;
     double[] cones = new double[]{cone1, cone2, cone3, cone4, cone5};
 }
 
