@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -122,6 +121,15 @@ public class DuoNoCalibration extends AutonDriving {
                 while(gamepad2.y) {}
                 isFlipped = false;
             }
+
+//            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
+//                robot.stopAndResetLiftEncoders();
+//                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                bottom = true;
+//            }
+//            else {
+//                bottom = false;
+//            }
 
             if(isFlipped){
                 robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));

@@ -53,10 +53,11 @@ public class Lift {
     private Servo claw;
     private Servo flipL;
     private Servo flipR;
-    public static double FLIP_CONSTANT = 0.9;
+    public static double FLIP_CONSTANT = 0.72;
+    public static double FLIP_BASE = 0.18;
     private Servo rotate;
     public static double ROTATE_CONSTANT = 0.84;
-    public static int minHeightForFlip = 2053;
+    public static int minHeightForFlip = 1300;
     public static double LIFTMOTORPOWER = 1.0;
 
     public static int groundInch = 0;
@@ -71,6 +72,7 @@ public class Lift {
 
     public TouchSensor upLSensor;
     public TouchSensor upRSensor;
+    private double flipPosition = FLIP_BASE;
 
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -96,10 +98,12 @@ public class Lift {
         upMotorL.setPower(0);
         upMotorR.setPower(0);
 
+        claw.scaleRange(0.35, 1);
+
         claw.setPosition(1);
-        flipL.setPosition(1);
-        flipR.setPosition(0);
-        rotate.setPosition(1);
+        flipL.setPosition(FLIP_BASE + FLIP_CONSTANT);
+        flipR.setPosition(FLIP_BASE);
+        rotate.setPosition(ROTATE_CONSTANT);
 
         upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -164,8 +168,14 @@ public class Lift {
         upMotorL.setTargetPosition(counts);
         upMotorR.setTargetPosition(counts);
 
-        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        try {
+            upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        catch(Exception e){
+            myOpMode.telemetry.addData("Motors failing", "use manual adjustments I guess");
+            myOpMode.telemetry.update();
+        }
 
         upMotorL.setPower(liftPower);
         upMotorR.setPower(liftPower);
@@ -175,12 +185,15 @@ public class Lift {
         }
     }
 
+    public boolean canFlip(){
+        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip;
+    }
     public void downDrop() {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);
     }
     public void downDrop(int height){
 //        setDrivePower(0,0,0,0);
-        setLift(height - 373,LIFTMOTORPOWER,1);
+        setLift(height - 373,LIFTMOTORPOWER/2,1);
         openClaw(); // open
     }
 
@@ -189,13 +202,22 @@ public class Lift {
         upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public void setMode(DcMotor.RunMode runMode){
+        upMotorL.setMode(runMode);
+        upMotorR.setMode(runMode);
+    }
+
     /**
      * Flips claw to a specific point
      * @param pos pos = 0 represents initialization state, pos = 1 represents flipped state
      */
     public void flipToPosition(double pos) {
-        flipL.setPosition(1 - pos);
-        flipR.setPosition(pos);
+        flipPosition = FLIP_BASE + FLIP_CONSTANT * pos;
+        flipL.setPosition(FLIP_BASE + FLIP_CONSTANT * (1 - pos));
+        flipR.setPosition(flipPosition);
+    }
+    public double getFlipPosition(){
+        return flipPosition;
     }
 
     public void closeClaw(){
@@ -209,5 +231,8 @@ public class Lift {
      * Sets rotato
      * @param pos 0 represents initialization state, 1 represents the post-flip state
      */
-    public void setRotate(double pos) {rotate.setPosition(1 - pos);}
+    public void setRotate(double pos) {rotate.setPosition(ROTATE_CONSTANT * (1 - pos));}
+    public int[] getCurrentLiftHeights(){
+        return new int[] {upMotorL.getCurrentPosition(), upMotorR.getCurrentPosition()};
+    }
 }

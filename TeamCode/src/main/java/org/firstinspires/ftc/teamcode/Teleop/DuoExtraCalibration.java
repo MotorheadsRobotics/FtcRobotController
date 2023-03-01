@@ -41,8 +41,8 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="Duo Normal", group="Robot")
-public class DuoNormal extends AutonDriving {
+@TeleOp(name="Duo With Calibration", group="Robot")
+public class DuoExtraCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -58,10 +58,20 @@ public class DuoNormal extends AutonDriving {
         double flipPosition = 0;
         double time = 0;
         double rotatePosition = 1;
+        double verticalMotorPower = 1.0;
         boolean isRotated = true;
         boolean isFlipped = true;
+        boolean wasPressed = false;
         double speedMultiplier = 1;
+        int liftPosL = 0, liftPosR = 0;
+        boolean needsToChange = true;
         boolean lock = false;
+        boolean bottom = true;
+
+        boolean dpadUpPressed = false;
+        boolean dpadDownPressed = false;
+        boolean dpadLeftPressed = false;
+        boolean dpadRightPressed = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init(true);
@@ -70,7 +80,7 @@ public class DuoNormal extends AutonDriving {
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-
+        
         // boolean slow = false;
         robot.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -87,7 +97,7 @@ public class DuoNormal extends AutonDriving {
 
             // Drive robot via mecanum
             // Slow mode mapped to left bumper
-            speedMultiplier = gamepad1.right_trigger > 0.3 ? 0.5 : 1;
+            speedMultiplier = gamepad1.left_trigger > 0.3 ? 0.3 : 1;
             robot.mecanumMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, speedMultiplier);
             if(lock)
                 robot.setDrivePower(0,0,0,0);
@@ -97,7 +107,7 @@ public class DuoNormal extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(Hardware.heightsCounts[currentPreset]);
+                robot.downDropUp(Hardware.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -110,8 +120,16 @@ public class DuoNormal extends AutonDriving {
             if (gamepad2.y) { // flipPosition = 0 means default state
                 flipPosition = 1 - flipPosition;
                 while(gamepad2.y) {}
-                isRotated = false;
                 isFlipped = false;
+            }
+
+            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
+                robot.stopAndResetLiftEncoders();
+                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                bottom = true;
+            }
+            else {
+                bottom = false;
             }
 
             if(isFlipped){
@@ -128,6 +146,7 @@ public class DuoNormal extends AutonDriving {
                 robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
                 time = runtime.milliseconds();
                 isFlipped = true;
+                isRotated = false;
             }
 
             //auto rotate after flip
@@ -142,39 +161,53 @@ public class DuoNormal extends AutonDriving {
             }
             robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
 
+            // flip is asked for
+            // set new flip position
+            // queue a flip to occur
+            // hold until above height
+            // flip
+            // start delay, queue rotate
+            // hold until delay
+            // rotate
+
+
+
+
+
+
             // Lifts
             telemetry.addData("leftLiftPos", robot.upMotorL.getCurrentPosition());
             telemetry.addData("rightLiftPos", robot.upMotorR.getCurrentPosition());
 
             // Offset Calculations using bumpers
-            if(gamepad2.left_trigger > 0.3){
+            if(gamepad2.left_trigger > 0.3)
                 offsetCounts -= 42;
-            }
-            else if(gamepad2.right_trigger > 0.3){
+
+            else if(gamepad2.right_trigger > 0.3)
                 offsetCounts += 42;
-            }
+
 
             // dpad setting presets
-            if(gamepad2.dpad_up){
+            if(!gamepad2.dpad_up && dpadUpPressed){
                 offsetCounts = 0;
                 currentPreset = 1;
-                while(gamepad2.dpad_up) {}
             }
-            else if(gamepad2.dpad_down){
+            else if(!gamepad2.dpad_down && dpadDownPressed){
                 offsetCounts = 0;
                 currentPreset = 0;
-                while(gamepad2.dpad_down) {}
             }
-            else if(gamepad2.dpad_right){ // right is medium
+            else if(!gamepad2.dpad_right && dpadRightPressed){ // right is medium
                 offsetCounts = 0;
                 currentPreset = 3;
-                while(gamepad2.dpad_right) {}
             }
-            else if(gamepad2.dpad_left){ // left is low
+            else if(!gamepad2.dpad_left && dpadLeftPressed){ // left is low
                 offsetCounts = 0;
                 currentPreset = 2;
-                while(gamepad2.dpad_left) {}
             }
+            dpadUpPressed = gamepad2.dpad_up;
+            dpadDownPressed = gamepad2.dpad_down;
+            dpadLeftPressed = gamepad2.dpad_left;
+            dpadRightPressed = gamepad2.dpad_right;
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
