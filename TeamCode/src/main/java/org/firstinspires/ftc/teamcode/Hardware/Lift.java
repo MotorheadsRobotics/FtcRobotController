@@ -119,9 +119,12 @@ public class Lift {
     }
 
     public void calibrateLift(){
+        calibrateLift(0.2);
+    }
+    public void calibrateLift(double speed){
         myOpMode.telemetry.addData(">", "Lift Calibrating");
-        upMotorL.setPower(-0.2);
-        upMotorR.setPower(-0.2);
+        upMotorL.setPower(-speed);
+        upMotorR.setPower(-speed);
 
         while(!upLSensor.isPressed() && !upRSensor.isPressed()) {}
         upMotorL.setPower(0);

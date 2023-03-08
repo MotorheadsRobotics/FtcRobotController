@@ -146,33 +146,7 @@ public class Hardware {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
-    public AprilTagDetectionPipeline initAprilTagDetection(){
-        // Borrowed from OpenCV's FTC documentation:
-        int cameraMonitorViewId = myOpMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", myOpMode.hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-
-            }
-        });
-
-        myOpMode.telemetry.addData(">", "AprilTagReader Initialized");
-        myOpMode.telemetry.update();
-        return aprilTagDetectionPipeline;
-    }
-    public void init(boolean calibrate)    {
+    public void init()    {
         fLMotor = myOpMode.hardwareMap.get(DcMotor.class, "fLMotor");
         fRMotor = myOpMode.hardwareMap.get(DcMotor.class, "fRMotor");
         bLMotor = myOpMode.hardwareMap.get(DcMotor.class, "bLMotor");
@@ -202,69 +176,8 @@ public class Hardware {
         bLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        /** Non-drive Motors **/
-        upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
-        upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
-//        horMotor = myOpMode.hardwareMap.get(DcMotor.class, "horMotor");
-//
-        claw = myOpMode.hardwareMap.get(Servo.class, "claw");
-        flipL = myOpMode.hardwareMap.get(Servo.class, "flipL");
-        flipR = myOpMode.hardwareMap.get(Servo.class, "flipR");
-        rotate = myOpMode.hardwareMap.get(Servo.class, "rotate");
-
-        upLSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upLSensor");
-        upRSensor = myOpMode.hardwareMap.get(TouchSensor.class, "upRSensor");
-
-        upMotorL.setDirection(DcMotor.Direction.FORWARD);
-        upMotorR.setDirection(DcMotor.Direction.REVERSE);
-//        horMotor.setDirection(DcMotor.Direction.FORWARD);
-//
-        upMotorL.setPower(0);
-        upMotorR.setPower(0);
-//        horMotor.setPower(0);
-//
-        claw.setPosition(1);
-        flipL.setPosition(FLIP_CONSTANT);
-        flipR.setPosition(0);
-        rotate.setPosition(ROTATE_CONSTANT);
-//
-        upMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        upMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        myOpMode.telemetry.addData(">", "Hardware Initialized");
-        myOpMode.telemetry.update();
-
-        if(calibrate)
-            calibrateLift();
-        //lift calibration code
     }
 
-    public void calibrateLift(){
-        myOpMode.telemetry.addData(">", "Lift Calibrating");
-        upMotorL.setPower(-0.2);
-        upMotorR.setPower(-0.2);
-
-        while(!upLSensor.isPressed() && !upRSensor.isPressed()) {}
-        upMotorL.setPower(0);
-        upMotorR.setPower(0);
-
-        if (!upLSensor.isPressed() || !upRSensor.isPressed()) {
-            myOpMode.telemetry.addData(">", "Lift Calibration Failed, Check Lift Alignment");
-        }
-        else {
-            myOpMode.telemetry.addData(">", "Lift Calibration Success.");
-        }
-        myOpMode.telemetry.update();
-
-        stopAndResetLiftEncoders();
-        upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
     public void mecanumMove(double left_stick_x, double left_stick_y, double right_stick_x, double speedMultiplier)
     {
         //variables
@@ -280,66 +193,6 @@ public class Hardware {
         setDrivePower(v1 * speedMultiplier, v2 * speedMultiplier, v3 * speedMultiplier, v4 * speedMultiplier);
 
         myOpMode.telemetry.update();
-    }
-
-    /**
-     * Sets the lift height to the given count number (floor = 0, ground = 660, low = 4950, middle = 7590, high = 10560)
-     * @param counts represents how high the lift should go, 330 counts = 1 inch
-     * @param liftPower how fast the lift should
-     */
-    public void setLift(int counts, double liftPower) {
-        upMotorL.setTargetPosition(counts);
-        upMotorR.setTargetPosition(counts);
-
-        try {
-            upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        catch(Exception e){
-            myOpMode.telemetry.addData("Motors failing", "use manual adjustments I guess");
-            myOpMode.telemetry.update();
-        }
-
-        upMotorL.setPower(liftPower);
-        upMotorR.setPower(liftPower);
-    }
-    public void setLift(int countsL, int countsR, double liftPower) {
-        upMotorL.setTargetPosition(countsL);
-        upMotorR.setTargetPosition(countsR);
-
-        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        upMotorL.setPower(liftPower);
-        upMotorR.setPower(liftPower);
-    }
-    public void setLift(int counts, double liftPower, double timeoutS) {
-        runtime.reset();
-
-        upMotorL.setTargetPosition(counts);
-        upMotorR.setTargetPosition(counts);
-
-        upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        upMotorL.setPower(liftPower);
-        upMotorR.setPower(liftPower);
-
-        while(upMotorL.isBusy() && upMotorR.isBusy() && runtime.seconds() < timeoutS){
-            // stay in the code
-        }
-    }
-    public void downDropUp(int height){
-        setDrivePower(0,0,0,0);
-        setLift(height - 373,LIFTMOTORPOWER * 0.5,1);
-        claw.setPosition(0); // open
-        try {
-            sleep(150);
-        } catch (InterruptedException e) {
-            myOpMode.telemetry.addData("Try-Catch Failed", "Oops");
-            myOpMode.telemetry.update();
-        }
-        setLift(height + 51,LIFTMOTORPOWER,1);
     }
 
     // Pass the requested wheel motor powers to the appropriate hardware drive motors.
@@ -368,35 +221,8 @@ public class Hardware {
         bLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    public void stopAndResetLiftEncoders() {
-        upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
 
-    public void setLiftMode(DcMotor.RunMode runMode){
-        upMotorL.setMode(runMode);
-        upMotorR.setMode(runMode);
-    }
     public boolean isBusy() {
         return fLMotor.isBusy() || fRMotor.isBusy() || bRMotor.isBusy() || bLMotor.isBusy();
-    }
-
-    /**
-     * Flips claw to a specific point
-     * @param pos pos = 0 represents initialization state, pos = 1 represents flipped state
-     */
-    public void flipToPosition(double pos) {
-        flipL.setPosition(1 - pos);
-        flipR.setPosition(pos);
-    }
-    public class SimplePipeline extends OpenCvPipeline{
-        public Mat processFrame(Mat input){
-            String decoded = det.detectAndDecode(input);
-            if (decoded.length() > 5){
-                found = true;
-                message = decoded;
-            }
-            return input;
-        }
     }
 }

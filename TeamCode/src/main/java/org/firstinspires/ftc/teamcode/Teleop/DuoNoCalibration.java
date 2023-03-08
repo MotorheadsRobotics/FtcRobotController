@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 /**
  *  In OnBot Java, add a new OpMode, drawing from this Sample; select TeleOp.
@@ -44,6 +45,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 @TeleOp(name="Duo No Calibration", group="Robot")
 public class DuoNoCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
+    Lift lift = new Lift(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
 
@@ -73,7 +75,8 @@ public class DuoNoCalibration extends AutonDriving {
         boolean dpadRightPressed = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init(false);
+        robot.init();
+        lift.init(true);
         robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
@@ -106,7 +109,7 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(Hardware.heightsCounts[currentPreset] + offsetCounts);
+                lift.downDrop(Hardware.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -213,7 +216,7 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
             telemetry.addData("Heading", robot.getRawHeading());
-            robot.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            lift.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 

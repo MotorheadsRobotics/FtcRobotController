@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
 import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 /**
  *  In OnBot Java, add a new OpMode, drawing from this Sample; select TeleOp.
@@ -44,6 +45,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Hardware;
 @TeleOp(name="Duo With Calibration", group="Robot")
 public class DuoExtraCalibration extends AutonDriving {
     Hardware robot = new Hardware(this);
+    Lift lift = new Lift(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
 
@@ -74,7 +76,8 @@ public class DuoExtraCalibration extends AutonDriving {
         boolean dpadRightPressed = false;
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init(true);
+        robot.init();
+        lift.init(true);
         robot.initGyro();
 
         // Send telemetry message to signify robot waiting;
@@ -107,7 +110,7 @@ public class DuoExtraCalibration extends AutonDriving {
 
             // Claw mapped to a
             if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(Hardware.heightsCounts[currentPreset] + offsetCounts);
+                lift.downDrop(Hardware.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -124,8 +127,8 @@ public class DuoExtraCalibration extends AutonDriving {
             }
 
             if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
-                robot.stopAndResetLiftEncoders();
-                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                lift.stopAndResetLiftEncoders();
+                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 bottom = true;
             }
             else {
@@ -214,7 +217,7 @@ public class DuoExtraCalibration extends AutonDriving {
             telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
 
             telemetry.addData("Heading", robot.getRawHeading());
-            robot.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            lift.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 
