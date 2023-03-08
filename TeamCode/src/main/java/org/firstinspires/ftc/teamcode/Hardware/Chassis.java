@@ -39,16 +39,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
-import org.opencv.core.Mat;
 import org.opencv.objdetect.QRCodeDetector;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 /**
@@ -56,7 +51,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * Also add a new OpMode, drawing from the Sample ConceptExternalHardwareClass.java; select TeleOp.
  */
 
-public class Hardware {
+public class Chassis {
 
     /* Declare OpMode members. */
     private OpMode myOpMode;   // gain access to methods in the calling OpMode.
@@ -124,7 +119,7 @@ public class Hardware {
     AprilTagDetection tagOfInterest = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Hardware(OpMode opmode) {
+    public Chassis(OpMode opmode) {
         myOpMode = opmode;
     }
 

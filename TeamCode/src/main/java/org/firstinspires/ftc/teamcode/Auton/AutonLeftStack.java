@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Auton;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="Left Stack Regular", group="Robot")
@@ -115,17 +115,17 @@ public class AutonLeftStack extends AutonDriving{
         encoderDrive(0.5, 90, 109.5,5);
         encoderDrive(0.5, 270, 6,5);
 
-        setLift(Hardware.maxHeightInch * Hardware.liftCountsPerInch,LIFTMOTORPOWER, 3);
+        setLift(Chassis.maxHeightInch * Chassis.liftCountsPerInch,LIFTMOTORPOWER, 3);
         robot.flipToPosition(0);
 
         encoderDrive(0.5, 180, 12.5,2);
 
-        setLift((Hardware.highInch - 3) * Hardware.liftCountsPerInch,LIFTMOTORPOWER,1); // added
+        setLift((Chassis.highInch - 3) * Chassis.liftCountsPerInch,LIFTMOTORPOWER,1); // added
 
         robot.claw.setPosition(0); // open claw
         sleep(150);
 
-        setLift(Hardware.highInch * Hardware.liftCountsPerInch,LIFTMOTORPOWER,1);
+        setLift(Chassis.highInch * Chassis.liftCountsPerInch,LIFTMOTORPOWER,1);
 
         sleep(250);
         telemetry.addData("Path Part 1: ", "Done");

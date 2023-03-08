@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 
 public abstract class AdiRunner extends AutonDriving{
     public void curveDrive (double fastSpeed, double endRelHead , double smallLength) {
@@ -18,7 +18,7 @@ public abstract class AdiRunner extends AutonDriving{
         while (robot.isBusy() && timeoutS < runtime.seconds() - startTime){}
         robot.setDrivePower(0, 0, 0, 0);
     }
-    public void turnToIMU (double relHead, double speed, Hardware robot1) {
+    public void turnToIMU (double relHead, double speed, Chassis robot1) {
         double targetHead = relHead + robot1.getRawHeading();
         double currentSpeed = speed;
         while (robot1.getRawHeading() != targetHead) {

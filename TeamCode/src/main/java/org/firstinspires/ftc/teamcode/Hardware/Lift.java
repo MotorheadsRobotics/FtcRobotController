@@ -189,7 +189,7 @@ public class Lift {
     }
 
     public boolean canFlip(){
-        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip;
+        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * Chassis.minHeightForFlip;
     }
     public void downDrop() {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);

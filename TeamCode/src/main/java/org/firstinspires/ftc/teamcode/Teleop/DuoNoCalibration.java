@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 /**
@@ -44,7 +44,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 @TeleOp(name="Duo No Calibration", group="Robot")
 public class DuoNoCalibration extends AutonDriving {
-    Hardware robot = new Hardware(this);
+    Chassis robot = new Chassis(this);
     Lift lift = new Lift(this);
 
 //  goal heights (in) {0, 2, 15, 23, 32}
@@ -108,8 +108,8 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
             // Claw mapped to a
-            if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                lift.downDrop(Hardware.heightsCounts[currentPreset] + offsetCounts);
+            if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Chassis.minHeightForFlip * 2) {
+                lift.downDrop(Chassis.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
@@ -135,17 +135,17 @@ public class DuoNoCalibration extends AutonDriving {
 //            }
 
             if(isFlipped){
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
+                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
             }
-            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Chassis.minHeightForFlip){
+                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
+                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
             }
-            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
+            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Chassis.minHeightForFlip){
                 robot.claw.setPosition(1);
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
+                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
                 time = runtime.milliseconds();
                 isFlipped = true;
                 isRotated = false;
@@ -161,7 +161,7 @@ public class DuoNoCalibration extends AutonDriving {
                 rotatePosition = 1 - rotatePosition;
                 while(gamepad2.x){}
             }
-            robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
+            robot.rotate.setPosition(Chassis.ROTATE_CONSTANT * rotatePosition);
 
             // flip is asked for
             // set new flip position
@@ -213,10 +213,10 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
+            telemetry.addData("Current Preset", Chassis.heightNames[currentPreset]);
 
             telemetry.addData("Heading", robot.getRawHeading());
-            lift.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            lift.setLift(Chassis.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 

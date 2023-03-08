@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ import java.util.ArrayList;
 
 public abstract class AutonDriving extends LinearOpMode {
     // Initialize Hardware
-    Hardware robot = new Hardware(this);
+    Chassis robot = new Chassis(this);
     ElapsedTime runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
