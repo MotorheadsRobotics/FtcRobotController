@@ -68,7 +68,7 @@ public class DuoExtraCalibration extends AutonDriving {
         int liftPosL = 0, liftPosR = 0;
         boolean needsToChange = true;
         boolean lock = false;
-        boolean bottom = true;
+        boolean needToResetLift = false;
 
         boolean dpadUpPressed = false;
         boolean dpadDownPressed = false;
@@ -126,13 +126,13 @@ public class DuoExtraCalibration extends AutonDriving {
                 isFlipped = false;
             }
 
-            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
+            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && needToResetLift) {
                 lift.stopAndResetLiftEncoders();
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                bottom = true;
+                needToResetLift = false;
             }
-            else {
-                bottom = false;
+            else if(!robot.upLSensor.isPressed() && !robot.upRSensor.isPressed()){
+                needToResetLift = true;
             }
 
             if(isFlipped){

@@ -13,7 +13,7 @@ import org.openftc.apriltag.AprilTagDetection;
 public class LeftStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
     //TODO: change lift presets to what they actually are.
-    double adjustment = -0.35;
+    double adjustment = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
