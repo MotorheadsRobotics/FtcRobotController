@@ -5,8 +5,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="RoadRunner Test Left Stack", group="Robot")
@@ -17,8 +17,8 @@ public class LeftStackRunner extends AutonomousDriving {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
+        Chassis robot = new Chassis(this, true);
+        Lift lift = new Lift(this, true);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
@@ -45,12 +45,12 @@ public class LeftStackRunner extends AutonomousDriving {
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                          .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                          .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                         .addTemporalMarker(0.1, () -> lift.closeClaw())
+                         .addTemporalMarker(0.1, lift::closeClaw)
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);
                              lift.openClaw();
                          })
-                         .addTemporalMarker(0.2, () -> lift.closeClaw())
+                         .addTemporalMarker(0.2, lift::closeClaw)
                          //TODO: Make robot not run into wall
                          .splineTo(new Vector2d(num, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
@@ -87,6 +87,9 @@ public class LeftStackRunner extends AutonomousDriving {
 
             // Go back to high goal
             int offset = 166;
+            if (robot.hitWall()){
+                robot.setPoseEstimate(new Pose2d(-62.5, -12, Math.toRadians(180)));
+            }
             trackMod.track3Update(offset);
             robot.followTrajectory(track3);
             lift.downDrop();
@@ -95,8 +98,7 @@ public class LeftStackRunner extends AutonomousDriving {
         }
 
         // Park in designated spot
-        Trajectory track4 = null;
-        int loopIterations = 4;
+        Trajectory track4;
         robot.setPoseEstimate(robot.getPoseEstimate());
         if(tagOfInterest == null) {
             tagOfInterest = new AprilTagDetection();
@@ -107,22 +109,28 @@ public class LeftStackRunner extends AutonomousDriving {
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate())
                         .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER / 2))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, () -> lift.closeClaw())
-                        .addTemporalMarker(0.3, () -> {
-                            lift.setRotate(0);
-                        })
+                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
                         //TODO: Make robot not run into wall
                         .splineTo(new Vector2d(-65, -12), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
                 break;
             case 3: // Park Right
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER / 2))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
                         .splineTo(new Vector2d(-36,-20),Math.toRadians(270))
                         .splineToConstantHeading(new Vector2d(-12,-30),Math.toRadians(0))
                         .build();
                 break;
             default: // Park Middle / or guess middle if no tag found
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER / 2))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
                         .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
                         .build();
         }

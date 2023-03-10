@@ -46,7 +46,7 @@ import java.util.ArrayList;
 
 public abstract class AutonDriving extends LinearOpMode {
     // Initialize Hardware
-    Chassis robot = new Chassis(this);
+    Chassis robot = new Chassis(this, true);
     ElapsedTime runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda
@@ -63,12 +63,11 @@ public abstract class AutonDriving extends LinearOpMode {
     static final double     HEADING_THRESHOLD      = 1;
 
     private double          robotHeading  = 0;
-    private double          headingOffset = -1;
     private double          headingError  = 0;
 
 
     private double  targetHeading = 0;
-    private double  driveSpeed    = 0;
+    private final double  driveSpeed    = 0;
     private double  turnSpeed     = 0;
     private double  leftSpeed     = 0;
     private double  fLSpeed       = 0;
@@ -76,8 +75,8 @@ public abstract class AutonDriving extends LinearOpMode {
     private double  bLSpeed       = 0;
     private double  bRSpeed       = 0;
     private double  rightSpeed    = 0;
-    private int     leftTarget    = 0;
-    private int     rightTarget   = 0;
+    private final int     leftTarget    = 0;
+    private final int     rightTarget   = 0;
 
     /**
      * Method to drive at any given angle for a certain number of degrees. Maintains heading.
@@ -104,7 +103,9 @@ public abstract class AutonDriving extends LinearOpMode {
         if (opModeIsActive()) {
             // Determine new target position, and pass to motor controller
 
-            /** Direction: forwards = 0, right = 90, back = 180, left = 270 **/
+            /*
+            Direction: forwards = 0, right = 90, back = 180, left = 270
+            */
             // direction -= 90; direction *= -1; direction *= Math.PI/180;
             direction = (90 - direction) * Math.PI / 180 - Math.PI / 4;
             double v1 = inches * Math.cos(direction);
@@ -138,11 +139,11 @@ public abstract class AutonDriving extends LinearOpMode {
             robot.bRMotor.setPower(forwardSlashSpeed);
 
             // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // Note: We use (motorsBusy() && motorsBusy()) in the loop test, which means that when EITHER motor hits
             // its target position, the motion will stop.  This is "safer" in the event that the robot will
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            // onto the next step, use (motorsBusy() || motorsBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy())) {
@@ -291,11 +292,11 @@ public abstract class AutonDriving extends LinearOpMode {
             }
 
             // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // Note: We use (motorsBusy() && motorsBusy()) in the loop test, which means that when EITHER motor hits
             // its target position, the motion will stop.  This is "safer" in the event that the robot will
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            // onto the next step, use (motorsBusy() || motorsBusy()) in the loop test.
             if (timeoutS != 0) {
                 while (opModeIsActive() &&
                         (runtime.seconds() < timeoutS) &&
@@ -368,37 +369,10 @@ public abstract class AutonDriving extends LinearOpMode {
             telemetry.update();
         }
     }
-    /**
-     * setLift (Autonomous), waits for
-     * @param counts
-     * @param liftPower
-     */
-    public void setLift(int counts, double liftPower, double timeoutS) {
-        runtime.reset();
-        robot.upMotorL.setTargetPosition(counts);
-        robot.upMotorR.setTargetPosition(counts);
-
-        robot.upMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.upMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.upMotorL.setPower(liftPower);
-        robot.upMotorR.setPower(liftPower);
-
-        while (opModeIsActive() &&
-                (runtime.seconds() < timeoutS) &&
-                (robot.upMotorL.isBusy() && robot.upMotorR.isBusy())) {
-
-            // Display it for the driver.
-            telemetry.addData("Running to",  " %7d", counts);
-            telemetry.addData("Currently at",  " at %7d :%7d",
-                    robot.upMotorL.getCurrentPosition(), robot.upMotorR.getCurrentPosition());
-            telemetry.update();
-        }
-    }
 
     /**
      * turnDegrees turns the robot in place counterclockwise by the number of degrees
-     * @param speed
+     * @param speed is motor speed
      * @param degrees +ve is counterclockwise, -ve is clockwise
      * @param timeoutS amount of time until program gives up
      */
@@ -442,7 +416,9 @@ public abstract class AutonDriving extends LinearOpMode {
         if (opModeIsActive()) {
             // Determine new target position, and pass to motor controller
 
-            /** Direction: forwards = 0, right = 90, back = 180, left = 270 **/
+            /*
+              Direction: forwards = 0, right = 90, back = 180, left = 270
+             */
             // direction -= 90; direction *= -1; direction *= Math.PI/180;
             direction = (90 - direction) * Math.PI / 180 - Math.PI / 4;
             double v1 = inches * Math.cos(direction);
@@ -488,30 +464,6 @@ public abstract class AutonDriving extends LinearOpMode {
         }
     }
 
-    public void holdHeading(double maxTurnSpeed, double heading, double holdTime) {
-
-        ElapsedTime holdTimer = new ElapsedTime();
-        holdTimer.reset();
-
-        // keep looping while we have time remaining.
-        while (opModeIsActive() && (holdTimer.time() < holdTime)) {
-            // Determine required steering to keep on heading
-            turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
-
-            // Clip the speed to the maximum permitted value.
-//            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
-
-            // Pivot in place by applying the turning correction
-            turnRobot(turnSpeed);
-
-            // Display drive status for the driver.
-            sendTelemetry();
-        }
-
-        // Stop all motion;
-        stopAllMotion();
-    }
-
     // **********  LOW Level driving functions.  ********************
 
     /**
@@ -525,6 +477,7 @@ public abstract class AutonDriving extends LinearOpMode {
         targetHeading = desiredHeading;  // Save for telemetry
 
         // Get the robot heading by applying an offset to the IMU heading
+        double headingOffset = -1;
         robotHeading = robot.getRawHeading() - headingOffset;
 
         // Determine the heading current error

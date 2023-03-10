@@ -47,8 +47,7 @@ public class Lift {
     private ElapsedTime runtime = new ElapsedTime();
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally - idk abt that one)
-    private DcMotor upMotorL;
-    private DcMotor upMotorR;
+    public DcMotor upMotorL, upMotorR;
 
     private Servo claw;
     private Servo flipL;
@@ -74,13 +73,8 @@ public class Lift {
     public TouchSensor upRSensor;
     private double flipPosition = FLIP_BASE;
 
-
-    // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Lift(OpMode opmode) {
-        myOpMode = opmode;
-    }
-
-    public void init(boolean calibrate)    {
+    public Lift(OpMode opMode, boolean calibrate)    {
+        myOpMode = opMode;
         upMotorL = myOpMode.hardwareMap.get(DcMotor.class, "upMotorL");
         upMotorR = myOpMode.hardwareMap.get(DcMotor.class, "upMotorR");
 

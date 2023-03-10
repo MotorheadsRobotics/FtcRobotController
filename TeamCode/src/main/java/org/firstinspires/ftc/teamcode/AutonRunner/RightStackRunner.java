@@ -5,8 +5,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="RoadRunner Test Right Stack", group="Robot")
@@ -18,8 +18,8 @@ public class RightStackRunner extends AutonomousDriving {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
+        Chassis robot = new Chassis(this, true);
+        Lift lift = new Lift(this, true);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
@@ -48,12 +48,12 @@ public class RightStackRunner extends AutonomousDriving {
                 track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                         .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, () -> lift.closeClaw())
+                        .addTemporalMarker(0.22, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> {
                             lift.setRotate(0);
                             lift.openClaw();
                         })
-                        .addTemporalMarker(0.2, () -> lift.closeClaw())
+                        .addTemporalMarker(0.2, lift::closeClaw)
                         //TODO: Make robot not run into wall
                         .splineTo(new Vector2d(num, -12), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
@@ -82,12 +82,16 @@ public class RightStackRunner extends AutonomousDriving {
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2);
             lift.closeClaw();
-            sleep(100);
-            trackMod.track3Update((4 - i) * 83);
+            sleep(300);
+            if (robot.hitWall()){
+                robot.setPoseEstimate(new Pose2d(62.5, -12, Math.toRadians(0)));
+            }
+            int offset = 166;
+            trackMod.track3Update(offset);
             robot.followTrajectory(track3);
             lift.downDrop();
         }
-        Trajectory track4 = null;
+        Trajectory track4;
         if(tagOfInterest == null) {
             tagOfInterest = new AprilTagDetection();
             tagOfInterest.id = -1;
