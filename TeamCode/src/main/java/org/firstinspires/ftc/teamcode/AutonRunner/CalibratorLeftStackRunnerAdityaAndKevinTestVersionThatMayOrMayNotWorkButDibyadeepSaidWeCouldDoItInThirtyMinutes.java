@@ -18,7 +18,6 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 

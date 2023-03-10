@@ -23,7 +23,7 @@ public abstract class AutonomousDriving extends LinearOpMode {
         void track2Mod(double cone);
         void track3Update(int offset);
     }
-    Lift lift = new Lift(this);
+    Lift lift = new Lift(this, true);
     Camera tagDetector = new Camera(this);
 
     public AprilTagDetection getTag(AprilTagDetectionPipeline pipeline) {
