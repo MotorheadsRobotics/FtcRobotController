@@ -46,7 +46,7 @@ import java.util.ArrayList;
 
 public abstract class AutonDriving extends LinearOpMode {
     // Initialize Hardware
-    Chassis robot = new Chassis(this, true);
+    Chassis robot;
     ElapsedTime runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;       // from GoBuilda

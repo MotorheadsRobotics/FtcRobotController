@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -75,6 +76,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
+
+    public TouchSensor RSensor;
+    public TouchSensor LSensor;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -126,6 +130,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         bLMotor = hardwareMap.get(DcMotorEx.class, "bLMotor");
         bRMotor = hardwareMap.get(DcMotorEx.class, "bRMotor");
         fRMotor = hardwareMap.get(DcMotorEx.class, "fRMotor");
+
+        RSensor = hardwareMap.get(TouchSensor.class, "RSensor");
+        LSensor = hardwareMap.get(TouchSensor.class, "LSensor");
 
         motors = Arrays.asList(fLMotor, bLMotor, bRMotor, fRMotor);
 
@@ -301,6 +308,10 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
+
+    public boolean hitWall() {
+        return RSensor.isPressed() || LSensor.isPressed();
     }
 
     @Override

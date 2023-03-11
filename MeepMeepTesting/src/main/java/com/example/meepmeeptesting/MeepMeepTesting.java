@@ -2,12 +2,8 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.noahbres.meepmeep.MeepMeep;
-import com.noahbres.meepmeep.core.colorscheme.ColorScheme;
-import com.noahbres.meepmeep.core.entity.BotEntity;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
-import com.noahbres.meepmeep.roadrunner.SampleMecanumDrive;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
@@ -26,7 +22,7 @@ public class MeepMeepTesting {
                                 })
                                 .strafeLeft(47.75)
                                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
-                                .lineTo(new Vector2d(-27.0,-3.0))
+                                .splineTo(new Vector2d(-27.0,-3.0), Math.toRadians(45))
                                 .addDisplacementMarker(() -> {
                                     // Down
                                 })

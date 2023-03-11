@@ -11,13 +11,14 @@ import org.openftc.apriltag.AprilTagDetection;
 @Autonomous(name="Left Stack Regular", group="Robot")
 
 public class AutonLeftStack extends AutonDriving{
-    Chassis robot = new Chassis(this, true);
-    Lift lift = new Lift(this, true);
-    Camera camera = new Camera(this);
+    Lift lift;
     public double LIFTMOTORPOWER = 1.0;
     public AprilTagDetection tagOfInterest = null;
     @Override
     public void runOpMode() {
+        robot = new Chassis(this, true);
+        lift = new Lift(this, true);
+        Camera camera = new Camera(this);
         runtime.reset();
         sleep(250);
         lift.flipToPosition(0.5);
@@ -62,7 +63,7 @@ public class AutonLeftStack extends AutonDriving{
     }
 
     public void pathWithCamera(AprilTagDetection tagOfInterest){
-        robot.claw.setPosition(1);
+        lift.closeClaw();
         moveConeToHighTerminalSimple();
         encoderDrive(0.5, 0, 9,2);
         lift.setLift(5,0.8);
@@ -101,7 +102,7 @@ public class AutonLeftStack extends AutonDriving{
     }
 
     public void pathWithoutCamera() {
-        robot.claw.setPosition(1); // close claw
+        lift.closeClaw(); // close claw
 //        moveConeToHighTerminal(false);
         moveConeToHighTerminalSimple();
 //        for(int numTimes = 4; numTimes > 3; numTimes--) { // change to numTimes >= 0 to do all five cones
@@ -118,24 +119,24 @@ public class AutonLeftStack extends AutonDriving{
         encoderDrive(0.5, 90, 109.5,5);
         encoderDrive(0.5, 270, 6,5);
 
-        lift.setLift(Chassis.maxHeightInch * Chassis.liftCountsPerInch,LIFTMOTORPOWER, 3);
+        lift.setLift(Lift.maxHeightInch * Lift.liftCountsPerInch,LIFTMOTORPOWER, 3);
         lift.flipToPosition(0);
 
         encoderDrive(0.5, 180, 12.5,2);
 
-        lift.setLift((Chassis.highInch - 3) * Chassis.liftCountsPerInch,LIFTMOTORPOWER,1); // added
+        lift.setLift((Lift.highInch - 3) * Lift.liftCountsPerInch,LIFTMOTORPOWER,1); // added
 
-        robot.claw.setPosition(0); // open claw
+        lift.openClaw(); // open claw
         sleep(150);
 
-        lift.setLift(Chassis.highInch * Chassis.liftCountsPerInch,LIFTMOTORPOWER,1);
+        lift.setLift(Lift.highInch * Lift.liftCountsPerInch,LIFTMOTORPOWER,1);
 
         sleep(250);
         telemetry.addData("Path Part 1: ", "Done");
         telemetry.update();
     }
     public void moveBackToHighTerminal() {
-        robot.claw.setPosition(1);
+        lift.closeClaw();
         lift.setLift(2741,LIFTMOTORPOWER);
         boolean dontFlip = true;
         sleep(100);
@@ -146,7 +147,7 @@ public class AutonLeftStack extends AutonDriving{
 
         while(dontStop || dontFlip){
             dontStop = robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy();
-            dontFlip = lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() < 2 * robot.minHeightForFlip;
+            dontFlip = lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() < 2 * Lift.minHeightForFlip;
             if(!dontStop) {
                 // Stop all motion;
                 robot.fLMotor.setPower(0);
@@ -161,15 +162,15 @@ public class AutonLeftStack extends AutonDriving{
                 robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
             if(!dontFlip){
-                robot.rotate.setPosition(0); // rotate
-                robot.claw.setPosition(0); // open
+                lift.setRotate(1); // rotate
+                lift.openClaw(); // open
             }
         }
         // TODO: strafe back to next to terminal
         encoderDrive(0.3,90, 12,1);
         // TODO: Move until cone is on top of high terminal
         encoderDrive(0.5,0,6,1);
-        robot.claw.setPosition(0);
+        lift.openClaw();
 
     }
     public void moveToStack(int numTimes) {
@@ -177,15 +178,15 @@ public class AutonLeftStack extends AutonDriving{
         encoderDrive(0.3,270, 12,1);
         //move lift back down
         lift.setLift(numTimes * 440,LIFTMOTORPOWER); // stack cone #5
-        robot.claw.setPosition(1);
-        robot.rotate.setPosition(1);
+        lift.closeClaw();
+        lift.setRotate(0);
         // TODO: begin moving toward stack, inches need to get robot to wall stack
         encoderDriveNoWaiting(0.3,0,48);
         //prepare claw to pick up cones
         sleep(250);
         lift.flipToPosition(0); // back to normal flipped state
         sleep(250);
-        robot.claw.setPosition(0);
+        lift.openClaw();
         while(robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy()){
             // stall
         }
@@ -214,8 +215,8 @@ public class AutonLeftStack extends AutonDriving{
         boolean dontStop = true;
 
         while(dontStop || dontFlip){
-            dontStop = robot.fLMotor.isBusy() || robot.fRMotor.isBusy() || robot.bLMotor.isBusy() || robot.bRMotor.isBusy();
-            dontFlip = lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() < 2 * robot.minHeightForFlip;
+            dontStop = robot.motorsBusy();
+            dontFlip = lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() < 2 * Lift.minHeightForFlip;
             if(!dontStop) {
                 // Stop all motion;
                 robot.fLMotor.setPower(0);
@@ -230,7 +231,7 @@ public class AutonLeftStack extends AutonDriving{
                 robot.fRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
             if(!dontFlip){
-                robot.rotate.setPosition(0); // rotate
+                lift.setRotate(1);
             }
         }
         encoderDrive(0.7,270,20,1);
@@ -239,7 +240,7 @@ public class AutonLeftStack extends AutonDriving{
         // TODO: Move until cone is on top of high terminal
         int direction = isRightSide ? 0 : 180;
         encoderDrive(0.5,direction,6,1);
-        robot.claw.setPosition(0); // open claw
+        lift.openClaw();
         sleep(250);
     }
 }

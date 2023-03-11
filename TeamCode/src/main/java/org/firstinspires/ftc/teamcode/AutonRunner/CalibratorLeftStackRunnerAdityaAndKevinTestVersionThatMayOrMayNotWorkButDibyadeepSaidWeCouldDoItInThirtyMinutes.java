@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
@@ -18,6 +19,8 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
+        Lift lift = new Lift(this, true);
+        Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 

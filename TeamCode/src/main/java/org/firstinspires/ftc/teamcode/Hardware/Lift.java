@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -49,7 +51,7 @@ public class Lift {
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally - idk abt that one)
     public DcMotor upMotorL, upMotorR;
 
-    private Servo claw;
+    public Servo claw;
     private Servo flipL;
     private Servo flipR;
     public static double FLIP_CONSTANT = 0.72;
@@ -108,6 +110,12 @@ public class Lift {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
 
+        try {
+            sleep(300);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         if(calibrate)
             calibrateLift();
     }
@@ -125,7 +133,7 @@ public class Lift {
         upMotorR.setPower(0);
 
         if (!upLSensor.isPressed() || !upRSensor.isPressed()) {
-            myOpMode.telemetry.addData(">", "Lift Calibration Failed, Check Lift Alignment");
+            myOpMode.telemetry.addData(">", "One Sensor hit, Calibration OK");
         }
         else {
             myOpMode.telemetry.addData(">", "Lift Calibration Success.");
@@ -183,7 +191,7 @@ public class Lift {
     }
 
     public boolean canFlip(){
-        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * Chassis.minHeightForFlip;
+        return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * minHeightForFlip;
     }
     public void downDrop() {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);

@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
@@ -72,17 +71,9 @@ public class DuoNoCalibration extends AutonDriving {
 
         Chassis robot = new Chassis(this, false);
         Lift lift = new Lift(this, false);
-
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        
-        // boolean slow = false;
-        lift.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        lift.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int offsetCounts = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -102,15 +93,15 @@ public class DuoNoCalibration extends AutonDriving {
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
             // Claw mapped to a
-            if (gamepad2.a && lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > Chassis.minHeightForFlip * 2) {
-                lift.downDrop(Chassis.heightsCounts[currentPreset] + offsetCounts);
+            if (gamepad2.a && lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > Lift.minHeightForFlip * 2) {
+                lift.downDrop(Lift.heightsCounts[currentPreset] + offsetCounts);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {
                 clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {}
             }
-            robot.claw.setPosition(clawPosition);
+            lift.claw.setPosition(clawPosition);
 
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state
@@ -120,17 +111,17 @@ public class DuoNoCalibration extends AutonDriving {
             }
 
             if(isFlipped){
-                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
+                lift.flipToPosition(1 - flipPosition);
+                lift.flipToPosition(flipPosition);
             }
-            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() <= 2 * Chassis.minHeightForFlip){
-                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
-                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
+            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() <= 2 * Lift.minHeightForFlip){
+                lift.flipToPosition(flipPosition);
+                lift.flipToPosition(1 - flipPosition);
             }
-            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > 2 * Chassis.minHeightForFlip){
-                robot.claw.setPosition(1);
-                robot.flipL.setPosition(Chassis.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Chassis.FLIP_CONSTANT * flipPosition);
+            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > 2 * Lift.minHeightForFlip){
+                lift.claw.setPosition(1);
+                lift.flipToPosition(1 - flipPosition);
+                lift.flipToPosition(flipPosition);
                 time = runtime.milliseconds();
                 isFlipped = true;
                 isRotated = false;
@@ -146,7 +137,7 @@ public class DuoNoCalibration extends AutonDriving {
                 rotatePosition = 1 - rotatePosition;
                 while(gamepad2.x){}
             }
-            robot.rotate.setPosition(Chassis.ROTATE_CONSTANT * rotatePosition);
+            lift.setRotate(rotatePosition);
 
             // flip is asked for
             // set new flip position
@@ -198,10 +189,8 @@ public class DuoNoCalibration extends AutonDriving {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", Chassis.heightNames[currentPreset]);
-
-            telemetry.addData("Heading", robot.getRawHeading());
-            lift.setLift(Chassis.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            telemetry.addData("Current Preset", Lift.heightNames[currentPreset]);
+            lift.setLift(Lift.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 
