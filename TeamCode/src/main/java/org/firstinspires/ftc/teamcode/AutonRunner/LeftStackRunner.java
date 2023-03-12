@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDriveCancelable;
 import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="RoadRunner Test Left Stack", group="Robot")
@@ -18,7 +19,7 @@ public class LeftStackRunner extends AutonomousDriving {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable robot = new SampleMecanumDriveCancelable(hardwareMap);
         Lift lift = new Lift(this, true);
         Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
@@ -81,7 +82,13 @@ public class LeftStackRunner extends AutonomousDriving {
         for (int i = 3; i >= 1 && opModeIsActive(); i--) {
             // Go towards cone stack
             trackMod.track2Mod(cones[i]);
-            robot.followTrajectory(track2, this);
+            robot.followTrajectoryAsync(track2);
+            while(robot.isBusy() && opModeIsActive()){
+                if (robot.hitWall()){
+                    robot.breakFollowing();
+                    robot.setPoseEstimate(new Pose2d(-62.5, -14, Math.toRadians(180)));
+                }
+            }
             lift.closeClaw();
             sleep(300);
             telemetry.addData("Path: ", "Track 2 Completed - (" + (4 - i) + "/4)");
@@ -89,9 +96,7 @@ public class LeftStackRunner extends AutonomousDriving {
 
             // Go back to high goal
             int offset = 166;
-            if (robot.hitWall()){
-                robot.setPoseEstimate(new Pose2d(-62.5, -14, Math.toRadians(180)));
-            }
+
             trackMod.track3Update(offset);
             robot.followTrajectory(track3, this);
             lift.downDrop();
