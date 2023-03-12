@@ -58,7 +58,7 @@ public class DuoNoCalibration extends AutonDriving {
         double clawPosition = 1;
         double flipPosition = 0;
         double time = 0;
-        double rotatePosition = 1;
+        double rotatePosition = 0;
         boolean isRotated = true;
         boolean isFlipped = true;
         double speedMultiplier;
