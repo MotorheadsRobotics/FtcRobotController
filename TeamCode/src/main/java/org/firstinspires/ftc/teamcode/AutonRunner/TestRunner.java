@@ -53,20 +53,20 @@ public class TestRunner extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
-        robot.followTrajectory(midtrack);
+        robot.followTrajectory(track1, this);
+        robot.followTrajectory(midtrack, this);
         sleep(1000);
 //        lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
-//        robot.followTrajectory(track2);
+//        robot.followTrajectory(track2, this);
 //        telemetry.addData("Path: ", "Track 2 Completed");
 //        telemetry.update();
 //        lift.closeClaw();
 //        sleep(100);
 //        lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
 //        sleep(200);
-//        robot.followTrajectory(track3);
+//        robot.followTrajectory(track3, this);
 //        lift.downDropUp(Lift.highInch * Lift.liftCountsPerInch);
         // ...
 

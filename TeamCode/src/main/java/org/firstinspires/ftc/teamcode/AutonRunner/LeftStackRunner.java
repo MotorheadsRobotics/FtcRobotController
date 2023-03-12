@@ -64,7 +64,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          .addTemporalMarker(1.5, () -> lift.setRotate(1))
                          .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER))
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-27, -3.6), Math.toRadians(40)) // further away from the cone
+                         .splineTo(new Vector2d(-27.6, -3.6), Math.toRadians(40)) // further away from the cone
                          .build();
              }
          };
@@ -73,7 +73,7 @@ public class LeftStackRunner extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
+        robot.followTrajectory(track1, this);
         telemetry.addData("Path: ", "Track 1 Completed - Preloaded Cone");
         telemetry.update();
         lift.downDrop();
@@ -81,7 +81,7 @@ public class LeftStackRunner extends AutonomousDriving {
         for (int i = 3; i >= 1 && opModeIsActive(); i--) {
             // Go towards cone stack
             trackMod.track2Mod(cones[i]);
-            robot.followTrajectory(track2);
+            robot.followTrajectory(track2, this);
             lift.closeClaw();
             sleep(300);
             telemetry.addData("Path: ", "Track 2 Completed - (" + (4 - i) + "/4)");
@@ -93,14 +93,14 @@ public class LeftStackRunner extends AutonomousDriving {
                 robot.setPoseEstimate(new Pose2d(-62.5, -14, Math.toRadians(180)));
             }
             trackMod.track3Update(offset);
-            robot.followTrajectory(track3);
+            robot.followTrajectory(track3, this);
             lift.downDrop();
             telemetry.addData("Path: ", "Track 3 Completed - (" + (4 - i) + "/4)");
             telemetry.update();
         }
 
         // Park in designated spot
-        Trajectory track4 = null;
+        Trajectory track4;
         if(tagOfInterest == null) {
             tagOfInterest = new AprilTagDetection();
             tagOfInterest.id = 0;
@@ -135,10 +135,11 @@ public class LeftStackRunner extends AutonomousDriving {
                         .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
                         .build();
         }
-//        lift.setLift(0, Lift.LIFTMOTORPOWER);
+        lift.setLift(0, Lift.LIFTMOTORPOWER);
         telemetry.addLine("Starting Track 4");
-        robot.followTrajectory(track4);
+        robot.followTrajectory(track4, this);
         telemetry.addData("Path: ", "Track 4 Completed - Park");
         telemetry.update();
+        while(lift.isBusy() && opModeIsActive());
     }
 }

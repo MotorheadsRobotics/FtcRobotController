@@ -57,8 +57,8 @@ public class LeftStackRunnerSlower extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
-        robot.followTrajectory(midtrack);
+        robot.followTrajectory(track1, this);
+        robot.followTrajectory(midtrack, this);
         lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();

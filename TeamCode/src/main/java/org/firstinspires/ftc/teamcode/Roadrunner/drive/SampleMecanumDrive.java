@@ -31,6 +31,8 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -202,9 +204,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         );
     }
 
-    public void followTrajectory(Trajectory trajectory) {
+    public void followTrajectory(Trajectory trajectory, LinearOpMode opMode) {
         followTrajectoryAsync(trajectory);
-        waitForIdle();
+        while(opMode.opModeIsActive() && isBusy()){
+            update();
+        }
     }
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {

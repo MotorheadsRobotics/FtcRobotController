@@ -240,4 +240,8 @@ public class Lift {
     public int[] getCurrentLiftHeights(){
         return new int[] {upMotorL.getCurrentPosition(), upMotorR.getCurrentPosition()};
     }
+
+    public boolean isBusy() {
+        return upMotorL.isBusy() || upMotorR.isBusy();
+    }
 }

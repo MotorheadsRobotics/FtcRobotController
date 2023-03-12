@@ -77,13 +77,13 @@ public class RightStackRunner extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
+        robot.followTrajectory(track1, this);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
         lift.downDrop();
         for (int i = 4; i >= 1; i--) {
             trackMod.track2Mod(cones[i]);
-            robot.followTrajectory(track2);
+            robot.followTrajectory(track2, this);
             lift.closeClaw();
             sleep(300);
             if (robot.hitWall()){
@@ -91,7 +91,7 @@ public class RightStackRunner extends AutonomousDriving {
             }
             int offset = 166;
             trackMod.track3Update(offset);
-            robot.followTrajectory(track3);
+            robot.followTrajectory(track3, this);
             lift.downDrop();
         }
         Trajectory track4;
@@ -118,7 +118,7 @@ public class RightStackRunner extends AutonomousDriving {
                         .build();
         }
         lift.setLift(0, Lift.LIFTMOTORPOWER);
-        robot.followTrajectory(track4);
+        robot.followTrajectory(track4, this);
         sleep(10000);
     }
 }
