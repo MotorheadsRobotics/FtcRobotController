@@ -197,8 +197,16 @@ public class Lift {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);
     }
     public void downDrop(int height){
+        downDrop(height, 0);
+    }
+    public void downDrop(int height, long delay){
 //        setDrivePower(0,0,0,0);
         setLift(height - 373,LIFTMOTORPOWER/2,1);
+        try {
+            sleep(delay);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         openClaw(); // open
     }
 

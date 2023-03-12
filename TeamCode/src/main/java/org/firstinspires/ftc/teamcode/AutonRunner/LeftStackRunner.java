@@ -30,7 +30,7 @@ public class LeftStackRunner extends AutonomousDriving {
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                .strafeLeft(45)
+                .strafeLeft(42.5)
                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
                 //TODO: make robot not run into pole
                 .splineTo(new Vector2d(-27,-3.6), Math.toRadians(40))
@@ -46,12 +46,11 @@ public class LeftStackRunner extends AutonomousDriving {
                  track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                          .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                          .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                         .addTemporalMarker(0.1, lift::closeClaw)
                          .addTemporalMarker(0.3, () -> {
                              lift.setRotate(0);
                              lift.openClaw();
                          })
-                         .addTemporalMarker(0.2, lift::closeClaw)
+                         .addTemporalMarker(0.15, lift::closeClaw)
                          //TODO: Make robot not run into wall
                          .splineTo(new Vector2d(num, -14), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
@@ -62,9 +61,12 @@ public class LeftStackRunner extends AutonomousDriving {
                  track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                          .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                          .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                         .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER))
+                         .addDisplacementMarker(() -> {
+                             lift.closeClaw();
+                             lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER);
+                         })
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-27.6, -3.6), Math.toRadians(40)) // further away from the cone
+                         .splineTo(new Vector2d(-27.6, -4), Math.toRadians(40)) // further away from the cone
                          .build();
              }
          };
@@ -76,7 +78,7 @@ public class LeftStackRunner extends AutonomousDriving {
         robot.followTrajectory(track1, this);
         telemetry.addData("Path: ", "Track 1 Completed - Preloaded Cone");
         telemetry.update();
-        lift.downDrop();
+        lift.downDrop(Lift.heightsCounts[1] - 100, 400);
 
         for (int i = 3; i >= 1 && opModeIsActive(); i--) {
             // Go towards cone stack
@@ -112,6 +114,7 @@ public class LeftStackRunner extends AutonomousDriving {
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
                         .addTemporalMarker(0.22, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
                         //TODO: Make robot not run into wall
                         .splineTo(new Vector2d(-65, -16), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
