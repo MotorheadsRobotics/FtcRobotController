@@ -8,18 +8,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDriveCancelable;
 import org.openftc.apriltag.AprilTagDetection;
 
 @Autonomous(name="RoadRunner Test Left Stack", group="Robot")
 public class LeftStackRunner extends AutonomousDriving {
     AprilTagDetection tagOfInterest = null;
     //TODO: change lift presets to what they actually are.
-    double y_adjustment = -1;
+    double y_adjustment = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDriveCancelable robot = new SampleMecanumDriveCancelable(hardwareMap);
+        SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(this, true);
         Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
@@ -31,7 +30,7 @@ public class LeftStackRunner extends AutonomousDriving {
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                .strafeLeft(45)
+                .strafeLeft(40)
                 .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
                 //TODO: make robot not run into pole
                 .splineTo(new Vector2d(-27,-3.6), Math.toRadians(40))
@@ -83,12 +82,11 @@ public class LeftStackRunner extends AutonomousDriving {
             // Go towards cone stack
             trackMod.track2Mod(cones[i]);
             robot.followTrajectoryAsync(track2);
-            while(robot.isBusy() && opModeIsActive()){
-                if (robot.hitWall()){
-                    robot.breakFollowing();
-                    robot.setPoseEstimate(new Pose2d(-62.5, -14, Math.toRadians(180)));
-                }
+            while(robot.isBusy() && !robot.hitWall() && opModeIsActive()){
+                robot.update();
             }
+            robot.breakFollowing();
+            robot.setPoseEstimate(new Pose2d(-62.5, -14, Math.toRadians(180)));
             lift.closeClaw();
             sleep(300);
             telemetry.addData("Path: ", "Track 2 Completed - (" + (4 - i) + "/4)");

@@ -1,5 +1,17 @@
 package org.firstinspires.ftc.teamcode.Roadrunner.drive;
 
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kV;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -17,7 +29,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,18 +50,6 @@ import org.firstinspires.ftc.teamcode.Roadrunner.util.LynxModuleUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.Roadrunner.drive.DriveConstants.kV;
 
 /*
  * Trajectory-cancelable version of the simple mecanum drive hardware implementation for REV hardware.
@@ -133,6 +132,12 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         bLMotor = hardwareMap.get(DcMotorEx.class, "bLMotor");
         bRMotor = hardwareMap.get(DcMotorEx.class, "bRMotor");
         fRMotor = hardwareMap.get(DcMotorEx.class, "fRMotor");
+
+        RSensor = hardwareMap.get(TouchSensor.class, "RSensor");
+        LSensor = hardwareMap.get(TouchSensor.class, "LSensor");
+
+        fLMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.REVERSE);
 
         motors = Arrays.asList(fLMotor, bLMotor, bRMotor, fRMotor);
 
