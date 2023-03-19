@@ -44,7 +44,6 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Roadrunner.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.Roadrunner.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.Roadrunner.trajectorysequence.TrajectorySequenceRunnerCancelable;
 import org.firstinspires.ftc.teamcode.Roadrunner.util.LynxModuleUtil;
 
@@ -53,20 +52,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /*
- * Simple mecanum drive hardware implementation for REV hardware.
+ * Trajectory-cancelable version of the simple mecanum drive hardware implementation for REV hardware.
+ * Ensure that this is copied into your project.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0);
+public class SampleMecanumDriveCancelable extends MecanumDrive {
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.1855849888;
+    public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    private TrajectorySequenceRunner trajectorySequenceRunner;
+    private TrajectorySequenceRunnerCancelable trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
@@ -74,15 +74,15 @@ public class SampleMecanumDrive extends MecanumDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx fLMotor, bLMotor, bRMotor, fRMotor;
+
+    public TouchSensor RSensor;
+    public TouchSensor LSensor;
     private List<DcMotorEx> motors;
 
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public TouchSensor RSensor;
-    public TouchSensor LSensor;
-
-    public SampleMecanumDrive(HardwareMap hardwareMap) {
+    public SampleMecanumDriveCancelable(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -136,6 +136,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         RSensor = hardwareMap.get(TouchSensor.class, "RSensor");
         LSensor = hardwareMap.get(TouchSensor.class, "LSensor");
 
+        fLMotor.setDirection(DcMotor.Direction.REVERSE);
+        bLMotor.setDirection(DcMotor.Direction.REVERSE);
+
         motors = Arrays.asList(fLMotor, bLMotor, bRMotor, fRMotor);
 
         for (DcMotorEx motor : motors) {
@@ -155,12 +158,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        fLMotor.setDirection(DcMotor.Direction.REVERSE);
-        bLMotor.setDirection(DcMotor.Direction.REVERSE);
+
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 
-        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        trajectorySequenceRunner = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -209,7 +211,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         while(opMode.opModeIsActive() && isBusy()){
             update();
         }
-        breakFollowing();
     }
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
@@ -222,8 +223,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public void breakFollowing() {
-        TrajectorySequenceRunnerCancelable trajectorySequenceRunnerCancelable = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
-        trajectorySequenceRunnerCancelable.breakFollowing();
+        trajectorySequenceRunner.breakFollowing();
     }
 
     public Pose2d getLastError() {
@@ -322,6 +322,11 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
+        // To work around an SDK bug, use -zRotationRate in place of xRotationRate
+        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
+        // expected). This bug does NOT affect orientation.
+        //
+        // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
         return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
     }
 

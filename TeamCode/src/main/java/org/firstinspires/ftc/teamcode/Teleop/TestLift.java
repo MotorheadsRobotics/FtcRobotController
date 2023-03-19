@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -44,7 +43,7 @@ import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 @TeleOp(name="Lift Test", group="Robot")
 public class TestLift extends LinearOpMode {
-    Lift lift = new Lift(this);
+    Lift lift = new Lift(this, true);
     private ElapsedTime runtime = new ElapsedTime();
     private static final double LIFTMOTORPOWER = 0.8;
     private static final double FLIPDELAY = 1100;
@@ -60,8 +59,6 @@ public class TestLift extends LinearOpMode {
         boolean isFlipped = true;
         double speedMultiplier = 1;
         boolean lock = false;
-
-        lift.init(true);
         waitForStart();
 
         lift.stopAndResetLiftEncoders();

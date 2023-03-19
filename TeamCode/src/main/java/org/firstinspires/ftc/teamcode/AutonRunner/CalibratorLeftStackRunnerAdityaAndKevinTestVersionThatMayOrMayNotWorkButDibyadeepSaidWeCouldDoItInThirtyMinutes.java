@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
@@ -18,7 +19,8 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
+        Lift lift = new Lift(this, true);
+        Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
@@ -70,7 +72,7 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
+        robot.followTrajectory(track1, this);
         telemetry.addData("Path: ", "Track 1 Completed - Preloaded Cone");
         telemetry.update();
         lift.downDrop();
@@ -78,7 +80,7 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
         for (int i = 4; i >= 1; i--) {
             // Go towards cone stack
             trackMod.track2Mod(cones[i]);
-            robot.followTrajectory(track2);
+            robot.followTrajectory(track2,this);
             lift.closeClaw();
             sleep(100);
             telemetry.addData("Path: ", "Track 2 Completed - (" + (5 - i) + "/5)");
@@ -86,7 +88,7 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
 
             // Go back to high goal
             trackMod.track3Update((4 - i) * 166);
-            robot.followTrajectory(track3);
+            robot.followTrajectory(track3, this);
             lift.downDrop();
             telemetry.addData("Path: ", "Track 3 Completed - (" + (5 - i) + "/5)");
             telemetry.update();
@@ -114,7 +116,7 @@ public class CalibratorLeftStackRunnerAdityaAndKevinTestVersionThatMayOrMayNotWo
                         .splineTo(new Vector2d(-36,-36),Math.toRadians(270))
                         .build();
         }
-        robot.followTrajectory(track4);
+        robot.followTrajectory(track4, this);
         telemetry.addData("Path: ", "Track 4 Completed - Park");
         telemetry.update();
 

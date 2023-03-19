@@ -47,8 +47,8 @@ public class BackAndForth extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
-            drive.followTrajectory(trajectoryForward);
-            drive.followTrajectory(trajectoryBackward);
+            drive.followTrajectory(trajectoryForward, this);
+            drive.followTrajectory(trajectoryBackward, this);
         }
     }
 }

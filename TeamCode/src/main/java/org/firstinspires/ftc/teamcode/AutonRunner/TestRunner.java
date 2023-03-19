@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
@@ -18,7 +19,8 @@ public class TestRunner extends AutonomousDriving {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
+        Lift lift = new Lift (this, true);
+        Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
@@ -51,20 +53,20 @@ public class TestRunner extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
-        robot.followTrajectory(midtrack);
+        robot.followTrajectory(track1, this);
+        robot.followTrajectory(midtrack, this);
         sleep(1000);
 //        lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
-//        robot.followTrajectory(track2);
+//        robot.followTrajectory(track2, this);
 //        telemetry.addData("Path: ", "Track 2 Completed");
 //        telemetry.update();
 //        lift.closeClaw();
 //        sleep(100);
 //        lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
 //        sleep(200);
-//        robot.followTrajectory(track3);
+//        robot.followTrajectory(track3, this);
 //        lift.downDropUp(Lift.highInch * Lift.liftCountsPerInch);
         // ...
 

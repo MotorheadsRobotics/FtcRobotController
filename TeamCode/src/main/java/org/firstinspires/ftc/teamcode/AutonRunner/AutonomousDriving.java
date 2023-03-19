@@ -8,7 +8,6 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Auton.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.openftc.apriltag.AprilTagDetection;
 
@@ -23,8 +22,6 @@ public abstract class AutonomousDriving extends LinearOpMode {
         void track2Mod(double cone);
         void track3Update(int offset);
     }
-    Lift lift = new Lift(this);
-    Camera tagDetector = new Camera(this);
 
     public AprilTagDetection getTag(AprilTagDetectionPipeline pipeline) {
         AprilTagDetection tagOfInterest = null;

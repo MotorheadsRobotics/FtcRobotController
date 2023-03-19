@@ -34,59 +34,48 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auton.AutonDriving;
-import org.firstinspires.ftc.teamcode.Hardware.Hardware;
+import org.firstinspires.ftc.teamcode.Hardware.Chassis;
+import org.firstinspires.ftc.teamcode.Hardware.Lift;
 
 /**
  *  In OnBot Java, add a new OpMode, drawing from this Sample; select TeleOp.
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
+@SuppressWarnings("StatementWithEmptyBody")
 @TeleOp(name="Duo With Calibration", group="Robot")
 public class DuoExtraCalibration extends AutonDriving {
-    Hardware robot = new Hardware(this);
+
 
 //  goal heights (in) {0, 2, 15, 23, 32}
 
     public int currentPreset = 0;
     private static final double LIFTMOTORPOWER = 0.8;
     public ElapsedTime runtime = new ElapsedTime();
-    public static double FLIPDELAY = 1100; // milliseconds
+    public static double FLIPDELAY = 700; // milliseconds
 
     @Override
     public void runOpMode() {
         double clawPosition = 1;
         double flipPosition = 0;
         double time = 0;
-        double rotatePosition = 1;
-        double verticalMotorPower = 1.0;
+        double rotatePosition = 0;
         boolean isRotated = true;
         boolean isFlipped = true;
-        boolean wasPressed = false;
-        double speedMultiplier = 1;
-        int liftPosL = 0, liftPosR = 0;
-        boolean needsToChange = true;
+        double speedMultiplier;
         boolean lock = false;
-        boolean bottom = true;
+        boolean needToResetLift = false;
 
         boolean dpadUpPressed = false;
         boolean dpadDownPressed = false;
         boolean dpadLeftPressed = false;
         boolean dpadRightPressed = false;
 
-        // initialize all the hardware, using the hardware class. See how clean and simple this is?
-        robot.init(true);
-        robot.initGyro();
-
+        Chassis robot = new Chassis(this, false);
+        Lift lift = new Lift(this, true);
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        
-        // boolean slow = false;
-        robot.upMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.upMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.upMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.upMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int offsetCounts = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -106,15 +95,20 @@ public class DuoExtraCalibration extends AutonDriving {
             telemetry.addData("Speed Multiplier: ", speedMultiplier);
 
             // Claw mapped to a
-            if (gamepad2.a && robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > Hardware.minHeightForFlip * 2) {
-                robot.downDropUp(Hardware.heightsCounts[currentPreset] + offsetCounts);
-                while(gamepad2.a) {}
+            if (gamepad2.a && lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > Lift.minHeightForFlip * 2) {
+                lift.downDrop();
+                while(gamepad2.a) {
+                    if (gamepad2.right_trigger > 0.3) {
+                        clawPosition = 0;
+                        break;
+                    }
+                }
             }
             else if(gamepad2.a) {
                 clawPosition = 1 - clawPosition;
                 while(gamepad2.a) {}
             }
-            robot.claw.setPosition(clawPosition);
+            lift.claw.setPosition(clawPosition);
 
             // Flipping mapped to y
             if (gamepad2.y) { // flipPosition = 0 means default state
@@ -123,27 +117,27 @@ public class DuoExtraCalibration extends AutonDriving {
                 isFlipped = false;
             }
 
-            if ((robot.upLSensor.isPressed() || robot.upRSensor.isPressed()) && !bottom) {
-                robot.stopAndResetLiftEncoders();
-                robot.setLiftMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                bottom = true;
+            if ((lift.upLSensor.isPressed() || lift.upRSensor.isPressed()) && needToResetLift) {
+                lift.stopAndResetLiftEncoders();
+                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                needToResetLift = false;
             }
-            else {
-                bottom = false;
+            else if(!lift.upLSensor.isPressed() && !lift.upRSensor.isPressed()){
+                needToResetLift = true;
             }
 
             if(isFlipped){
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+                lift.flipToPosition(1 - flipPosition);
+                lift.flipToPosition(flipPosition);
             }
-            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() <= 2 * Hardware.minHeightForFlip){
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
+            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() <= 2 * Lift.minHeightForFlip){
+                lift.flipToPosition(flipPosition);
+                lift.flipToPosition(1 - flipPosition);
             }
-            else if(robot.upMotorL.getCurrentPosition() + robot.upMotorR.getCurrentPosition() > 2 * Hardware.minHeightForFlip){
-                robot.claw.setPosition(1);
-                robot.flipL.setPosition(Hardware.FLIP_CONSTANT * (1 - flipPosition));
-                robot.flipR.setPosition(Hardware.FLIP_CONSTANT * flipPosition);
+            else if(lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > 2 * Lift.minHeightForFlip){
+                lift.claw.setPosition(1);
+                lift.flipToPosition(1 - flipPosition);
+                lift.flipToPosition(flipPosition);
                 time = runtime.milliseconds();
                 isFlipped = true;
                 isRotated = false;
@@ -159,7 +153,7 @@ public class DuoExtraCalibration extends AutonDriving {
                 rotatePosition = 1 - rotatePosition;
                 while(gamepad2.x){}
             }
-            robot.rotate.setPosition(Hardware.ROTATE_CONSTANT * rotatePosition);
+            lift.setRotate(rotatePosition);
 
             // flip is asked for
             // set new flip position
@@ -176,8 +170,8 @@ public class DuoExtraCalibration extends AutonDriving {
 
 
             // Lifts
-            telemetry.addData("leftLiftPos", robot.upMotorL.getCurrentPosition());
-            telemetry.addData("rightLiftPos", robot.upMotorR.getCurrentPosition());
+            telemetry.addData("leftLiftPos", lift.upMotorL.getCurrentPosition());
+            telemetry.addData("rightLiftPos", lift.upMotorR.getCurrentPosition());
 
             // Offset Calculations using bumpers
             if(gamepad2.left_trigger > 0.3)
@@ -211,10 +205,8 @@ public class DuoExtraCalibration extends AutonDriving {
 
             // Move Lifts
             telemetry.addData("Preset Mode", true);
-            telemetry.addData("Current Preset", Hardware.heightNames[currentPreset]);
-
-            telemetry.addData("Heading", robot.getRawHeading());
-            robot.setLift(Hardware.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
+            telemetry.addData("Current Preset", Lift.heightNames[currentPreset]);
+            lift.setLift(Lift.heightsCounts[currentPreset] + offsetCounts, LIFTMOTORPOWER);
 
             telemetry.update();
 

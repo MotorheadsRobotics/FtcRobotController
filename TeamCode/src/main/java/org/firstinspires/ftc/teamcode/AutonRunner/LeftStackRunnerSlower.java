@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
@@ -18,22 +19,17 @@ public class LeftStackRunnerSlower extends AutonomousDriving {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        lift.init(true);
+        Lift lift = new Lift(this, true);
+        Camera tagDetector = new Camera(this);
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
         robot.setPoseEstimate(new Pose2d(-36,-65.75,0));
 
         Trajectory track1 = robot.trajectoryBuilder(new Pose2d(-36, -65.75,0), true)
-                .addDisplacementMarker(() -> {
-                    lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
-                })
-                .addTemporalMarker(0, 0.5, () -> {
-                    lift.flipToPosition(1);
-                })
-                .addTemporalMarker(0, 1.5, () -> {
-                    lift.setRotate(1);
-                })
+                .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
+                .addTemporalMarker(0, 0.5, () -> lift.flipToPosition(1))
+                .addTemporalMarker(0, 1.5, () -> lift.setRotate(1))
                 .strafeLeft(47.75)
                 .build();
 
@@ -61,8 +57,8 @@ public class LeftStackRunnerSlower extends AutonomousDriving {
 
         if(isStopRequested()) return;
 
-        robot.followTrajectory(track1);
-        robot.followTrajectory(midtrack);
+        robot.followTrajectory(track1, this);
+        robot.followTrajectory(midtrack, this);
         lift.downDrop(Lift.highInch * Lift.liftCountsPerInch);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
