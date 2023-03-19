@@ -20,9 +20,10 @@ public class MeepMeepTesting {
                                 .addDisplacementMarker(() -> {
                                     // Set Lift High Goal
                                 })
-                                .strafeLeft(47.75)
-                                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(225)), Math.toRadians(45))
-                                .splineTo(new Vector2d(-27.0,-3.0), Math.toRadians(45))
+                                .strafeLeft(20)
+                                .lineToSplineHeading(new Pose2d(-36, -18, Math.toRadians(-90)))
+                                .splineToSplineHeading(new Pose2d(-30.8,-6.8,Math.toRadians(220)), Math.toRadians(40))
+                                .splineTo(new Vector2d(-27.0,-3.6), Math.toRadians(40))
                                 .addDisplacementMarker(() -> {
                                     // Down
                                 })

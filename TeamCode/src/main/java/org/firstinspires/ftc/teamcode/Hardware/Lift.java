@@ -71,7 +71,7 @@ public class Lift {
     public static String[] heightNames = new String[] {"Floor", "High Terminal", "Low Terminal", "Medium Terminal"};
     public static int maxHeightCounts = maxHeightInch * liftCountsPerInch;
 
-    public TouchSensor upLSensor;
+    private TouchSensor upLSensor;
     public TouchSensor upRSensor;
     private double flipPosition = FLIP_BASE;
 
@@ -193,6 +193,10 @@ public class Lift {
     public boolean canFlip(){
         return upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition() > 2 * minHeightForFlip;
     }
+
+    public void downDropDelay(long delay){
+        downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2, delay);
+    }
     public void downDrop() {
         downDrop((upMotorL.getCurrentPosition() + upMotorR.getCurrentPosition()) / 2);
     }
@@ -251,5 +255,9 @@ public class Lift {
 
     public boolean isBusy() {
         return upMotorL.isBusy() || upMotorR.isBusy();
+    }
+
+    public boolean sensorPress() {
+        return upRSensor.isPressed() || upLSensor.isPressed();
     }
 }

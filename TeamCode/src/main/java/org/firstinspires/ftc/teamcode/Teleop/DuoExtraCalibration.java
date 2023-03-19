@@ -112,12 +112,12 @@ public class DuoExtraCalibration extends AutonDriving {
                 isFlipped = false;
             }
 
-            if ((lift.upLSensor.isPressed() || lift.upRSensor.isPressed()) && needToResetLift) {
+            if ((lift.sensorPress()) && needToResetLift) {
                 lift.stopAndResetLiftEncoders();
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 needToResetLift = false;
             }
-            else if(!lift.upLSensor.isPressed() && !lift.upRSensor.isPressed()){
+            else if(!lift.sensorPress()){
                 needToResetLift = true;
             }
 
