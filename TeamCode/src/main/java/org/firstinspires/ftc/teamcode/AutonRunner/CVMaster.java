@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Components.CV;
+package org.firstinspires.ftc.teamcode.AutonRunner;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -10,7 +10,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CVMaster {
     private OpenCvWebcam webcam;
-    private StickObserverPipeline opencv = null;
+    private org.firstinspires.ftc.teamcode.Components.CV.StickObserverPipeline opencv = null;
     private LinearOpMode op;
     public CVMaster(LinearOpMode p_op){
         //you can input  a hardwareMap instead of linearOpMode if you want
@@ -20,7 +20,7 @@ public class CVMaster {
     }
     public void observeStick(){
         //create the pipeline
-        opencv = new StickObserverPipeline();
+        opencv = new org.firstinspires.ftc.teamcode.Components.CV.StickObserverPipeline();
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
