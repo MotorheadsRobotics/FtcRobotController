@@ -33,7 +33,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -56,8 +55,6 @@ public class Chassis {
 
     private List<DcMotor> motors;
 
-    public TouchSensor RSensor;
-    public TouchSensor LSensor;
 
     private IMU imu;
 
@@ -91,9 +88,6 @@ public class Chassis {
         }
 
         if (auton) {
-            RSensor = myOpMode.hardwareMap.get(TouchSensor.class, "RSensor");
-            LSensor = myOpMode.hardwareMap.get(TouchSensor.class, "LSensor");
-
             IMU.Parameters parameters = new IMU.Parameters(
                     new RevHubOrientationOnRobot(
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -129,9 +123,6 @@ public class Chassis {
         fRMotor.setPower(frontRight);
         bLMotor.setPower(backLeft);
         bRMotor.setPower(backRight);
-    }
-    public boolean hitWall(){
-        return RSensor.isPressed() || LSensor.isPressed();
     }
     public void stopAndResetDriveEncoders() {
         fLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

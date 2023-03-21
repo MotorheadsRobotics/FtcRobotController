@@ -23,7 +23,7 @@ public class LeftStackRunner extends AutonomousDriving {
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
         double stackx = 1;
-        double y_adj = -1;
+        double y_adj = -1.5;
         double x_adj = -1;
 
 
@@ -35,9 +35,8 @@ public class LeftStackRunner extends AutonomousDriving {
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
                 .strafeLeft(20)
                 .lineToSplineHeading(new Pose2d(-36, -18, Math.toRadians(-90)))
-                .splineToSplineHeading(new Pose2d(-30.8,-9,Math.toRadians(220)), Math.toRadians(40))
+                .splineToSplineHeading(new Pose2d(-27,-4,Math.toRadians(220)), Math.toRadians(40))
                 //TODO: make robot not run into pole
-                .splineTo(new Vector2d(-27,-6), Math.toRadians(40))
                 .build();
 
 
@@ -56,7 +55,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          })
                          .addTemporalMarker(0.15, lift::closeClaw)
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-62 - stackx, -14), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
+                         .splineTo(new Vector2d(-62.5, -13), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
              @Override
@@ -70,7 +69,7 @@ public class LeftStackRunner extends AutonomousDriving {
                              lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER);
                          })
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-27.6, -6), Math.toRadians(38)) // further away from the cone
+                         .splineTo(new Vector2d(-28, -5.75), Math.toRadians(35)) // further away from the cone
                          .build();
              }
          };
@@ -115,19 +114,20 @@ public class LeftStackRunner extends AutonomousDriving {
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate())
                         .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.1, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> lift.setRotate(0))
                         .addTemporalMarker(0.4, lift::openClaw)
                         //TODO: Make robot not run into wall
-                        .splineTo(new Vector2d(-65, -16), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
+                        .splineTo(new Vector2d(-62, -16), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
                 break;
             case 3: // Park Right
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
                         .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.1, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
                         .splineTo(new Vector2d(-36,-24),Math.toRadians(270))
                         .splineToConstantHeading(new Vector2d(-8,-36),Math.toRadians(0))
                         .build();
@@ -136,8 +136,9 @@ public class LeftStackRunner extends AutonomousDriving {
                 track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
                         .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, lift::closeClaw)
+                        .addTemporalMarker(0.1, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
                         .splineTo(new Vector2d(-36,-39),Math.toRadians(270))
                         .build();
         }

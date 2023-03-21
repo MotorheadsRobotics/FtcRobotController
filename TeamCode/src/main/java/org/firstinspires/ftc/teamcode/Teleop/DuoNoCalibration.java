@@ -95,6 +95,7 @@ public class DuoNoCalibration extends AutonDriving {
             // Claw mapped to a
             if (gamepad2.a && lift.upMotorL.getCurrentPosition() + lift.upMotorR.getCurrentPosition() > Lift.minHeightForFlip * 2) {
                 lift.downDrop(Lift.heightsCounts[currentPreset] + offsetCounts);
+                sleep(300);
                 while(gamepad2.a) {}
             }
             else if(gamepad2.a) {

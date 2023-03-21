@@ -27,18 +27,19 @@ public class RightStackRunner extends AutonomousDriving {
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
-        robot.setPoseEstimate(new Pose2d(36,-65.25,0));
-        Vector2d coneSpot = new Vector2d(26.-5);
+        double stackx = -1;
+        double y_adj = -1;
+        double x_adj = 1;
 
-        Trajectory track1 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
+        robot.setPoseEstimate(new Pose2d(36,-65.25,0));
+        Vector2d coneSpot = new Vector2d(27, -5);
+
+        track1 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
                 .strafeLeft(47.75)
-                .splineToSplineHeading(new Pose2d(30.8,-6.8,Math.toRadians(-45)), Math.toRadians(135))
-                //TODO: make robot not run into pole
-//                .lineTo(coneSpot)
-                .splineTo(coneSpot, Math.PI + Math.atan((0 - coneSpot.getY())/(24-coneSpot.getX())))
+                .splineToSplineHeading(new Pose2d(27,-4,Math.toRadians(320)), Math.toRadians(140))
                 .build();
 
 
@@ -47,18 +48,17 @@ public class RightStackRunner extends AutonomousDriving {
             public void track2Mod(double cone) {
                 //it's possible we may need to hardcode a start point instead of getting the current estimate.
                 // don't know which would cause less drift
-                robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(0,-adjustment)));
+                robot.setPoseEstimate(robot.getPoseEstimate().plus(new Pose2d(-x_adj,-y_adj)));
                 track2 = robot.trajectoryBuilder(robot.getPoseEstimate())
                         .addDisplacementMarker(() -> lift.setLift((int)cone, Lift.LIFTMOTORPOWER))
                         .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
-                        .addTemporalMarker(0.22, lift::closeClaw)
                         .addTemporalMarker(0.3, () -> {
                             lift.setRotate(0);
                             lift.openClaw();
                         })
-                        .addTemporalMarker(0.2, lift::closeClaw)
+                        .addTemporalMarker(0.15, lift::closeClaw)
                         //TODO: Make robot not run into wall
-                        .splineTo(new Vector2d(leftWallPoint, -12), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
+                        .splineTo(new Vector2d(62.5, -13), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
             }
             @Override
@@ -66,9 +66,12 @@ public class RightStackRunner extends AutonomousDriving {
                 track3 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
                         .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                         .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                        .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
+                        .addDisplacementMarker(() -> {
+                            lift.closeClaw();
+                            lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
+                        })
                         //TODO: copy from track 1 to not have it run into pole
-                        .splineTo(new Vector2d(26.7, -2.9), Math.toRadians(135))
+                        .splineTo(new Vector2d(28, -5.75), Math.toRadians(135))
                         .build();
             }
         };
@@ -80,45 +83,66 @@ public class RightStackRunner extends AutonomousDriving {
         robot.followTrajectory(track1, this);
         telemetry.addData("Path: ", "Track 1 Completed");
         telemetry.update();
-        lift.downDrop();
-        for (int i = 4; i >= 1; i--) {
+        sleep(300);
+        lift.downDrop(Lift.heightsCounts[1] - 100, 400);
+        for (int i = 3; i >= 1 && opModeIsActive(); i--) {
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2, this);
             lift.closeClaw();
             sleep(300);
-            if (robot.hitWall()){
-                robot.setPoseEstimate(new Pose2d(63, -12, Math.toRadians(0)));
-            }
             int offset = 166;
             trackMod.track3Update(offset);
             robot.followTrajectory(track3, this);
-            lift.downDrop();
+            sleep(300);
+            lift.downDropDelay(300);
+            telemetry.addData("Path: ", "Track 3 Completed - (" + (4 - i) + "/4)");
+            telemetry.update();
         }
         Trajectory track4;
         if(tagOfInterest == null) {
             tagOfInterest = new AprilTagDetection();
-            tagOfInterest.id = -1;
+            tagOfInterest.id = 0;
         }
         switch (tagOfInterest.id) {
             case 1:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
-                        .splineTo(new Vector2d(36,-26),Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(-60,-36),Math.toRadians(180))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.1, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
+                        .splineTo(new Vector2d(36,-24),Math.toRadians(270))
+                        .splineToConstantHeading(new Vector2d(8,-36),Math.toRadians(0))
                         .build();
                 break;
             case 3:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
-                        .splineTo(new Vector2d(36,-26),Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(-12,-36),Math.toRadians(0))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate())
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.1, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
+                        //TODO: Make robot not run into wall
+                        .splineTo(new Vector2d(62, -16), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
                 break;
             default:
-                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), true)
-                        .splineTo(new Vector2d(36,-36),Math.toRadians(90))
+                track4 = robot.trajectoryBuilder(robot.getPoseEstimate(), false)
+                        .addDisplacementMarker(() -> lift.setLift(0, Lift.LIFTMOTORPOWER))
+                        .addTemporalMarker(0.05, () -> lift.flipToPosition(0))
+                        .addTemporalMarker(0.1, lift::closeClaw)
+                        .addTemporalMarker(0.3, () -> lift.setRotate(0))
+                        .addTemporalMarker(0.4, lift::openClaw)
+                        .splineTo(new Vector2d(36,-39),Math.toRadians(270))
                         .build();
         }
         lift.setLift(0, Lift.LIFTMOTORPOWER);
         robot.followTrajectory(track4, this);
-        sleep(10000);
+        lift.setLift(0, Lift.LIFTMOTORPOWER);
+        telemetry.addLine("Starting Track 4");
+        robot.followTrajectory(track4, this);
+        telemetry.addData("Path: ", "Track 4 Completed - Park");
+        telemetry.update();
+        while(lift.isBusy() && opModeIsActive() && !lift.sensorPress());
     }
 }
