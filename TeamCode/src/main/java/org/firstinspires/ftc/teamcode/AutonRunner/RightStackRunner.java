@@ -28,8 +28,8 @@ public class RightStackRunner extends AutonomousDriving {
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
         double stackx = -1;
-        double y_adj = -1;
-        double x_adj = 1;
+        double y_adj = -.4;
+        double x_adj = 1.2;
 
         robot.setPoseEstimate(new Pose2d(36,-65.25,0));
         Vector2d coneSpot = new Vector2d(27, -5);
@@ -38,8 +38,8 @@ public class RightStackRunner extends AutonomousDriving {
                 .addDisplacementMarker(() -> lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER))
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
-                .strafeLeft(47.75)
-                .splineToSplineHeading(new Pose2d(27,-4,Math.toRadians(320)), Math.toRadians(140))
+                .strafeLeft(40)
+                .splineToSplineHeading(new Pose2d(25,-8.6,Math.toRadians(320)), Math.toRadians(140))
                 .build();
 
 
@@ -58,7 +58,7 @@ public class RightStackRunner extends AutonomousDriving {
                         })
                         .addTemporalMarker(0.15, lift::closeClaw)
                         //TODO: Make robot not run into wall
-                        .splineTo(new Vector2d(62.5, -13), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
+                        .splineTo(new Vector2d(60, -17), Math.toRadians(0)) // theoretically this point should be (-63.5, -12) but variations idk
                         .build();
             }
             @Override
@@ -71,7 +71,7 @@ public class RightStackRunner extends AutonomousDriving {
                             lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
                         })
                         //TODO: copy from track 1 to not have it run into pole
-                        .splineTo(new Vector2d(28, -5.75), Math.toRadians(135))
+                        .splineTo(new Vector2d(25, -7), Math.toRadians(140))
                         .build();
             }
         };
@@ -90,7 +90,7 @@ public class RightStackRunner extends AutonomousDriving {
             robot.followTrajectory(track2, this);
             lift.closeClaw();
             sleep(300);
-            int offset = 166;
+            int offset = 225;
             trackMod.track3Update(offset);
             robot.followTrajectory(track3, this);
             sleep(300);
