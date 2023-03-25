@@ -84,13 +84,13 @@ public class LeftStackRunner extends AutonomousDriving {
         sleep(300);
         lift.downDrop(Lift.heightsCounts[1] - 100, 400);
 
-        for (int i = 3; i >= 1 && opModeIsActive(); i--) {
+        for (int i = 4; i >= 1 && opModeIsActive(); i--) {
             // Go towards cone stack
             trackMod.track2Mod(cones[i]);
             robot.followTrajectory(track2, this);
             lift.closeClaw();
             sleep(150);
-            telemetry.addData("Path: ", "Track 2 Completed - (" + (4 - i) + "/4)");
+            telemetry.addData("Path: ", "Track 2 Completed - (" + (5 - i) + "/5)");
             telemetry.update();
 
             // Go back to high goal
@@ -99,7 +99,7 @@ public class LeftStackRunner extends AutonomousDriving {
             robot.followTrajectory(track3, this);
             sleep(300);
             lift.downDropDelay(300);
-            telemetry.addData("Path: ", "Track 3 Completed - (" + (4 - i) + "/4)");
+            telemetry.addData("Path: ", "Track 3 Completed - (" + (5 - i) + "/5)");
             telemetry.update();
         }
 
