@@ -55,7 +55,7 @@ public class LeftStackRunner extends AutonomousDriving {
                          })
                          .addTemporalMarker(0.15, lift::closeClaw)
                          //TODO: Make robot not run into wall
-                         .splineTo(new Vector2d(-62.5, -13), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
+                         .splineTo(new Vector2d(-62.5, -11), Math.toRadians(180)) // theoretically this point should be (-63.5, -12) but variations idk
                          .build();
              }
              @Override
@@ -69,7 +69,7 @@ public class LeftStackRunner extends AutonomousDriving {
                              lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER);
                          })
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-28, -5.25), Math.toRadians(35)) // further away from the cone
+                         .splineTo(new Vector2d(-29, -4), Math.toRadians(35)) // further away from the cone
                          .build();
              }
          };
