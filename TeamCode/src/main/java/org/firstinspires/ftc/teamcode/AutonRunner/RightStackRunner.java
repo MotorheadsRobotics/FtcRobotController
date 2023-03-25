@@ -28,7 +28,7 @@ public class RightStackRunner extends AutonomousDriving {
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
 
         double stackx = -1;
-        double y_adj = -.4;
+        double y_adj = -.5;
         double x_adj = 1.2;
 
         robot.setPoseEstimate(new Pose2d(36,-65.25,0));
@@ -39,7 +39,7 @@ public class RightStackRunner extends AutonomousDriving {
                 .addTemporalMarker(0.5, () -> lift.flipToPosition(1))
                 .addTemporalMarker(1.5, () -> lift.setRotate(1))
                 .strafeLeft(40)
-                .splineToSplineHeading(new Pose2d(25,-8.6,Math.toRadians(320)), Math.toRadians(140))
+                .splineToSplineHeading(new Pose2d(23.5,-11,Math.toRadians(320)), Math.toRadians(140))
                 .build();
 
 
@@ -71,7 +71,7 @@ public class RightStackRunner extends AutonomousDriving {
                             lift.setLift(Lift.highInch * Lift.liftCountsPerInch, Lift.LIFTMOTORPOWER);
                         })
                         //TODO: copy from track 1 to not have it run into pole
-                        .splineTo(new Vector2d(25, -7), Math.toRadians(140))
+                        .splineTo(new Vector2d(24, -10), Math.toRadians(140))
                         .build();
             }
         };

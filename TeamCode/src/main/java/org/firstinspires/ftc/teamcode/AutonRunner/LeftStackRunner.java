@@ -23,7 +23,7 @@ public class LeftStackRunner extends AutonomousDriving {
         lift.flipToPosition(0.5);
         tagOfInterest = getTag(tagDetector.initAprilTagDetection());
         double stackx = 1;
-        double y_adj = -1.5;
+        double y_adj = -0.5;
         double x_adj = -1;
 
 
