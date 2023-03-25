@@ -69,7 +69,7 @@ public class LeftStackRunner extends AutonomousDriving {
                              lift.setLift(Lift.highInch * Lift.liftCountsPerInch + offset, Lift.LIFTMOTORPOWER);
                          })
                          //TODO: copy from track 1 to not have it run into pole
-                         .splineTo(new Vector2d(-28, -5.75), Math.toRadians(35)) // further away from the cone
+                         .splineTo(new Vector2d(-28, -5.25), Math.toRadians(35)) // further away from the cone
                          .build();
              }
          };
