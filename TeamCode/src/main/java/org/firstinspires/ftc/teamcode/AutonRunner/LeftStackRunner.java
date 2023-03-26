@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Hardware.Camera;
 import org.firstinspires.ftc.teamcode.Hardware.Lift;
+import org.firstinspires.ftc.teamcode.Roadrunner.PoseStorage;
 import org.firstinspires.ftc.teamcode.Roadrunner.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 
@@ -147,6 +148,7 @@ public class LeftStackRunner extends AutonomousDriving {
         robot.followTrajectory(track4, this);
         telemetry.addData("Path: ", "Track 4 Completed - Park");
         telemetry.update();
+        PoseStorage.currentPose = robot.getPoseEstimate();
         while(lift.isBusy() && opModeIsActive() && !lift.sensorPress());
     }
 }
